@@ -1,0 +1,11 @@
+{
+	"id": "gay-toolbar",
+	"name": "🏳‍🌈 Gay Toolbar 🏳‍🌈",
+	"version": "1.0.0",
+	"minAppVersion": "0.15.0",
+	"description": "Colorful, customizable toolbar for Obsidian, designed for mobile.",
+	"author": "Chas Kane",
+	"authorUrl": "https://github.com/ChasKane",
+	"fundingUrl": "Fill me in once I get back to the states ;)",
+	"isDesktopOnly": false
+}
