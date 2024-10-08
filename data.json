@@ -9,53 +9,84 @@
     "editor:insert-wikilink",
     "editor:insert-link",
     "editor:toggle-highlight",
-    "editor:toggle-highlight",
-    "editor:save-file"
+    "periodic-notes:open-daily-note",
+    "editor:paste",
+    "switcher:open",
+    "periodic-notes:open-daily-note",
+    "editor:paste",
+    "editor:toggle-bullet-list",
+    "switcher:open"
   ],
   "commandLocations": {
-    "editor:configure-toolbar": {
-      "row": 1,
-      "col": 1
-    },
-    "gay-toolbar:edit-toolbar": {
-      "row": 1,
-      "col": 2
-    },
-    "editor:undo": {
-      "row": 2,
-      "col": 4
-    },
-    "editor:redo": {
-      "row": 1,
-      "col": 6
-    },
-    "editor:unindent-list": {
-      "row": 1,
-      "col": 7
-    },
-    "editor:insert-wikilink": {
-      "row": 1,
-      "col": 8
-    },
-    "editor:insert-link": {
-      "row": 1,
-      "col": 9
-    },
-    "editor:toggle-highlight": {
-      "row": 1,
-      "col": 3
-    },
-    "editor:indent-list": {
-      "row": 3,
-      "col": 8
-    },
-    "editor:save-file": {
-      "row": 1,
-      "col": 4
-    }
+    "editor:configure-toolbar": [
+      0,
+      0
+    ],
+    "gay-toolbar:edit-toolbar": [
+      0,
+      1
+    ],
+    "editor:undo": [
+      1,
+      4
+    ],
+    "editor:redo": [
+      0,
+      4
+    ],
+    "editor:unindent-list": [
+      0,
+      5
+    ],
+    "editor:insert-wikilink": [
+      0,
+      7
+    ],
+    "editor:insert-link": [
+      0,
+      8
+    ],
+    "editor:toggle-highlight": [
+      1,
+      0
+    ],
+    "editor:indent-list": [
+      0,
+      6
+    ],
+    "periodic-notes:open-daily-note": [
+      2,
+      7
+    ],
+    "editor:paste": [
+      1,
+      1
+    ],
+    "switcher:open": [
+      2,
+      3
+    ],
+    "editor:toggle-bullet-list": [
+      1,
+      2
+    ]
+  },
+  "commandIcons": {
+    "gay-toolbar:edit-toolbar": "lucide-wrench",
+    "editor:undo": "lucide-undo-2",
+    "editor:redo": "lucide-redo-2",
+    "editor:unindent-list": "lucide-outdent",
+    "editor:insert-wikilink": "bracket-glyph",
+    "editor:insert-link": "lucide-link",
+    "editor:toggle-highlight": "lucide-highlighter",
+    "editor:indent-list": "lucide-indent",
+    "periodic-notes:open-daily-note": "lucide-cross",
+    "editor:paste": "lucide-clipboard-type",
+    "editor:toggle-bullet-list": "lucide-list",
+    "switcher:open": "lucide-navigation"
   },
   "numRows": 3,
   "numCols": 8,
-  "rowHeight": 40,
+  "rowHeight": 26,
   "forceSquareButtons": true
 }

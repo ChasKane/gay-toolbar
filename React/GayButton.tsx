@@ -18,10 +18,6 @@ const GayButton: React.FC<GayButtonProps> = ({ commandId, icon }) => {
             setIcon(ref.current, icon || 'question-mark-glyph');
             const svg = ref.current.firstChild as HTMLElement;
             if (svg) {
-                svg.addEventListener('dragenter', e => e.stopPropagation())
-                svg.addEventListener('dragleave', e => e.stopPropagation())
-                svg.addEventListener('dragstart', e => e.stopPropagation())
-                svg.addEventListener('dragend', e => e.stopPropagation())
                 isEditing ? svg.classList.add('wiggle') : svg.classList.remove('wiggle')
             }
         }

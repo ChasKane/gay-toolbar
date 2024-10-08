@@ -25,7 +25,7 @@
     margin-Inline: 10px;
 }
 
-.cell {
+.slot {
     display: flex;
     justify-content: center;
     align-items: center;

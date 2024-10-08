@@ -52,6 +52,14 @@ export default class ChooseIconModal extends FuzzySuggestModal<string> {
         setIcon(aux.createSpan({ cls: "suggestion-flair" }), item.item);
     }
 
+    public getItemText(item: string): string {
+        return item;
+    }
+
+    // This will be overriden anyway, but typescript complains if it's not declared
+    // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-empty-function
+    public onChooseItem(_: string, __: MouseEvent | KeyboardEvent): void { }
+
     public getItems(): string[] {
         return [
             "activity",
@@ -646,12 +654,4 @@ export default class ChooseIconModal extends FuzzySuggestModal<string> {
             "search-large",
         ];
     }
-
-    public getItemText(item: string): string {
-        return item;
-    }
-
-    // This will be overriden anyway, but typescript complains if it's not declared
-    // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-empty-function
-    public onChooseItem(_: string, __: MouseEvent | KeyboardEvent): void { }
 }
