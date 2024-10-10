@@ -11,11 +11,11 @@ const SliderInputGroup: React.FC<{
     return (
         <div className='slider-input-group'>
             <input
-                ref={ref2}
-                type='range'
+                ref={ref1}
+                type='number'
                 name={name}
-                className='range-input'
-                onChange={e => { if (ref1.current) ref1.current.value = e.target.value }}
+                className='number-input'
+                onChange={e => { if (ref2.current) ref2.current.value = e.target.value }}
                 defaultValue={value}
                 min={bounds[0]}
                 max={bounds[1]}
@@ -23,11 +23,11 @@ const SliderInputGroup: React.FC<{
             ></input>
             <label htmlFor={name}>{text}</label>
             <input
-                ref={ref1}
-                type='number'
+                ref={ref2}
+                type='range'
                 name={name}
-                className='number-input'
-                onChange={e => { if (ref2.current) ref2.current.value = e.target.value }}
+                className='range-input'
+                onChange={e => { if (ref1.current) ref1.current.value = e.target.value }}
                 defaultValue={value}
                 min={bounds[0]}
                 max={bounds[1]}

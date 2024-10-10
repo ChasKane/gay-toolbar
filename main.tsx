@@ -1,11 +1,10 @@
-import { App, Modal, Notice, Plugin, PluginSettingTab } from 'obsidian';
+import { App, Plugin, PluginSettingTab } from 'obsidian';
 import { createRoot, Root } from "react-dom/client";
 import GayToolbar from './React/GayTOOLBAR';
-import DEFAULT_SETTINGS, { GayToolbarSettings } from './React/SETTINGS_BACKUP';
+import DEFAULT_SETTINGS, { GayToolbarSettings } from './React/Settings/DEFAULT_SETTINGS';
 import { RecoilRoot } from 'recoil';
 import RecoilNexus, { resetRecoil, setRecoil } from "recoil-nexus";
-import { settingsAtom, isEditingAtom, pluginAtom, appAtom } from './React/GayAtoms'
-import { Suspense } from 'react';
+import { pluginAtom, settingsSelector, isEditingAtom } from './React/GayAtoms'
 
 export default class GayToolbarPlugin extends Plugin {
     settings: GayToolbarSettings;
@@ -23,14 +22,15 @@ export default class GayToolbarPlugin extends Plugin {
             id: "load-from-backup",
             name: "Load Settings from Backup",
             callback: () => {
-                console.log(DEFAULT_SETTINGS); resetRecoil(settingsAtom)
+                console.log('load-from-backup DEFAULT_SETTINGS', DEFAULT_SETTINGS)
+                setRecoil(settingsSelector, DEFAULT_SETTINGS)
             },
         });
 
         const navbar = document.querySelector('.mobile-navbar');
 
         this.toolbarNode = createDiv('gay-toolbar-container');
-        console.log(navbar.clientHeight)
+        console.log('navbar height = ', navbar?.clientHeight)
         this.toolbarNode.style.bottom = (navbar?.clientHeight || 0) + 'px';
 
         // when there's no keyboard, navbar is absolutely positioned and toolbar must be rendered above it
@@ -72,29 +72,24 @@ export default class GayToolbarPlugin extends Plugin {
             this.toolbarRoot.render(
                 <RecoilRoot>
                     <RecoilNexus />
-                    <Suspense fallback={<>loading...</>}>
-                        <GayToolbar settingsContainerEl={settingsTab.containerEl} />
-                    </Suspense>
+                    <GayToolbar settingsContainerEl={settingsTab.containerEl} />
                 </RecoilRoot>
             );
 
-            // Recoil needs access to `saveData` in `settingsAtom`'s effect.
-            GayToolbarPlugin.saveData = this.saveData.bind(this)
             // this must happen after <RecoilNexus /> renders
             await this.loadSettings()
         });
     }
 
-    static async saveSettings(newSettings: GayToolbarSettings) {
-        await GayToolbarPlugin.saveData(newSettings)
+    async saveSettings(newSettings: GayToolbarSettings) {
+        await this.saveData(newSettings)
     }
-    static saveData: any;
 
     async loadSettings() {
-        const settings = await this.loadData();
-        setRecoil(settingsAtom, Object.assign({}, DEFAULT_SETTINGS, settings));
-        setRecoil(pluginAtom, this)
-        setRecoil(appAtom, this.app)
+        this.settings = await this.loadData();
+        console.log('loadSettings() -> this.settings', this.settings)
+        setRecoil(pluginAtom, this);
+        setRecoil(settingsSelector, this.settings);
     }
 
     onunload() {
@@ -116,32 +111,5 @@ class GayToolbarSettingTab extends PluginSettingTab {
     }
 
     hide(): void {
-    }
-}
-
-class Dialog extends Modal {
-    text: string;
-    callback: () => void;
-
-    constructor(app: App, text: string, callback: () => void) {
-        super(app);
-        this.text = text;
-        this.callback = callback;
-    }
-
-    onOpen() {
-        const { contentEl } = this;
-        contentEl.setText(this.text);
-        contentEl.append(
-            createEl('button', { text: 'Cancel' }, el =>
-                el.addEventListener('click', this.close)),
-            createEl('button', { text: 'SWAP' }, el =>
-                el.addEventListener('click', () => { this.callback(); this.close() }))
-        )
-    }
-
-    onClose() {
-        const { contentEl } = this;
-        contentEl.empty();
     }
 }

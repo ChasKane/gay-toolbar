@@ -1,92 +1,33 @@
 {
-  "commandIds": [
-    "editor:configure-toolbar",
-    "gay-toolbar:edit-toolbar",
-    "editor:indent-list",
-    "editor:unindent-list",
-    "editor:undo",
-    "editor:redo",
-    "editor:insert-wikilink",
-    "editor:insert-link",
-    "editor:toggle-highlight",
-    "periodic-notes:open-daily-note",
-    "editor:paste",
-    "switcher:open",
-    "periodic-notes:open-daily-note",
-    "editor:paste",
-    "editor:toggle-bullet-list",
-    "switcher:open"
+  "buttonNames": [
+    "Edit Gay Toolbar",
+    "Bullet List Commands"
   ],
-  "commandLocations": {
-    "editor:configure-toolbar": [
+  "buttonLocations": {
+    "Edit Gay Toolbar": [
       0,
       0
     ],
-    "gay-toolbar:edit-toolbar": [
+    "Bullet List Commands": [
       0,
       1
-    ],
-    "editor:undo": [
-      1,
-      4
-    ],
-    "editor:redo": [
-      0,
-      4
-    ],
-    "editor:unindent-list": [
-      0,
-      5
-    ],
-    "editor:insert-wikilink": [
-      0,
-      7
-    ],
-    "editor:insert-link": [
-      0,
-      8
-    ],
-    "editor:toggle-highlight": [
-      1,
-      0
-    ],
-    "editor:indent-list": [
-      0,
-      6
-    ],
-    "periodic-notes:open-daily-note": [
-      2,
-      7
-    ],
-    "editor:paste": [
-      1,
-      1
-    ],
-    "switcher:open": [
-      2,
-      3
-    ],
-    "editor:toggle-bullet-list": [
-      1,
-      2
     ]
   },
-  "commandIcons": {
-    "gay-toolbar:edit-toolbar": "lucide-wrench",
-    "editor:undo": "lucide-undo-2",
-    "editor:redo": "lucide-redo-2",
-    "editor:unindent-list": "lucide-outdent",
-    "editor:insert-wikilink": "bracket-glyph",
-    "editor:insert-link": "lucide-link",
-    "editor:toggle-highlight": "lucide-highlighter",
-    "editor:indent-list": "lucide-indent",
-    "periodic-notes:open-daily-note": "lucide-cross",
-    "editor:paste": "lucide-clipboard-type",
-    "editor:toggle-bullet-list": "lucide-list",
-    "switcher:open": "lucide-navigation"
+  "buttons": {
+    "Edit Gay Toolbar": {
+      "name": "Edit Gay Toolbar",
+      "icon": "lucide-wrench",
+      "backgroundColor": "pink",
+      "onClickCommandId": "gay-toolbar:edit-toolbar"
+    },
+    "Bullet List Commands": {
+      "name": "Bullet List Commands",
+      "icon": "lucide-indent",
+      "backgroundColor": "lightblue",
+      "onClickCommandId": "editor:indent-list"
+    }
   },
   "numRows": 3,
   "numCols": 8,
-  "rowHeight": 26,
-  "forceSquareButtons": true
+  "rowHeight": 40
 }

@@ -6,12 +6,35 @@
 
 .gay-settings-container {
     overflow-y: scroll;
+    background-color: var(--background-primary);
+    display: flex;
+    flex-direction: column;
+}
+
+.tab-bar {
+    display: flex;
+}
+.tab-item {
+    width: 100%;
+    flex: 1;
+    background-color: var(--background-primary);
+    border: none;
+    /* border: 7px;
+    border-color: var(--color-accent);
+    border-style: solid;
+    border-radius: 0%; */
+    padding: 10px 20px;
+    transition: background-color 0.3s ease;
+
+}
+.tab-item-active {
+    border-top: none;
 }
 
 .slider-input-group {
     margin: 10px;
     padding: 5px;
-    border: 2px ridge hsl(calc(258 - 3), calc(88% * 1.02), calc(66% * 1.15));
+    border: 2px ridge var(--color-accent);
     display: flex;
     align-items: center;
 }
@@ -35,6 +58,7 @@
     width: 100%;
     height: 100%;
     opacity: 100%;
+    background-color: var(--background-primary);
 }
 
 .hovering-button-container {
@@ -42,13 +66,16 @@
 }
 
 .gay-button {
-    background: radial-gradient(black, pink) padding-box, conic-gradient(lightblue, pink, lightblue, pink) border-box;
+    /* background: radial-gradient(black, pink) padding-box, conic-gradient(lightblue, pink, lightblue, pink) border-box; */
     border-radius: 10px;
     border: 4px solid transparent;
     width: 100%;
     height: 100%;
 }
 
+.button-halo {
+    scale: 1.5;
+}
 
 
 .wiggle {

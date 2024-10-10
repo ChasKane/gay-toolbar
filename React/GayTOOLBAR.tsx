@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import GaySettingsPane from './GaySettings';
-import { appAtom, isEditingAtom, settingsAtom } from './GayAtoms';
-import { useRecoilState } from 'recoil';
+import { isEditingAtom, settingsSelector } from './GayAtoms';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import ButtonGrid from './Grid/ButtonGrid';
+import GaySettings from './Settings/GaySettings';
 
 interface GayToolbarProps {
     settingsContainerEl: HTMLElement;
@@ -12,21 +12,20 @@ interface GayToolbarProps {
 const GayToolbar: React.FC<GayToolbarProps> = ({ settingsContainerEl }) => {
     console.log('GayToolbar render 🏳‍🌈');
 
-    const [settings, setSettings] = useRecoilState(settingsAtom);
-    const { commandIds } = settings;
+    const persistedSettings = useRecoilValue(settingsSelector);
     const [isEditing] = useRecoilState(isEditingAtom);
-    const [app] = useRecoilState(appAtom);
 
     useEffect(() => {
+        console.log('recoil_window persistedSettings', persistedSettings)
         // @ts-ignore
-        window.__DEBUG_RECOIL__ = settings
-    }, [settings]);
+        window.__DEBUG_RECOIL__ = persistedSettings
+    }, [persistedSettings]);
 
     return (
         <>
-            {isEditing && <GaySettingsPane />}
+            {isEditing && <GaySettings />}
             <ButtonGrid />
-            {createPortal(<GaySettingsPane />, settingsContainerEl)}
+            {createPortal(<GaySettings />, settingsContainerEl)}
         </>
     );
 }

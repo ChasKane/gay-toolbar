@@ -5,10 +5,11 @@ export default class AddCommandModal extends FuzzySuggestModal<Command> {
     private plugin: GayToolbarPlugin;
     private commands: Command[];
 
-    public constructor(plugin: GayToolbarPlugin, app: App) {
-        super(app);
+    public constructor(plugin: GayToolbarPlugin) {
+        super(plugin.app);
         this.plugin = plugin;
-        this.commands = Object.values(app.commands.commands);
+        // @ts-ignore | app.commands exists; not sure why it's not in the API...
+        this.commands = Object.values(plugin.app.commands.commands);
         this.setPlaceholder("Choose a Command to add");
 
         this.setInstructions([

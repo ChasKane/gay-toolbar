@@ -9,17 +9,17 @@ import { App } from "obsidian";
  * @param {CommanderPlugin} plugin - The plugin that is calling the modal.
  * @returns {CommandIconPair}
  */
-export async function chooseNewCommand(plugin: GayToolbarPlugin, app: App): Promise<{
+export async function chooseNewCommand(plugin: GayToolbarPlugin): Promise<{
     id: string;
     icon: string;
     mode: string;
     color?: string;
 }> {
-    const command = await new AddCommandModal(plugin, app).awaitSelection();
+    const command = await new AddCommandModal(plugin).awaitSelection();
 
     let icon;
     if (!command.hasOwnProperty("icon")) {
-        icon = await new ChooseIconModal(plugin, app).awaitSelection();
+        icon = await new ChooseIconModal(plugin).awaitSelection();
     }
 
     return {
