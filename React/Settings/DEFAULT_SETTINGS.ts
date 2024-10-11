@@ -1,20 +1,13 @@
-type buttonNames = string[];
-export interface GayToolbarSettings {
-    buttonNames: buttonNames;
-    buttonLocations: Record<buttonNames[number], [number, number]>
-    buttons: Record<buttonNames[number], GayButtonSettings>
-    numRows: number;
-    numCols: number;
-    rowHeight: number;
-}
+import { GayToolbarSettings } from "types";
 
-export interface GayButtonSettings {
-    name: string;
-    icon: string;
-    backgroundColor: string;
-    onClickCommandId: string;
-}
-
+export const emptySettings = {
+    buttonNames: [],
+    buttonLocations: {},
+    buttons: {},
+    numRows: 2,
+    numCols: 5,
+    rowHeight: 20,
+} as GayToolbarSettings;
 
 export default {
     buttonNames: [

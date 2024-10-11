@@ -1,36 +1,37 @@
-import { App, Plugin, PluginSettingTab } from 'obsidian';
+import { Plugin } from 'obsidian';
 import { createRoot, Root } from "react-dom/client";
 import GayToolbar from './React/GayTOOLBAR';
-import DEFAULT_SETTINGS, { GayToolbarSettings } from './React/Settings/DEFAULT_SETTINGS';
-import { RecoilRoot } from 'recoil';
-import RecoilNexus, { resetRecoil, setRecoil } from "recoil-nexus";
-import { pluginAtom, settingsSelector, isEditingAtom } from './React/GayAtoms'
+import DEFAULT_SETTINGS, { emptySettings } from './React/Settings/DEFAULT_SETTINGS';
+import { usePlugin, useSettings, useEditor } from './React/StateManagement'
+import { GayToolbarSettings } from 'types';
 
 export default class GayToolbarPlugin extends Plugin {
     settings: GayToolbarSettings;
     toolbarRoot: Root;
     toolbarNode: HTMLElement;
     observer: MutationObserver;
+    unsubscribePositionStore: () => void;
 
     async onload() {
+        this.loadSettings()
+
         this.addCommand({
             id: "edit-toolbar",
             name: "Edit Toolbar",
-            callback: () => setRecoil(isEditingAtom, editing => !editing),
+            callback: () => useEditor.setState(prev => ({ isEditing: !prev.isEditing })),
         });
         this.addCommand({
             id: "load-from-backup",
             name: "Load Settings from Backup",
             callback: () => {
                 console.log('load-from-backup DEFAULT_SETTINGS', DEFAULT_SETTINGS)
-                setRecoil(settingsSelector, DEFAULT_SETTINGS)
+                useSettings.setState(DEFAULT_SETTINGS);
             },
         });
 
         const navbar = document.querySelector('.mobile-navbar');
 
         this.toolbarNode = createDiv('gay-toolbar-container');
-        console.log('navbar height = ', navbar?.clientHeight)
         this.toolbarNode.style.bottom = (navbar?.clientHeight || 0) + 'px';
 
         // when there's no keyboard, navbar is absolutely positioned and toolbar must be rendered above it
@@ -65,19 +66,11 @@ export default class GayToolbarPlugin extends Plugin {
             parentNode.insertBefore(this.toolbarNode, parentNode.querySelector('.status-bar'));
         }
 
-        const settingsTab = new GayToolbarSettingTab(this.app, this);
-        this.addSettingTab(settingsTab);
-
         this.app.workspace.onLayoutReady(async () => {
             this.toolbarRoot.render(
-                <RecoilRoot>
-                    <RecoilNexus />
-                    <GayToolbar settingsContainerEl={settingsTab.containerEl} />
-                </RecoilRoot>
+                <GayToolbar />
             );
 
-            // this must happen after <RecoilNexus /> renders
-            await this.loadSettings()
         });
     }
 
@@ -86,30 +79,30 @@ export default class GayToolbarPlugin extends Plugin {
     }
 
     async loadSettings() {
-        this.settings = await this.loadData();
-        console.log('loadSettings() -> this.settings', this.settings)
-        setRecoil(pluginAtom, this);
-        setRecoil(settingsSelector, this.settings);
+        // TODO: clean this up
+        this.settings = await this.loadData()
+        if (!this.settings) {
+            this.settings = emptySettings;
+            this.saveSettings(this.settings)
+        }
+        usePlugin.setState({ plugin: this });
+        useSettings.setState(this.settings);
+        this.unsubscribePositionStore = useSettings.subscribe(state => {
+            // couldn't I juse use `this`? but then I'd need to bind...?
+            const plugin = usePlugin.getState().plugin
+            if (plugin) {
+                plugin.settings = state;
+                plugin.saveSettings(plugin.settings)
+            }
+            else
+                throw new Error('plugin undefined in useStore subscription')
+        });
     }
 
     onunload() {
         this.toolbarRoot?.unmount?.();
         this.toolbarNode?.remove();
         this.observer.disconnect();
-    }
-}
-
-class GayToolbarSettingTab extends PluginSettingTab {
-    plugin: GayToolbarPlugin;
-
-    constructor(app: App, plugin: GayToolbarPlugin) {
-        super(app, plugin);
-        this.plugin = plugin;
-    }
-
-    display(): void {
-    }
-
-    hide(): void {
+        this.unsubscribePositionStore();
     }
 }

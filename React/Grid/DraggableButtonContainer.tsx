@@ -1,12 +1,12 @@
 
 import { ReactNode, useEffect, useMemo, useRef, useState } from 'react'
-import invariant from 'tiny-invariant';
 import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
+import { buttonNames } from 'types';
 
 
 interface ButtonContainerProps {
     location: [number, number];
-    buttonName: string;
+    buttonName: keyof buttonNames;
     children: ReactNode;
 }
 
@@ -16,7 +16,8 @@ const DraggableButtonContainer: React.FC<ButtonContainerProps> = ({ location, bu
 
     useEffect(() => {
         const el = ref.current;
-        invariant(el, 'ref is null');
+        if (!el)
+            throw new Error('drag error');
 
         return draggable({
             element: el,

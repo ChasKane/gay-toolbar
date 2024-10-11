@@ -1,7 +1,11 @@
 {
   "buttonNames": [
     "Edit Gay Toolbar",
-    "Bullet List Commands"
+    "Bullet List Commands",
+    "Save current file",
+    "Unindent list item",
+    "Periodic Notes: Open daily note",
+    "Quick switcher: Open quick switcher"
   ],
   "buttonLocations": {
     "Edit Gay Toolbar": [
@@ -10,21 +14,61 @@
     ],
     "Bullet List Commands": [
       0,
+      2
+    ],
+    "Save current file": [
+      0,
+      3
+    ],
+    "Unindent list item": [
+      0,
       1
+    ],
+    "Periodic Notes: Open daily note": [
+      0,
+      4
+    ],
+    "Quick switcher: Open quick switcher": [
+      0,
+      5
     ]
   },
   "buttons": {
     "Edit Gay Toolbar": {
       "name": "Edit Gay Toolbar",
       "icon": "lucide-wrench",
-      "backgroundColor": "pink",
+      "backgroundColor": "#9e0000",
       "onClickCommandId": "gay-toolbar:edit-toolbar"
     },
     "Bullet List Commands": {
       "name": "Bullet List Commands",
       "icon": "lucide-indent",
-      "backgroundColor": "lightblue",
+      "backgroundColor": "#0000ff",
       "onClickCommandId": "editor:indent-list"
+    },
+    "Save current file": {
+      "name": "Save current file",
+      "icon": "align-start-horizontal",
+      "onClickCommandId": "editor:follow-link",
+      "backgroundColor": "#c21414"
+    },
+    "Unindent list item": {
+      "name": "Unindent list item",
+      "icon": "lucide-outdent",
+      "onClickCommandId": "editor:unindent-list",
+      "backgroundColor": "#ff00ff"
+    },
+    "Periodic Notes: Open daily note": {
+      "name": "Periodic Notes: Open daily note",
+      "icon": "check",
+      "onClickCommandId": "periodic-notes:open-daily-note",
+      "backgroundColor": "#00ff00"
+    },
+    "Quick switcher: Open quick switcher": {
+      "name": "Quick switcher: Open quick switcher",
+      "icon": "lucide-navigation",
+      "onClickCommandId": "switcher:open",
+      "backgroundColor": "#00bfbf"
     }
   },
   "numRows": 3,

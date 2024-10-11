@@ -10,10 +10,9 @@ import { App } from "obsidian";
  * @returns {CommandIconPair}
  */
 export async function chooseNewCommand(plugin: GayToolbarPlugin): Promise<{
-    id: string;
+    name: string;
+    onClickCommandId: string;
     icon: string;
-    mode: string;
-    color?: string;
 }> {
     const command = await new AddCommandModal(plugin).awaitSelection();
 
@@ -23,10 +22,8 @@ export async function chooseNewCommand(plugin: GayToolbarPlugin): Promise<{
     }
 
     return {
-        id: command.id,
-        //This cannot be undefined anymore
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        name: command.name,
         icon: icon ?? command.icon!,
-        mode: "any",
+        onClickCommandId: command.id,
     };
 }

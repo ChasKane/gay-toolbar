@@ -1,20 +1,18 @@
 import React, { useEffect, useRef } from 'react'
 import { setIcon } from 'obsidian';
-import { buttonFamily, editingButtonNameAtom, pluginAtom, isEditingAtom } from '../GayAtoms';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { usePlugin, useSettings, useEditor } from '../StateManagement';
 
-interface GayButtonProps {
-    buttonName: string;
-}
-
-const GayButton: React.FC<GayButtonProps> = ({ buttonName }) => {
+const GayButton: React.FC<{ buttonName: string }> = ({ buttonName }) => {
     const ref = useRef<HTMLButtonElement>(null);
 
-    const [plugin] = useRecoilState(pluginAtom);
-    console.log(buttonName)
-    const { icon, backgroundColor, onClickCommandId } = useRecoilValue(buttonFamily(buttonName));
-    const [isEditing] = useRecoilState(isEditingAtom);
-    const [editingbuttonName, setEditingbuttonName] = useRecoilState(editingButtonNameAtom);
+    const plugin = usePlugin(state => state.plugin)
+    const { isEditing, selectedButtonName, setSelectedButtonName } = useEditor();
+    const button = useSettings(state => state.buttons[buttonName]);
+
+    if (!button)
+        return null
+
+    const { icon, backgroundColor, onClickCommandId } = button;
 
     useEffect(() => {
         if (ref.current) {
@@ -24,7 +22,8 @@ const GayButton: React.FC<GayButtonProps> = ({ buttonName }) => {
                 isEditing ? svg.classList.add('wiggle') : svg.classList.remove('wiggle')
             }
         }
-    }, [ref.current, isEditing]);
+    }, [ref.current, isEditing, icon]);
+
 
     return (
         <button
@@ -33,10 +32,10 @@ const GayButton: React.FC<GayButtonProps> = ({ buttonName }) => {
             onClick={(e) => {
                 e.preventDefault();
                 if (isEditing) {
-                    if (editingbuttonName === buttonName)
-                        setEditingbuttonName('')
+                    if (selectedButtonName === buttonName)
+                        setSelectedButtonName('')
                     else
-                        setEditingbuttonName(buttonName)
+                        setSelectedButtonName(buttonName)
                 } else {
                     // @ts-ignore | app.commands exists; not sure why it's not in the API...
                     onClickCommandId && plugin?.app.commands.executeCommandById(onClickCommandId)
@@ -46,7 +45,7 @@ const GayButton: React.FC<GayButtonProps> = ({ buttonName }) => {
             ref={ref}
             className={[
                 'gay-button',
-                isEditing && buttonName === editingbuttonName ? 'button-halo' : '',
+                isEditing && buttonName === selectedButtonName ? 'button-halo' : '',
             ].join(' ')}
             style={{ backgroundColor: backgroundColor }}
         >

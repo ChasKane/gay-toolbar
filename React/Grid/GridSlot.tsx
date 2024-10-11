@@ -1,20 +1,18 @@
 
 import { ReactNode, useEffect, useRef, useState } from 'react'
-import invariant from 'tiny-invariant';
 import { dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 
-interface SlotProps {
+const Slot: React.FC<{
     location: [number, number];
     children: ReactNode;
-}
-
-const Slot: React.FC<SlotProps> = ({ location, children }) => {
+}> = ({ location, children }) => {
     const ref = useRef(null)
     const [entered, setEntered] = useState(false)
 
     useEffect(() => {
         const el = ref.current
-        invariant(el)
+        if (!el)
+            throw new Error('drag error')
 
         return dropTargetForElements({
             element: el,
