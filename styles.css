@@ -3,50 +3,16 @@
     left: 0;
     right: 0;
 }
-
-.gay-settings-container {
-    overflow-y: scroll;
-    background-color: var(--background-primary);
-    display: flex;
-    flex-direction: column;
+.gay-toolbar {
+    /* From https://css.glass */
+    border-radius: 8px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
 }
 
-.tab-bar {
-    display: flex;
-}
-.tab-item {
-    width: 100%;
-    flex: 1;
-    background-color: var(--background-primary);
-    border: none;
-    /* border: 7px;
-    border-color: var(--color-accent);
-    border-style: solid;
-    border-radius: 0%; */
-    padding: 10px 20px;
-    transition: background-color 0.3s ease;
 
-}
-.tab-item-active {
-    border-top: none;
-}
-
-.slider-input-group {
-    margin: 10px;
-    padding: 5px;
-    border: 2px ridge var(--color-accent);
-    display: flex;
-    align-items: center;
-}
-
-.number-input {
-    margin-inline: 10px;
-}
-
-.range-input {
-    flex-grow: 1;
-    margin-Inline: 10px;
-}
+/* ------------------GRID------------------ */
 
 .slot {
     display: flex;
@@ -57,8 +23,6 @@
 .gay-button-container {
     width: 100%;
     height: 100%;
-    opacity: 100%;
-    background-color: var(--background-primary);
 }
 
 .hovering-button-container {
@@ -67,8 +31,14 @@
 
 .gay-button {
     /* background: radial-gradient(black, pink) padding-box, conic-gradient(lightblue, pink, lightblue, pink) border-box; */
-    border-radius: 10px;
+    border-radius: 8px;
     border: 4px solid transparent;
+    width: 100%;
+    height: 100%;
+    padding: 0px;
+}
+
+.gay-icon-lmao {
     width: 100%;
     height: 100%;
 }
@@ -76,7 +46,6 @@
 .button-halo {
     scale: 1.5;
 }
-
 
 .wiggle {
     animation: wiggle 0.5s infinite ease-in-out;
@@ -97,3 +66,54 @@
         transform: rotate(5deg);
     }
 }
+
+
+
+
+/* ------------------SETTINGS------------------ */
+
+.gay-settings-container {
+    overflow-y: auto;
+    max-height: 50vh;
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+}
+
+.settings-footer {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row-reverse;
+    margin-top: 8px;
+}
+
+.slider-input-group {
+    margin: 10px;
+    padding: 5px;
+    border: 6px ridge var(--color-accent);
+    display: flex;
+    align-items: center;
+}
+
+.number-input {
+    margin-inline: 10px;
+}
+
+.range-input {
+    flex-grow: 1;
+    margin-Inline: 10px;
+}
+
+input[type="color"] {
+    -webkit-appearance: none; /* Remove mobile-specific styles */
+    appearance: none;         /* Remove default browser styling */
+    width: auto;
+    line-height: 40px;
+    box-sizing: border-box;
+    padding-top: 8dp;
+    padding-bottom: 8dp;
+    padding-right: 8px;
+  
+    height: 40dp;             /* Adjust height to fix the cutting */
+  }
+  

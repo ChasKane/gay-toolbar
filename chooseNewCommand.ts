@@ -11,7 +11,7 @@ import { App } from "obsidian";
  */
 export async function chooseNewCommand(plugin: GayToolbarPlugin): Promise<{
     name: string;
-    onClickCommandId: string;
+    onTapCommandId: string;
     icon: string;
 }> {
     const command = await new AddCommandModal(plugin).awaitSelection();
@@ -24,6 +24,6 @@ export async function chooseNewCommand(plugin: GayToolbarPlugin): Promise<{
     return {
         name: command.name,
         icon: icon ?? command.icon!,
-        onClickCommandId: command.id,
+        onTapCommandId: command.id,
     };
 }

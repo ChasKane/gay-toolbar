@@ -1,7 +1,7 @@
 import { Plugin } from 'obsidian';
 import { createRoot, Root } from "react-dom/client";
 import GayToolbar from './React/GayTOOLBAR';
-import DEFAULT_SETTINGS, { emptySettings } from './React/Settings/DEFAULT_SETTINGS';
+import DEFAULT_SETTINGS from './React/Settings/DEFAULT_SETTINGS';
 import { usePlugin, useSettings, useEditor } from './React/StateManagement'
 import { GayToolbarSettings } from 'types';
 
@@ -17,14 +17,13 @@ export default class GayToolbarPlugin extends Plugin {
 
         this.addCommand({
             id: "edit-toolbar",
-            name: "Edit Toolbar",
+            name: "Toggle Edit Mode",
             callback: () => useEditor.setState(prev => ({ isEditing: !prev.isEditing })),
         });
         this.addCommand({
             id: "load-from-backup",
             name: "Load Settings from Backup",
             callback: () => {
-                console.log('load-from-backup DEFAULT_SETTINGS', DEFAULT_SETTINGS)
                 useSettings.setState(DEFAULT_SETTINGS);
             },
         });
@@ -82,7 +81,7 @@ export default class GayToolbarPlugin extends Plugin {
         // TODO: clean this up
         this.settings = await this.loadData()
         if (!this.settings) {
-            this.settings = emptySettings;
+            this.settings = DEFAULT_SETTINGS;
             this.saveSettings(this.settings)
         }
         usePlugin.setState({ plugin: this });
@@ -103,6 +102,6 @@ export default class GayToolbarPlugin extends Plugin {
         this.toolbarRoot?.unmount?.();
         this.toolbarNode?.remove();
         this.observer.disconnect();
-        this.unsubscribePositionStore();
+        this.unsubscribePositionStore?.();
     }
 }

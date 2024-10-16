@@ -3,7 +3,7 @@ export type Coord = [number, number];
 export type SettingsActions = {
     setSettings: (newSettings: Partial<GayToolbarSettings>) => void;
     moveButton: (buttonName: string, location: Coord) => void;
-    addButton: (name: string, icon: string, onClickCommandId: string, location: Coord) => void;
+    addButton: (name: string, icon: string, onTapCommandId: string, location: Coord) => void;
     updateButton: (name: string, newSettings: Partial<GayButtonSettings>) => void;
     deleteButton: (name: string) => void;
 }
@@ -24,11 +24,17 @@ export type GayToolbarSettings = {
     numRows: number;
     numCols: number;
     rowHeight: number;
+    gridGap: number;
+    gridPadding: number;
+    backgroundColor: { r: number, g: number, b: number };
+    opacity: number;
+    customBackground?: string;
 }
 
 export type GayButtonSettings = {
     name: string;
     icon: string;
     backgroundColor: string;
-    onClickCommandId: string;
+    onTapCommandId: string;
+    jsCommand?: string;
 }

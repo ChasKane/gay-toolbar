@@ -1,56 +1,115 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import SliderInputGroup from './SliderInputGroup';
-import { settingsAtom, useEditor, usePlugin, useSettings } from 'React/StateManagement';
+import { useEditor, usePlugin, useSettings } from 'React/StateManagement';
 import ChooseIconModal from 'ChooseIconModal';
 import AddCommandModal from 'addCommandModal';
+import { GayToolbarSettings } from 'types';
 
 
+function hexToRgb(hex: string) {
+    hex = hex.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    return { r, g, b };
+}
+const rgbToHex = ({ r, g, b }: { r: number, g: number, b: number }) =>
+    `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
 
 const GaySettings = () => {
     const { setIsEditing, selectedButtonName, setSelectedButtonName } = useEditor();
+    const { backgroundColor, opacity, customBackground, setSettings } = useSettings();
+    const [useCustomCSS, setUseCustomCSS] = useState(!!customBackground)
+
+    useEffect(() => {
+        // @ts-ignore Capacitor exists on mobile because Obsidian mobile is built on it
+        window.Capacitor?.Plugins?.App?.addListener('backButton', () => {
+            setIsEditing(false)
+        });
+    }, [])
 
     return (
         <div className='gay-settings-container'>
-            {selectedButtonName ? <ButtonSettings /> : <GridSettings />}
-            <div className='tab-bar'>
+            {selectedButtonName ?
+                <ButtonSettings />
+                : (
+                    <form className='settings-main' id='grid-settings' onSubmit={e => {
+                        e.preventDefault()
+                        const newSettings: Partial<GayToolbarSettings> = {}
+                        new FormData(e.target as HTMLFormElement).forEach((v, k: string) => {
+                            if (['numCols', 'numRows', 'rowHeight', 'gridGap', 'gridPadding', 'opacity'].includes(k))
+                                // @ts-ignore -- we know k is a GayToolbarSettings key
+                                newSettings[k] = Number(v);
+                            else if (k === 'backgroundColor')
+                                newSettings[k] = hexToRgb(v as string);
+                            else if (k === 'customBackground')
+                                newSettings[k] = useCustomCSS ? (v as string) : '';
+                        })
+                        setSettings(useCustomCSS ? newSettings : { ...newSettings, customBackground: '' })
+                    }}>
+                        <SliderInputGroup label="Number of Columns" name='numCols' bounds={[1, 20]} />
+                        <SliderInputGroup label="Number of Rows" name='numRows' bounds={[1, 10]} />
+                        <SliderInputGroup label="Row Height" name='rowHeight' bounds={[5, 70]} />
+                        <SliderInputGroup label="Gap" name='gridGap' bounds={[0, 20]} />
+                        <SliderInputGroup label="Padding" name='gridPadding' bounds={[0, 20]} />
+                        <div style={{ backgroundColor: 'grey', borderRadius: '8px', marginTop: '8px', padding: '8px' }} >
+                            <label>Background</label>
+                            <div>
+                                <input id='custom-css' type='checkbox' defaultChecked={useCustomCSS} onChange={e => {
+                                    setUseCustomCSS(e.target.checked)
+                                }}></input>
+                                <label htmlFor='custom-css'>Use custom CSS?</label>
+                            </div>
+                            {useCustomCSS ?
+                                <div>
+                                    <label htmlFor='customBackground'>
+                                        Custom CSS <a href='https://developer.mozilla.org/en-US/docs/Web/CSS/background'>background</a> value
+                                        <input type='text' placeholder='radial-gradient(circle at top, red, orange, yellow, green, blue, purple)' defaultValue={customBackground} name='customBackground' ></input>
+                                    </label>
+                                </div>
+                                :
+                                <div style={{ padding: '8px', display: 'flex', flexGrow: 1, alignItems: 'center' }}>
+                                    <input type='color' defaultValue={rgbToHex(backgroundColor)} name='backgroundColor' ></input>
+                                    <SliderInputGroup label="Opacity" name='opacity' bounds={[0, 1]} step={.01} />
+                                </div>
+                            }
+                        </div>
+                    </form>
+                )
+            }
+            <div className='settings-footer'>
                 <button onClick={() => { setIsEditing(false); setSelectedButtonName('') }} onMouseDown={e => e.preventDefault()}>X</button>
+                {!selectedButtonName && <button form='grid-settings' role='submit' onMouseDown={e => e.preventDefault()}>Save</button>}
             </div>
         </div >
     );
 };
 
-const GridSettings: React.FC = () => {
-    const { numCols, numRows, rowHeight, setSettings } = useSettings();
-    return (
-        <form method='POST' onSubmit={e => {
-            e.preventDefault()
-            const newSettings: { [key: string]: number } = {}
-            new FormData(e.target as HTMLFormElement).forEach((v, k) => {
-                newSettings[k] = Number(v)
-            })
-            setSettings(newSettings)
-        }}>
-            <SliderInputGroup text="Number of Columns" value={numCols} name='numCols' bounds={[1, 20]} />
-            <SliderInputGroup text="Number of Rows" value={numRows} name='numRows' bounds={[1, 10]} />
-            <SliderInputGroup text="Row Height in Pixels" value={rowHeight} name='rowHeight' bounds={[5, 70]} />
-            <button role='submit' onMouseDown={e => e.preventDefault()}>Save</button>
-        </form>
-    )
-};
-
 const ButtonSettings: React.FC = () => {
     const plugin = usePlugin(state => state.plugin)
-    const { setIsEditing, selectedButtonName, setSelectedButtonName } = useEditor();
+    const { selectedButtonName, setSelectedButtonName } = useEditor();
     const { updateButton, deleteButton } = useSettings(state => state);
+    const [danger, setDanger] = useState(false)
+
     if (!plugin) return null;
 
     return (
-        <div style={{ backgroundColor: 'pink' }}>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
             <input type='color' onChange={e => updateButton(selectedButtonName, { backgroundColor: e.target.value })}></input>
-            <button >Edit Name</button>
             <button onClick={async () => updateButton(selectedButtonName, { icon: await new ChooseIconModal(plugin).awaitSelection() })}>Edit Icon</button>
-            <button onClick={async () => updateButton(selectedButtonName, { onClickCommandId: (await new AddCommandModal(plugin).awaitSelection())?.id })}>Edit onTap Command</button>
+            <button onClick={async () => updateButton(selectedButtonName, { onTapCommandId: (await new AddCommandModal(plugin).awaitSelection())?.id })}>Edit onTap Command</button>
             <button onClick={() => { deleteButton(selectedButtonName); setSelectedButtonName(''); }}>Delete Button</button>
+            <div>
+                <input id='danger-checkbox' type='checkbox' checked={danger} onChange={e => setDanger(e.target.checked)}></input>
+                <label htmlFor='custom-css'>Custom Javascript Command</label>
+            </div>
+            {danger &&
+                <>
+                    <label htmlFor='dangerous'>WARNING: DON'T WRITE ANYTHING YOU DON'T UNDERSTAND. This string is passed to `new Function()` as the function body. It allows you to run arbitrary javascript when this button is clicked, which means your data could be at risk if you don't completely understand what's in this box.</label>
+                    <label htmlFor='dangerous'>Overrides the onTap command set above</label>
+                    <input id='dangerous' type='text' placeholder='custom JS function body (`plugin` passed as argument automatically)' onChange={e => updateButton(selectedButtonName, { jsCommand: e.target.value })}></input>
+                </>
+            }
         </div >
     );
 };
