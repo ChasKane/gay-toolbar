@@ -7,7 +7,7 @@ const GayButton: React.FC<{ buttonName: string }> = ({ buttonName }) => {
 
     const plugin = usePlugin(state => state.plugin)
     const { isEditing, selectedButtonName, setSelectedButtonName } = useEditor();
-    const { icon, backgroundColor, onTapCommandId, jsCommand } = useSettings(state => state.buttons[buttonName]);
+    const { icon, backgroundColor, onTapCommandId } = useSettings(state => state.buttons[buttonName]);
 
     useEffect(() => {
         if (ref.current) {
@@ -34,11 +34,8 @@ const GayButton: React.FC<{ buttonName: string }> = ({ buttonName }) => {
                         setSelectedButtonName(buttonName)
                 } else {
                     if (onTapCommandId)
-                        if (jsCommand)
-                            new Function("plugin", jsCommand)(plugin)
-                        else
-                            // @ts-ignore | app.commands exists; not sure why it's not in the API...
-                            plugin?.app.commands.executeCommandById(onTapCommandId)
+                        // @ts-ignore | app.commands exists; not sure why it's not in the API...
+                        plugin?.app.commands.executeCommandById(onTapCommandId)
                 }
             }}
             onMouseDown={(e) => !isEditing && e.preventDefault()}

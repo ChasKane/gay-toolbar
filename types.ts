@@ -36,5 +36,4 @@ export type GayButtonSettings = {
     icon: string;
     backgroundColor: string;
     onTapCommandId: string;
-    jsCommand?: string;
 }

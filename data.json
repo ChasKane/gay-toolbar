@@ -272,7 +272,7 @@
   "numRows": 3,
   "numCols": 9,
   "rowHeight": 40,
-  "gridGap": 2,
+  "gridGap": 1,
   "gridPadding": 2,
   "backgroundColor": {
     "r": 255,

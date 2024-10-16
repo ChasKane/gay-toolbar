@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import SliderInputGroup from './SliderInputGroup';
+import NumericInputGroup from './NumericInputGroup';
 import { useEditor, usePlugin, useSettings } from 'React/StateManagement';
 import ChooseIconModal from 'ChooseIconModal';
 import AddCommandModal from 'addCommandModal';
@@ -33,7 +33,7 @@ const GaySettings = () => {
             {selectedButtonName ?
                 <ButtonSettings />
                 : (
-                    <form className='settings-main' id='grid-settings' onSubmit={e => {
+                    <form className='settings-main scrollable' id='grid-settings' onSubmit={e => {
                         e.preventDefault()
                         const newSettings: Partial<GayToolbarSettings> = {}
                         new FormData(e.target as HTMLFormElement).forEach((v, k: string) => {
@@ -47,32 +47,34 @@ const GaySettings = () => {
                         })
                         setSettings(useCustomCSS ? newSettings : { ...newSettings, customBackground: '' })
                     }}>
-                        <SliderInputGroup label="Number of Columns" name='numCols' bounds={[1, 20]} />
-                        <SliderInputGroup label="Number of Rows" name='numRows' bounds={[1, 10]} />
-                        <SliderInputGroup label="Row Height" name='rowHeight' bounds={[5, 70]} />
-                        <SliderInputGroup label="Gap" name='gridGap' bounds={[0, 20]} />
-                        <SliderInputGroup label="Padding" name='gridPadding' bounds={[0, 20]} />
-                        <div style={{ backgroundColor: 'grey', borderRadius: '8px', marginTop: '8px', padding: '8px' }} >
-                            <label>Background</label>
-                            <div>
-                                <input id='custom-css' type='checkbox' defaultChecked={useCustomCSS} onChange={e => {
-                                    setUseCustomCSS(e.target.checked)
-                                }}></input>
-                                <label htmlFor='custom-css'>Use custom CSS?</label>
-                            </div>
-                            {useCustomCSS ?
+                        <NumericInputGroup label="Columns" name='numCols' bounds={[1, 20]} />
+                        <NumericInputGroup label="Rows" name='numRows' bounds={[1, 10]} />
+                        <NumericInputGroup label="Row Height" name='rowHeight' bounds={[5, 70]} />
+                        <NumericInputGroup label="Gap" name='gridGap' bounds={[0, 20]} />
+                        <NumericInputGroup label="Padding" name='gridPadding' bounds={[0, 20]} />
+                        <div className='background-options'>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <label>Background</label>
                                 <div>
+                                    <label style={{ paddingRight: '8px' }} htmlFor='custom-css'>Use Custom CSS</label>
+                                    <input id='custom-css' type='checkbox' defaultChecked={useCustomCSS} onChange={e => {
+                                        setUseCustomCSS(e.target.checked)
+                                    }}></input>
+                                </div>
+                            </div>
+                            <div>
+                                {useCustomCSS ?
                                     <label htmlFor='customBackground'>
                                         Custom CSS <a href='https://developer.mozilla.org/en-US/docs/Web/CSS/background'>background</a> value
                                         <input type='text' placeholder='radial-gradient(circle at top, red, orange, yellow, green, blue, purple)' defaultValue={customBackground} name='customBackground' ></input>
                                     </label>
-                                </div>
-                                :
-                                <div style={{ padding: '8px', display: 'flex', flexGrow: 1, alignItems: 'center' }}>
-                                    <input type='color' defaultValue={rgbToHex(backgroundColor)} name='backgroundColor' ></input>
-                                    <SliderInputGroup label="Opacity" name='opacity' bounds={[0, 1]} step={.01} />
-                                </div>
-                            }
+                                    :
+                                    <div style={{ padding: '8px', display: 'flex', flexGrow: 1, alignItems: 'center' }}>
+                                        <input className='gay-color-input' type='color' defaultValue={rgbToHex(backgroundColor)} name='backgroundColor'></input>
+                                        <NumericInputGroup label="Opacity" name='opacity' bounds={[0, 1]} step={.01} />
+                                    </div>
+                                }
+                            </div>
                         </div>
                     </form>
                 )
@@ -89,27 +91,15 @@ const ButtonSettings: React.FC = () => {
     const plugin = usePlugin(state => state.plugin)
     const { selectedButtonName, setSelectedButtonName } = useEditor();
     const { updateButton, deleteButton } = useSettings(state => state);
-    const [danger, setDanger] = useState(false)
 
     if (!plugin) return null;
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div className='settings-main scrollable'>
             <input type='color' onChange={e => updateButton(selectedButtonName, { backgroundColor: e.target.value })}></input>
             <button onClick={async () => updateButton(selectedButtonName, { icon: await new ChooseIconModal(plugin).awaitSelection() })}>Edit Icon</button>
             <button onClick={async () => updateButton(selectedButtonName, { onTapCommandId: (await new AddCommandModal(plugin).awaitSelection())?.id })}>Edit onTap Command</button>
             <button onClick={() => { deleteButton(selectedButtonName); setSelectedButtonName(''); }}>Delete Button</button>
-            <div>
-                <input id='danger-checkbox' type='checkbox' checked={danger} onChange={e => setDanger(e.target.checked)}></input>
-                <label htmlFor='custom-css'>Custom Javascript Command</label>
-            </div>
-            {danger &&
-                <>
-                    <label htmlFor='dangerous'>WARNING: DON'T WRITE ANYTHING YOU DON'T UNDERSTAND. This string is passed to `new Function()` as the function body. It allows you to run arbitrary javascript when this button is clicked, which means your data could be at risk if you don't completely understand what's in this box.</label>
-                    <label htmlFor='dangerous'>Overrides the onTap command set above</label>
-                    <input id='dangerous' type='text' placeholder='custom JS function body (`plugin` passed as argument automatically)' onChange={e => updateButton(selectedButtonName, { jsCommand: e.target.value })}></input>
-                </>
-            }
         </div >
     );
 };

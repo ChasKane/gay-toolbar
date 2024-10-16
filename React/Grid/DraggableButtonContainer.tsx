@@ -1,12 +1,11 @@
 
 import { ReactNode, useEffect, useMemo, useRef, useState } from 'react'
 import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
-import { buttonNames } from 'types';
 
 
 interface ButtonContainerProps {
     location: [number, number];
-    buttonName: keyof buttonNames;
+    buttonName: string;
     children: ReactNode;
 }
 

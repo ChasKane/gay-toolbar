@@ -43,17 +43,6 @@ const SliderInputGroup: React.FC<{
                     onClick={() => value < bounds[1] && setSettings({ [name]: value + step })}
                     style={{ marginRight: '8px' }}
                 >+</button>
-                <div style={{ flexGrow: 1 }}>
-                    <input
-                        type="range"
-                        min={bounds[0]}
-                        max={bounds[1]}
-                        onChange={() => setSettings({ [name]: Number(localValue) })}
-                        step={step}
-                        value={value}
-                        style={{ width: '100%' }}
-                    />
-                </div>
             </div>
         </div>
     );
