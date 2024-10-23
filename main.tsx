@@ -9,7 +9,6 @@ export default class GayToolbarPlugin extends Plugin {
     settings: GayToolbarSettings;
     toolbarRoot: Root;
     toolbarNode: HTMLElement;
-    observer: MutationObserver;
     unsubscribePositionStore: () => void;
 
     async onload() {
@@ -73,7 +72,6 @@ export default class GayToolbarPlugin extends Plugin {
     onunload() {
         this.toolbarRoot?.unmount?.();
         this.toolbarNode?.remove();
-        this.observer?.disconnect();
         this.unsubscribePositionStore?.();
     }
 }
