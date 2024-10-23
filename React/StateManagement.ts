@@ -8,9 +8,7 @@ const prideColors: string[] = ['lightblue', 'lightpink', 'white', 'red', 'orange
 export const useSettings = create<GayToolbarSettings & SettingsActions>()(
     (set, get) => ({
         ...emptySettings,
-        setSettings: (newSettings) => {
-            set(newSettings)
-        },
+        setSettings: set,
         moveButton: (buttonName, location) => set((prev: GayToolbarSettings) => ({
             buttonLocations: { ...prev.buttonLocations, [buttonName as string]: location }
         })),

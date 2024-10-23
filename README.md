@@ -84,9 +84,7 @@ If you have multiple URLs, you can also do:
 ```json
 {
     "fundingUrl": {
-        "Buy Me a Coffee": "https://buymeacoffee.com",
-        "GitHub Sponsor": "https://github.com/sponsors",
-        "Patreon": "https://www.patreon.com/"
+        "Buy Me a Coffee": "https://buymeacoffee.com/chaskane",
     }
 }
 ```

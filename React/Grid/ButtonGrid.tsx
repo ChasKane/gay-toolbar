@@ -9,6 +9,7 @@ import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/ad
 const ButtonGrid: React.FC = () => {
     const addButton = useSettings(state => state.addButton)
     const moveButton = useSettings(state => state.moveButton)
+    const setSelectedButtonName = useEditor(state => state.setSelectedButtonName)
     const { buttonLocations, numRows, numCols, rowHeight, gridGap, gridPadding } = useSettings(state => state)
     const plugin = usePlugin(state => state.plugin)
     const isEditing = useEditor(state => state.isEditing);
@@ -34,7 +35,8 @@ const ButtonGrid: React.FC = () => {
         for (let i = 0; i < numRows; i++)
             arr[i] = Array(numCols).fill('')
         Object.entries(buttonLocations).forEach(([name, coord]) => {
-            arr[coord[0]][coord[1]] = name;
+            if (coord[0] < numRows && coord[1] < numCols)
+                arr[coord[0]][coord[1]] = name;
         })
         return arr
     }, [buttonLocations, numRows, numCols])
@@ -64,6 +66,7 @@ const ButtonGrid: React.FC = () => {
                                 if (plugin?.app) {
                                     const { name, icon, onTapCommandId } = await chooseNewCommand(plugin);
                                     addButton(name, icon, onTapCommandId, [i, j])
+                                    setTimeout(() => setSelectedButtonName(name), 0)
                                 }
                             }}>+</button>
                         );

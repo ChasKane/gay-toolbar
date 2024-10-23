@@ -2,7 +2,8 @@
     position: absolute;
     left: 0;
     right: 0;
-    bottom: 0
+    bottom: 0;
+    transition: bottom 0.05s linear;
 }
 .gay-toolbar {
     /* From https://css.glass */
@@ -74,13 +75,17 @@
 /* ------------------SETTINGS------------------ */
 
 .gay-settings-container {
+    border: solid 1px #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     padding: 8px;
 }
-
+  
 .background-options {
-    grid-row-start: 4; /* This ensures the item always takes up the last row */
+    grid-row-start: 4; /* Last row */
     grid-column: 1 / 3; /* Span the entire row */
     border-radius: 8px;
     margin-top: 8px;
@@ -88,16 +93,15 @@
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
-}  
+}
+.background-options-header {
+    display: flex;
+    justify-content: space-between;
+}
 
 .scroleable {
     overflow-y: auto;
     max-height: 50vh;
-}
-
-.gay-color-input {
-    height: auto;
-    margin-right: 8px;
 }
 
 .settings-main {
@@ -112,19 +116,13 @@
     margin-top: 8px;
 }
 
-.slider-input-group {
-    margin: 10px;
-    padding: 5px;
-    border: 6px ridge var(--color-accent);
-    display: flex;
-    align-items: center;
+.gay-numeric-input {
+    margin-right: 8px;
+    text-align: center;
 }
 
-.number-input {
-    margin-inline: 10px;
-}
-
-.range-input {
-    flex-grow: 1;
-    margin-Inline: 10px;
+.gay-color-input {
+    height: auto;
+    margin-right: 8px;
+    box-shadow: 0 0 4px rgb(202, 11, 11)
 }

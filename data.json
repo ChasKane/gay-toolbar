@@ -23,7 +23,10 @@
     "Calendar: Open Weekly Note",
     "Tasks: Create or edit task",
     "Toggle bullet list",
-    "🏳‍🌈 Gay Toolbar 🏳‍🌈: Toggle Edit Mode"
+    "🏳‍🌈 Gay Toolbar 🏳‍🌈: Toggle Edit Mode",
+    "Delete paragraph",
+    "Command palette: Open command palette",
+    "Follow link under cursor"
   ],
   "buttonLocations": {
     "Bullet List Commands": [
@@ -121,6 +124,18 @@
     "🏳‍🌈 Gay Toolbar 🏳‍🌈: Toggle Edit Mode": [
       0,
       8
+    ],
+    "Delete paragraph": [
+      0,
+      7
+    ],
+    "Command palette: Open command palette": [
+      2,
+      7
+    ],
+    "Follow link under cursor": [
+      1,
+      7
     ]
   },
   "buttons": {
@@ -267,19 +282,37 @@
       "icon": "wrench",
       "onTapCommandId": "gay-toolbar:edit-toolbar",
       "backgroundColor": "#ff6600"
+    },
+    "Delete paragraph": {
+      "name": "Delete paragraph",
+      "icon": "lucide-scissors",
+      "onTapCommandId": "editor:delete-paragraph",
+      "backgroundColor": "#ff0000"
+    },
+    "Command palette: Open command palette": {
+      "name": "Command palette: Open command palette",
+      "icon": "lucide-terminal-square",
+      "onTapCommandId": "command-palette:open",
+      "backgroundColor": "green"
+    },
+    "Follow link under cursor": {
+      "name": "Follow link under cursor",
+      "icon": "clock-2",
+      "onTapCommandId": "obsidian-timestamper:obsidian-fast-timestamp",
+      "backgroundColor": "purple"
     }
   },
   "numRows": 3,
   "numCols": 9,
-  "rowHeight": 40,
-  "gridGap": 1,
-  "gridPadding": 2,
+  "rowHeight": 37,
+  "gridGap": 3,
+  "gridPadding": 3,
   "backgroundColor": {
     "r": 255,
-    "g": 0,
+    "g": 157,
     "b": 0
   },
-  "opacity": 0.5,
+  "opacity": 0.27,
   "transparency": 0.5,
   "customBackground": ""
 }

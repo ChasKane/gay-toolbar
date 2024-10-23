@@ -11,36 +11,45 @@ const SliderInputGroup: React.FC<{
     const value = useSettings(state => state[name])
     const setSettings = useSettings(state => state.setSettings)
 
-    const [localValue, setLocalValue] = useState(value.toString());
+    const [isEmpty, setIsEmpty] = useState(false);
+
+    const groomValue = (val: number) => Math.clamp(step === 1 ? val : Math.round(val * 100) / 100, bounds[0], bounds[1])
 
     return (
         <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>{label}</label>
+            <label style={{ display: 'block', marginTop: '4x', marginBottom: '4px' }}>{label}</label>
 
             <div style={{ display: 'flex', alignItems: 'center' }}>
                 <button
-                    onClick={() => value > bounds[0] && setSettings({ [name]: value - step })}
+                    onClick={() => value > bounds[0] && setSettings({ [name]: groomValue(value - step) })}
                     style={{ marginRight: '8px' }}
                 >-</button>
                 <input
-                    style={{ marginRight: '8px', width: '3em', textAlign: 'center' }}
+                    className='gay-numeric-input'
                     type="number"
-                    value={localValue}
+                    value={isEmpty ? '' : value}
                     min={bounds[0]}
                     max={bounds[1]}
-                    onChange={e => setLocalValue(e.target.value)}
-                    onBlur={e => {
-                        // If input is empty, revert to the previous state or fallback value (e.g., 0)
-                        if (localValue === '') {
-                            setSettings({ [name]: 0 });
-                            setLocalValue('0');
+                    step={step}
+                    onChange={e => {
+                        if (e.target.value === '') {
+                            setIsEmpty(true)
+                            setSettings({ [name]: bounds[0] });
                         } else {
-                            setSettings({ [name]: Number(localValue) });
+                            setIsEmpty(false)
+                            setSettings({ [name]: groomValue(Number(e.target.value)) });
+                        }
+                    }}
+                    onBlur={e => {
+                        if (e.target.value === '') {
+                            setSettings({ [name]: 0 });
+                        } else {
+                            setSettings({ [name]: groomValue(Number(e.target.value)) });
                         }
                     }}
                 />
                 <button
-                    onClick={() => value < bounds[1] && setSettings({ [name]: value + step })}
+                    onClick={() => value < bounds[1] && setSettings({ [name]: groomValue(value + step) })}
                     style={{ marginRight: '8px' }}
                 >+</button>
             </div>
