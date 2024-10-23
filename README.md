@@ -3,6 +3,7 @@
 * Buttons can be moved, added, removed, and customized (color, command), all from a custom editor. Empty slots provide the ability to add "gaps" if you wish.
 * Default settings render an orange button on the top right with a wrench icon -- tap this (or run `Gay Toolbar: Toggle Edit Mode`) to customize toolbar.
 * If ever you get lost, open the command palete and run `Gay Toolbar: Load Settings from Backup`.
+![demo](https://github.com/user-attachments/assets/b9231a9a-9ea2-436d-be8b-9568c4f630e8)
 # Toolbar Edit Mode
 * If no button is selected, grid properties can be edited
 	* numRows
