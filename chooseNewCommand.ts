@@ -10,7 +10,6 @@ import { App } from "obsidian";
  * @returns {CommandIconPair}
  */
 export async function chooseNewCommand(plugin: GayToolbarPlugin): Promise<{
-    name: string;
     onTapCommandId: string;
     icon: string;
 }> {
@@ -22,7 +21,6 @@ export async function chooseNewCommand(plugin: GayToolbarPlugin): Promise<{
     }
 
     return {
-        name: command.name,
         icon: icon ?? command.icon!,
         onTapCommandId: command.id,
     };

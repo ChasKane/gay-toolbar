@@ -3,6 +3,7 @@ import NumericInputGroup from './NumericInputGroup';
 import { useEditor, usePlugin, useSettings } from 'React/StateManagement';
 import ChooseIconModal from 'ChooseIconModal';
 import AddCommandModal from 'addCommandModal';
+import { setIcon } from 'obsidian';
 
 
 function hexToRgb(hex: string) {
@@ -17,13 +18,26 @@ const rgbToHex = ({ r, g, b }: { r: number, g: number, b: number }) =>
 
 const GaySettings: React.FC = () => {
     const plugin = usePlugin(state => state.plugin)
-    const { setIsEditing, selectedButtonName, setSelectedButtonName } = useEditor();
-    const { updateButton, deleteButton, backgroundColor, opacity, customBackground, mobileOnly, setSettings } = useSettings();
+    const { setIsEditing, selectedButtonId, setSelectedButtonId } = useEditor();
+    const { updateButton, deleteButton, backgroundColor, opacity, customBackground, mobileOnly, setSettings, buttons } = useSettings();
 
     const [useCustomCSS, setUseCustomCSS] = useState(!!customBackground)
     const [modaL, setModal] = useState<boolean>(false)
 
     const listener = useRef<{ remove: () => {} } | null>(null)
+    const iconButtonRef = useRef<HTMLButtonElement | null>(null)
+
+    useEffect(() => {
+        if (!selectedButtonId)
+            return
+        if (iconButtonRef.current) {
+            setIcon(iconButtonRef.current, buttons[selectedButtonId].icon || 'question-mark-glyph');
+            const svg = iconButtonRef.current.firstChild as HTMLElement;
+            if (svg) {
+                svg.classList.add('gay-icon-lmao');
+            }
+        }
+    }, [iconButtonRef.current, buttons, selectedButtonId]);
 
     useEffect(() => {
         if (modaL) {
@@ -46,35 +60,53 @@ const GaySettings: React.FC = () => {
 
     return (
         <div className='gay-settings-container'>
-            {selectedButtonName ?
-                <div className='settings-main scrollable'>
-                    <input className='gay-input-color' type='color' onChange={e => updateButton(selectedButtonName, { backgroundColor: e.target.value })}></input>
-                    <button onClick={async () => {
-                        setModal(true)
-                        let icon = '';
-                        try {
-                            icon = await new ChooseIconModal(plugin).awaitSelection()
-                        } catch (e) {
-                            setModal(false)
-                        }
-                        if (icon)
-                            updateButton(selectedButtonName, { icon: icon })
-                        setModal(false)
-                    }}>Edit Icon</button>
-                    <button onClick={async () => {
-                        setModal(true)
-                        let command;
-                        try {
-                            command = await new AddCommandModal(plugin).awaitSelection()
-                        } catch (e) {
-                            setModal(false)
-                        }
-                        if (command)
-                            updateButton(selectedButtonName, { onTapCommandId: command.id })
-                        setModal(false)
-                    }}>Change Tap Command</button>
-                    <button onClick={() => { deleteButton(selectedButtonName); setSelectedButtonName(''); }}>Delete Button</button>
-                </div >
+            {selectedButtonId ?
+                <>
+                    <div className='settings-main scrollable button-settings'>
+                        <div style={{ backgroundColor: buttons[selectedButtonId].backgroundColor }} onClick={e => e.preventDefault()}>
+                            <div>
+                                <input className='gay-input-color' type='color' onChange={e => updateButton(selectedButtonId, { backgroundColor: e.target.value })}></input>
+                            </div>
+                            <button ref={iconButtonRef} onClick={async () => {
+                                setModal(true)
+                                let icon = '';
+                                try {
+                                    icon = await new ChooseIconModal(plugin).awaitSelection()
+                                } catch (e) {
+                                    setModal(false)
+                                }
+                                if (icon)
+                                    updateButton(selectedButtonId, { icon: icon })
+                                setModal(false)
+                            }}></button>
+                            <button onClick={async () => {
+                                setModal(true)
+                                let command;
+                                try {
+                                    command = await new AddCommandModal(plugin).awaitSelection()
+                                } catch (e) {
+                                    setModal(false)
+                                }
+                                if (command)
+                                    updateButton(selectedButtonId, { onTapCommandId: command.id })
+                                setModal(false)
+                            }}>Tap</button>
+                            <button onClick={async () => {
+                                setModal(true)
+                                let command;
+                                try {
+                                    command = await new AddCommandModal(plugin).awaitSelection()
+                                } catch (e) {
+                                    setModal(false)
+                                }
+                                if (command)
+                                    updateButton(selectedButtonId, { onHoldCommandId: command.id })
+                                setModal(false)
+                            }}>Hold</button>
+                        </div>
+                    </div>
+                    <button className='delete-button' onClick={() => { deleteButton(selectedButtonId); setSelectedButtonId(''); }}>Delete</button>
+                </>
                 :
                 <div className='settings-main scrollable'>
                     <NumericInputGroup label="Columns" name='numCols' bounds={[1, 20]} />
@@ -127,11 +159,7 @@ const GaySettings: React.FC = () => {
                 </div>
 
             }
-            {
-                <div className='settings-footer'>
-                    <button onClick={() => { setIsEditing(false); setSelectedButtonName('') }} onMouseDown={e => e.preventDefault()}>X</button>
-                </div>
-            }
+            <button className='close-button' onClick={() => { setIsEditing(false); setSelectedButtonId('') }} onMouseDown={e => e.preventDefault()}>Close</button>
         </div>
     );
 };

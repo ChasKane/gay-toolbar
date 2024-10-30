@@ -12,25 +12,25 @@ export const useSettings = create<GayToolbarSettings & SettingsActions>()(
         moveButton: (buttonName, location) => set((prev: GayToolbarSettings) => ({
             buttonLocations: { ...prev.buttonLocations, [buttonName as string]: location }
         })),
-        addButton: (name, icon, onTapCommandId, location) => set((prev: GayToolbarSettings) => ({
-            buttonNames: [...prev.buttonNames, name],
-            buttonLocations: { ...prev.buttonLocations, [name]: location },
+        addButton: (id, icon, onTapCommandId, location) => set((prev: GayToolbarSettings) => ({
+            buttonNames: [...prev.buttonNames, id],
+            buttonLocations: { ...prev.buttonLocations, [id]: location },
             buttons: {
-                ...prev.buttons, [name]: {
-                    name: name,
+                ...prev.buttons, [id]: {
+                    id: id,
                     icon: icon,
                     onTapCommandId: onTapCommandId,
                     backgroundColor: prideColors[Math.floor(Math.random() * prideColors.length)]
                 }
             },
         })),
-        updateButton: (name, newSettings) => set((prev: GayToolbarSettings) => ({
-            buttons: { ...prev.buttons, [name]: { ...prev.buttons[name], name: name, ...newSettings } },
+        updateButton: (id, newSettings) => set((prev: GayToolbarSettings) => ({
+            buttons: { ...prev.buttons, [id]: { ...prev.buttons[id], id: id, ...newSettings } },
         })),
-        deleteButton: (name) => set((prev: GayToolbarSettings) => ({
-            buttonNames: prev.buttonNames.filter(s => s !== name),
-            buttonLocations: { ...(delete prev.buttonLocations[name], prev.buttonLocations) },
-            buttons: { ...(delete prev.buttons[name], prev.buttons) }
+        deleteButton: (id) => set((prev: GayToolbarSettings) => ({
+            buttonNames: prev.buttonNames.filter(s => s !== id),
+            buttonLocations: { ...(delete prev.buttonLocations[id], prev.buttonLocations) },
+            buttons: { ...(delete prev.buttons[id], prev.buttons) }
         })),
     }),
 );
@@ -45,9 +45,9 @@ export const usePlugin = create<{ plugin: GayToolbarPlugin | null }>()(
 export const useEditor = create<EditorState & EditorActions>()(
     set => ({
         isEditing: false,
-        selectedButtonName: '',
+        selectedButtonId: '',
 
         setIsEditing: (isEditing) => set({ isEditing: isEditing }),
-        setSelectedButtonName: (name) => set({ selectedButtonName: name }),
+        setSelectedButtonId: (id) => set({ selectedButtonId: id }),
     })
 );

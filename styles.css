@@ -71,6 +71,7 @@
 /* ------------------SETTINGS------------------ */
 
 .gay-settings-container {
+    position: relative;
     border: solid 1px #ccc;
     border-radius: 8px;
     padding: 20px;
@@ -100,12 +101,40 @@
     overflow-y: auto;
     max-height: 50vh;
     padding-right: .3rem; /* Width of typical scrollbar */
-  
 }
 
 .settings-main {
     display: grid;
     grid-template-columns: 1fr 1fr;
+}
+
+.button-settings {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.button-settings > div {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 4px;
+    
+    padding: 8px 8px;
+    border-radius: 8px;
+    /* border: 4px solid red; */
+}
+
+.delete-button {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+}
+.close-button {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
 }
 
 .settings-footer {

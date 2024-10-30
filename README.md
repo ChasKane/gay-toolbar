@@ -18,7 +18,7 @@
 * Tap a button to edit its properties (color, command, *icon*) or remove it via the button settings pane.
 * Tap and hold to drag buttons to different slots. If there's a button in the destination slot, their positions will be swapped.
 # Planned features/bug fixes
-* Move grid settings to main plugin settings list, make `isEditing && !selectedButtonName` state yield just the bottom row of the settings pane with existing X on right and gear icon (opens grid settings) on left.
+* Move grid settings to main plugin settings list, make `isEditing && !selectedButtonId` state yield just the bottom row of the settings pane with existing X on right and gear icon (opens grid settings) on left.
 * Polish the button settings UI.
 * Listen for back button in add-command menu
 * Command to show/hide toolbar, which leaves one button (draggable?) floating at the bottom. On tap, toolbar slides in from bottom.

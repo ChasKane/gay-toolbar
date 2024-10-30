@@ -10,11 +10,11 @@ export type SettingsActions = {
 
 export type EditorState = {
     isEditing: boolean;
-    selectedButtonName: string;
+    selectedButtonId: string;
 }
 export type EditorActions = {
     setIsEditing: (isEditing: boolean) => void;
-    setSelectedButtonName: (name: string) => void;
+    setSelectedButtonId: (id: string) => void;
 }
 
 export type GayToolbarSettings = {
@@ -33,8 +33,9 @@ export type GayToolbarSettings = {
 }
 
 export type GayButtonSettings = {
-    name: string;
+    id: string;
     icon: string;
     backgroundColor: string;
     onTapCommandId: string;
+    onHoldCommandId?: string;
 }

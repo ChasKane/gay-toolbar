@@ -6,7 +6,7 @@ const GayButton: React.FC<{ buttonName: string }> = ({ buttonName }) => {
     const ref = useRef<HTMLButtonElement>(null);
 
     const plugin = usePlugin(state => state.plugin)
-    const { isEditing, selectedButtonName, setSelectedButtonName } = useEditor();
+    const { isEditing, selectedButtonId, setSelectedButtonId } = useEditor();
     const { icon, backgroundColor, onTapCommandId } = useSettings(state => state.buttons[buttonName]);
 
     useEffect(() => {
@@ -28,10 +28,10 @@ const GayButton: React.FC<{ buttonName: string }> = ({ buttonName }) => {
             onClick={(e) => {
                 e.preventDefault();
                 if (isEditing) {
-                    if (selectedButtonName === buttonName)
-                        setSelectedButtonName('')
+                    if (selectedButtonId === buttonName)
+                        setSelectedButtonId('')
                     else
-                        setSelectedButtonName(buttonName)
+                        setSelectedButtonId(buttonName)
                 } else {
                     if (onTapCommandId)
                         // @ts-ignore | app.commands exists; not sure why it's not in the API...
@@ -42,7 +42,7 @@ const GayButton: React.FC<{ buttonName: string }> = ({ buttonName }) => {
             ref={ref}
             className={[
                 'gay-button',
-                isEditing && buttonName === selectedButtonName ? 'button-halo' : '',
+                isEditing && buttonName === selectedButtonId ? 'button-halo' : '',
             ].join(' ')}
             style={{ backgroundColor: backgroundColor }}
         >
