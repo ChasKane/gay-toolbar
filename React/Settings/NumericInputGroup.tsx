@@ -19,10 +19,9 @@ const SliderInputGroup: React.FC<{
         <div>
             <label style={{ display: 'block', marginTop: '4x', marginBottom: '4px' }}>{label}</label>
 
-            <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div className='gay-input'>
                 <button
                     onClick={() => value > bounds[0] && setSettings({ [name]: groomValue(value - step) })}
-                    style={{ marginRight: '8px' }}
                 >-</button>
                 <input
                     className='gay-numeric-input'
@@ -50,7 +49,6 @@ const SliderInputGroup: React.FC<{
                 />
                 <button
                     onClick={() => value < bounds[1] && setSettings({ [name]: groomValue(value + step) })}
-                    style={{ marginRight: '8px' }}
                 >+</button>
             </div>
         </div>

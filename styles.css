@@ -95,9 +95,12 @@
     justify-content: space-between;
 }
 
-.scroleable {
+.scrollable {
+    overflow-x: hidden;
     overflow-y: auto;
     max-height: 50vh;
+    padding-right: .3rem; /* Width of typical scrollbar */
+  
 }
 
 .settings-main {
@@ -112,12 +115,20 @@
     margin-top: 8px;
 }
 
-.gay-numeric-input {
-    margin-right: 8px;
-    text-align: center;
+.gay-input {
+    display: flex;
+    justify-content: start;
+}
+.gay-input input {
+    margin-inline: 6px;
 }
 
-.gay-color-input {
+.gay-input-numeric {
+    margin-right: 8px;
+    text-align: space-between;
+}
+
+.gay-input-color {
     height: auto;
     margin-right: 8px;
     box-shadow: 0 0 4px rgb(202, 11, 11)

@@ -1,4 +1,4 @@
-import { Plugin, WorkspaceLeaf } from 'obsidian';
+import { App, Platform, Plugin, PluginSettingTab, Setting, WorkspaceLeaf } from 'obsidian';
 import { createRoot, Root } from "react-dom/client";
 import GayToolbar from './React/GayTOOLBAR';
 import DEFAULT_SETTINGS from './React/Settings/DEFAULT_SETTINGS';
@@ -12,7 +12,13 @@ export default class GayToolbarPlugin extends Plugin {
     unsubscribePositionStore: () => void;
 
     async onload() {
-        this.loadSettings()
+        await this.loadSettings()
+
+        const settingsTab = new GayToolbarSettingTab(this.app, this);
+        this.addSettingTab(settingsTab);
+
+        if (this.settings.mobileOnly && Platform.isDesktop)
+            return;
 
         this.addCommand({
             id: "edit-toolbar",
@@ -38,14 +44,14 @@ export default class GayToolbarPlugin extends Plugin {
             if (parentNode) {
                 this.toolbarNode = createDiv('gay-toolbar-container');
                 this.toolbarRoot = createRoot(this.toolbarNode);
-                this.toolbarRoot.render(<GayToolbar />);
+                this.toolbarRoot.render(<GayToolbar settingsContainerEl={settingsTab.containerEl} />);
                 parentNode.insertBefore(this.toolbarNode, parentNode.querySelector('.status-bar'));
             }
         });
     }
 
-    async saveSettings(newSettings: GayToolbarSettings) {
-        await this.saveData(newSettings)
+    async saveSettings(newSettings?: GayToolbarSettings | undefined) {
+        await this.saveData(newSettings || this.settings)
     }
 
     async loadSettings() {
@@ -73,5 +79,20 @@ export default class GayToolbarPlugin extends Plugin {
         this.toolbarRoot?.unmount?.();
         this.toolbarNode?.remove();
         this.unsubscribePositionStore?.();
+    }
+}
+
+class GayToolbarSettingTab extends PluginSettingTab {
+    plugin: GayToolbarPlugin;
+
+    constructor(app: App, plugin: GayToolbarPlugin) {
+        super(app, plugin);
+        this.plugin = plugin;
+    }
+
+    display(): void {
+    }
+
+    hide(): void {
     }
 }

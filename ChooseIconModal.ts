@@ -4,7 +4,9 @@ import GayToolbarPlugin from "main";
 export default class ChooseIconModal extends FuzzySuggestModal<string> {
     private plugin: GayToolbarPlugin;
 
-    public constructor(plugin: GayToolbarPlugin) {
+    public constructor(plugin: GayToolbarPlugin | null) {
+        if (!plugin)
+            return;
         super(plugin.app);
         this.plugin = plugin;
         this.setPlaceholder("Choose a Icon for your new Command");

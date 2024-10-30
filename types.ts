@@ -18,6 +18,7 @@ export type EditorActions = {
 }
 
 export type GayToolbarSettings = {
+    mobileOnly: boolean
     buttonNames: string[];
     buttonLocations: Record<string, Coord>
     buttons: Record<string, GayButtonSettings>;

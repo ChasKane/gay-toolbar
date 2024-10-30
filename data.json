@@ -130,11 +130,11 @@
       7
     ],
     "Command palette: Open command palette": [
-      2,
+      0,
       7
     ],
     "Follow link under cursor": [
-      0,
+      2,
       7
     ]
   },
@@ -142,7 +142,7 @@
     "Bullet List Commands": {
       "name": "Bullet List Commands",
       "icon": "lucide-indent",
-      "backgroundColor": "#691b3c",
+      "backgroundColor": "#6e9faf",
       "onTapCommandId": "editor:indent-list"
     },
     "Unindent list item": {
@@ -280,8 +280,8 @@
     "🏳‍🌈 Gay Toolbar 🏳‍🌈: Toggle Edit Mode": {
       "name": "🏳‍🌈 Gay Toolbar 🏳‍🌈: Toggle Edit Mode",
       "icon": "wrench",
-      "onTapCommandId": "gay-toolbar:edit-toolbar",
-      "backgroundColor": "#ff6600"
+      "backgroundColor": "#ff6600",
+      "onTapCommandId": "gay-toolbar:edit-toolbar"
     },
     "Delete paragraph": {
       "name": "Delete paragraph",
@@ -304,15 +304,16 @@
   },
   "numRows": 3,
   "numCols": 9,
-  "rowHeight": 43,
-  "gridGap": 3,
-  "gridPadding": 3,
+  "rowHeight": 34,
+  "gridGap": 4,
+  "gridPadding": 4,
   "backgroundColor": {
     "r": 255,
-    "g": 157,
+    "g": 115,
     "b": 0
   },
-  "opacity": 0.27,
+  "opacity": 0.5,
   "transparency": 0.5,
-  "customBackground": ""
+  "customBackground": "",
+  "mobileOnly": false
 }
