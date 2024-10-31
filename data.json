@@ -287,7 +287,9 @@
       "tapIcon": "lucide-scissors",
       "backgroundColor": "#ff0000",
       "id": "Delete paragraph",
-      "onHoldCommandId": "editor:cut"
+      "onHoldCommandId": "editor:cut",
+      "onTapCommandId": "editor:delete-paragraph",
+      "holdIcon": "lucide-scissors"
     },
     "Command palette: Open command palette": {
       "id": "Command palette: Open command palette",
@@ -301,7 +303,9 @@
       "tapIcon": "clock-2",
       "onTapCommandId": "obsidian-timestamper:obsidian-fast-timestamp",
       "backgroundColor": "purple",
-      "id": "Follow link under cursor"
+      "id": "Follow link under cursor",
+      "onHoldCommandId": "obsidian-timestamper:obsidian-fast-datestamp",
+      "holdIcon": "calendar"
     }
   },
   "numRows": 3,

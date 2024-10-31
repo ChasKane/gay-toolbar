@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import NumericInputGroup from './NumericInputGroup';
 import { useEditor, usePlugin, useSettings } from 'src/StateManagement';
-import ChooseIconModal from 'src/ChooseIconModal';
 import { AddCommandModal, chooseNewCommand } from '../chooseNewCommand';
 import { setIcon } from 'obsidian';
 
@@ -33,7 +32,6 @@ const GaySettings: React.FC = () => {
             return
 
         const { tapIcon, holdIcon } = buttons[selectedButtonId]
-        console.log(tapIcon, holdIcon)
         if (tapCommandButtonRef.current) {
             setIcon(tapCommandButtonRef.current, tapIcon || 'question-mark-glyph');
             const svg = tapCommandButtonRef.current.firstChild as HTMLElement;
@@ -93,10 +91,12 @@ const GaySettings: React.FC = () => {
                                 setModal(false)
                             }}></button>
                             <button ref={holdCommandButtonRef} onClick={async () => {
+                                if (!plugin)
+                                    return;
                                 setModal(true)
                                 let command;
                                 try {
-                                    command = await new AddCommandModal(plugin).awaitSelection()
+                                    command = await chooseNewCommand(plugin)
                                 } catch (e) {
                                     setModal(false)
                                 }

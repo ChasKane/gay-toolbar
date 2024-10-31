@@ -1,6 +1,21 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react';
 import { setIcon } from 'obsidian';
 import { usePlugin, useSettings, useEditor } from '../StateManagement';
+
+const pointerInside = (t: PointerEvent, el: HTMLElement | null) => {
+    if (!el)
+        return false;
+
+    const { x, y, width, height } = el.getBoundingClientRect()
+    if (t.clientX >= x
+        && t.clientX <= x + width
+        && t.clientY >= y
+        && t.clientY <= y + height
+    )
+        return true;
+
+    return false;
+}
 
 const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
     const buttonRef = useRef<HTMLButtonElement>(null);
@@ -39,24 +54,63 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
                 isEditing && buttonId === selectedButtonId ? 'button-halo' : '',
             ].join(' ')}
             style={{ backgroundColor: backgroundColor }}
-            onClick={(e) => {
-                e.preventDefault();
+            onClick={isEditing ? e => {
+                !isEditing && e.preventDefault();
                 if (isEditing) {
                     if (selectedButtonId === buttonId)
                         setSelectedButtonId('')
                     else
                         setSelectedButtonId(buttonId)
-                } else {
-                    if (onTapCommandId)
-                        // @ts-ignore | app.commands exists; not sure why it's not in the API...
-                        plugin?.app.commands.executeCommandById(onTapCommandId)
                 }
-            }}
+            } : undefined}
             onMouseDown={e => !isEditing && e.preventDefault()}
+            onPointerDown={!isEditing ? e => {
+                !isEditing && e.preventDefault()
+                const el = buttonRef.current
+                el?.addClass('gay-button-tap')
+
+                const startTime = Date.now();
+                let pointerDown = true;
+                setTimeout(() => {
+                    if (pointerDown && holdIcon)
+                        el?.addClass('gay-button-hold')
+                    el?.removeClass('gay-button-tap')
+                }, 200)
+
+                document.body.addEventListener('pointerup', pointerUpListener)
+                document.body.addEventListener('pointercancel', pointerCancelListener)
+
+                function pointerUpListener(e: PointerEvent) {
+                    e.preventDefault()
+                    pointerDown = false;
+                    holdIcon && el?.removeClass('gay-button-hold')
+                    if (pointerInside(e, buttonRef.current)) {
+                        const delta = Date.now() - startTime;
+                        if (delta < 200) { // tap
+                            if (onTapCommandId)
+                                // @ts-ignore | app.commands exists; not sure why it's not in the API...
+                                plugin?.app.commands.executeCommandById(onTapCommandId)
+
+                        } else { // hold
+                            if (!isEditing && onHoldCommandId)
+                                // @ts-ignore | app.commands exists; not sure why it's not in the API...
+                                plugin?.app.commands.executeCommandById(onHoldCommandId)
+                        }
+                    } else { // swipe
+                        // ...
+                    }
+                    document.body.removeEventListener('pointerup', pointerUpListener)
+                    document.body.removeEventListener('pointercancel', pointerCancelListener)
+                }
+                function pointerCancelListener() {
+                    document.body.removeEventListener('pointerup', pointerUpListener)
+                    document.body.removeEventListener('pointercancel', pointerCancelListener)
+                }
+            } : undefined}
         >
-            <div ref={tapIconRef}></div>
-            <div className='hold-icon' ref={holdIconRef}></div>
-        </button>
+            <div className={holdIcon && 'tap-icon'} ref={tapIconRef}></div>
+            {holdIcon && <div className='hold-icon' ref={holdIconRef}></div>}
+        </button >
 
     )
 }

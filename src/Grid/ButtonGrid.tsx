@@ -17,7 +17,6 @@ const ButtonGrid: React.FC = () => {
     useEffect(() => {
         return monitorForElements({
             onDrop({ source, location }) {
-                console.log(source, location)
                 const [sx, sy] = (source.data.location as [number, number])
                 const destination = location.current.dropTargets[0]
                 if (!destination) return;
