@@ -1,7 +1,27 @@
-import { Command, setIcon, FuzzySuggestModal, FuzzyMatch, App } from "obsidian";
+import ChooseIconModal from "src/ChooseIconModal";
 import GayToolbarPlugin from "main";
+import { Command, setIcon, FuzzySuggestModal, FuzzyMatch, App } from "obsidian";
 
-export default class AddCommandModal extends FuzzySuggestModal<Command> {
+/**
+ * It creates a modal, waits for the user to select a command, and then creates another modal to wait
+ * for the user to select an icon
+ * @param {CommanderPlugin} plugin - The plugin that is calling the modal.
+ * @returns {CommandIconPair}
+ */
+export async function chooseNewCommand(plugin: GayToolbarPlugin): Promise<{
+    id: string;
+    icon: string;
+}> {
+    const command = await new AddCommandModal(plugin).awaitSelection();
+    let icon = await new ChooseIconModal(plugin, command.icon).awaitSelection();
+
+    return {
+        icon: icon ?? command.icon!,
+        id: command.id,
+    };
+}
+
+export class AddCommandModal extends FuzzySuggestModal<Command> {
     private plugin: GayToolbarPlugin;
     private commands: Command[];
 

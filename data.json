@@ -1,5 +1,5 @@
 {
-  "buttonNames": [
+  "buttonIds": [
     "Bullet List Commands",
     "Unindent list item",
     "Undo",
@@ -140,168 +140,168 @@
   },
   "buttons": {
     "Bullet List Commands": {
-      "name": "Bullet List Commands",
-      "icon": "lucide-indent",
+      "id": "Bullet List Commands",
+      "tapIcon": "lucide-indent",
       "backgroundColor": "#6e9faf",
       "onTapCommandId": "editor:indent-list"
     },
     "Unindent list item": {
-      "name": "Unindent list item",
-      "icon": "lucide-outdent",
+      "id": "Unindent list item",
+      "tapIcon": "lucide-outdent",
       "onTapCommandId": "editor:unindent-list",
       "backgroundColor": "#411125"
     },
     "Undo": {
-      "name": "Undo",
-      "icon": "lucide-undo-2",
+      "id": "Undo",
+      "tapIcon": "lucide-undo-2",
       "onTapCommandId": "editor:undo",
       "backgroundColor": "#3a173a"
     },
     "Redo": {
-      "name": "Redo",
-      "icon": "lucide-redo-2",
+      "id": "Redo",
+      "tapIcon": "lucide-redo-2",
       "onTapCommandId": "editor:redo",
       "backgroundColor": "#5e265b"
     },
     "Quick switcher: Open quick switcher": {
-      "name": "Quick switcher: Open quick switcher",
-      "icon": "lucide-navigation",
+      "id": "Quick switcher: Open quick switcher",
+      "tapIcon": "lucide-navigation",
       "onTapCommandId": "switcher:open",
       "backgroundColor": "#00a832"
     },
     "Audio recorder: Start recording audio": {
-      "name": "Audio recorder: Start recording audio",
-      "icon": "lucide-play-circle",
+      "id": "Audio recorder: Start recording audio",
+      "tapIcon": "lucide-play-circle",
       "onTapCommandId": "audio-recorder:start",
       "backgroundColor": "black"
     },
     "Audio recorder: Stop recording audio": {
-      "name": "Audio recorder: Stop recording audio",
-      "icon": "lucide-stop-circle",
+      "id": "Audio recorder: Stop recording audio",
+      "tapIcon": "lucide-stop-circle",
       "onTapCommandId": "audio-recorder:stop",
       "backgroundColor": "black"
     },
     "Toggle heading": {
-      "name": "Toggle heading",
-      "icon": "heading-glyph",
+      "id": "Toggle heading",
+      "tapIcon": "heading-glyph",
       "onTapCommandId": "editor:set-heading",
       "backgroundColor": "black"
     },
     "Toggle bold": {
-      "name": "Toggle bold",
-      "icon": "lucide-bold",
+      "id": "Toggle bold",
+      "tapIcon": "lucide-bold",
       "onTapCommandId": "editor:toggle-bold",
       "backgroundColor": "black"
     },
     "Toggle strikethrough": {
-      "name": "Toggle strikethrough",
-      "icon": "lucide-strikethrough",
+      "id": "Toggle strikethrough",
+      "tapIcon": "lucide-strikethrough",
       "onTapCommandId": "editor:toggle-strikethrough",
       "backgroundColor": "black"
     },
     "Add internal link": {
-      "name": "Add internal link",
-      "icon": "bracket-glyph",
+      "id": "Add internal link",
+      "tapIcon": "bracket-glyph",
       "onTapCommandId": "editor:insert-wikilink",
       "backgroundColor": "black"
     },
     "Insert attachment": {
-      "name": "Insert attachment",
-      "icon": "lucide-paperclip",
+      "id": "Insert attachment",
+      "tapIcon": "lucide-paperclip",
       "onTapCommandId": "editor:attach-file",
       "backgroundColor": "black"
     },
     "Insert Markdown link": {
-      "name": "Insert Markdown link",
-      "icon": "lucide-link",
+      "id": "Insert Markdown link",
+      "tapIcon": "lucide-link",
       "onTapCommandId": "editor:insert-link",
       "backgroundColor": "black"
     },
     "Toggle highlight": {
-      "name": "Toggle highlight",
-      "icon": "lucide-highlighter",
+      "id": "Toggle highlight",
+      "tapIcon": "lucide-highlighter",
       "onTapCommandId": "editor:toggle-highlight",
       "backgroundColor": "#bdb70f"
     },
     "Cycle bullet/checkbox": {
-      "name": "Cycle bullet/checkbox",
-      "icon": "lucide-check-square",
+      "id": "Cycle bullet/checkbox",
+      "tapIcon": "lucide-check-square",
       "onTapCommandId": "editor:cycle-list-checklist",
       "backgroundColor": "#165200"
     },
     "Move line up": {
-      "name": "Move line up",
-      "icon": "lucide-corner-right-up",
+      "id": "Move line up",
+      "tapIcon": "lucide-corner-right-up",
       "onTapCommandId": "editor:swap-line-up",
       "backgroundColor": "#0c2846"
     },
     "Move line down": {
-      "name": "Move line down",
-      "icon": "lucide-corner-right-down",
+      "id": "Move line down",
+      "tapIcon": "lucide-corner-right-down",
       "onTapCommandId": "editor:swap-line-down",
       "backgroundColor": "#134171"
     },
     "Move caret up": {
-      "name": "Move caret up",
-      "icon": "lucide-chevron-up",
+      "id": "Move caret up",
+      "tapIcon": "lucide-chevron-up",
       "onTapCommandId": "editor:move-caret-up",
       "backgroundColor": "#520000"
     },
     "Move caret down": {
-      "name": "Move caret down",
-      "icon": "lucide-chevron-down",
+      "id": "Move caret down",
+      "tapIcon": "lucide-chevron-down",
       "onTapCommandId": "editor:move-caret-down",
       "backgroundColor": "#850000"
     },
     "Periodic Notes: Open daily note": {
-      "name": "Periodic Notes: Open daily note",
-      "icon": "check",
+      "id": "Periodic Notes: Open daily note",
+      "tapIcon": "check",
       "onTapCommandId": "periodic-notes:open-daily-note",
       "backgroundColor": "#8f3c00"
     },
     "Calendar: Open Weekly Note": {
-      "name": "Calendar: Open Weekly Note",
-      "icon": "check-circle",
+      "id": "Calendar: Open Weekly Note",
+      "tapIcon": "check-circle",
       "onTapCommandId": "calendar:open-weekly-note",
       "backgroundColor": "#c15101"
     },
     "Tasks: Create or edit task": {
-      "name": "Tasks: Create or edit task",
-      "icon": "pencil",
+      "id": "Tasks: Create or edit task",
+      "tapIcon": "pencil",
       "onTapCommandId": "obsidian-tasks-plugin:edit-task",
       "backgroundColor": "#238500"
     },
     "Toggle bullet list": {
-      "name": "Toggle bullet list",
-      "icon": "lucide-list",
+      "id": "Toggle bullet list",
+      "tapIcon": "lucide-list",
       "onTapCommandId": "editor:toggle-bullet-list",
       "backgroundColor": "black"
     },
     "🏳‍🌈 Gay Toolbar 🏳‍🌈: Toggle Edit Mode": {
-      "name": "🏳‍🌈 Gay Toolbar 🏳‍🌈: Toggle Edit Mode",
-      "icon": "wrench",
+      "tapIcon": "wrench",
       "backgroundColor": "#ff6600",
-      "onTapCommandId": "gay-toolbar:edit-toolbar"
+      "onTapCommandId": "gay-toolbar:edit-toolbar",
+      "id": "🏳‍🌈 Gay Toolbar 🏳‍🌈: Toggle Edit Mode"
     },
     "Delete paragraph": {
-      "name": "Delete paragraph",
-      "icon": "lucide-scissors",
-      "onTapCommandId": "editor:delete-paragraph",
+      "tapIcon": "lucide-scissors",
       "backgroundColor": "#ff0000",
       "id": "Delete paragraph",
       "onHoldCommandId": "editor:cut"
     },
     "Command palette: Open command palette": {
-      "name": "Command palette: Open command palette",
-      "icon": "lucide-terminal-square",
+      "id": "Command palette: Open command palette",
+      "tapIcon": "lucide-terminal-square",
       "onTapCommandId": "command-palette:open",
-      "backgroundColor": "green"
+      "backgroundColor": "green",
+      "onHoldCommandId": "switcher:open",
+      "holdIcon": "lucide-navigation"
     },
     "Follow link under cursor": {
-      "name": "Follow link under cursor",
-      "icon": "clock-2",
+      "tapIcon": "clock-2",
       "onTapCommandId": "obsidian-timestamper:obsidian-fast-timestamp",
-      "backgroundColor": "purple"
+      "backgroundColor": "purple",
+      "id": "Follow link under cursor"
     }
   },
   "numRows": 3,
@@ -315,7 +315,7 @@
     "b": 0
   },
   "opacity": 0.5,
+  "mobileOnly": false,
   "transparency": 0.5,
-  "customBackground": "",
-  "mobileOnly": false
+  "customBackground": ""
 }

@@ -3,7 +3,7 @@ import GayButton from './GayButton';
 import GridSlot from './GridSlot';
 import DraggableButtonContainer from './DraggableButtonContainer';
 import { useSettings, usePlugin, useEditor } from '../StateManagement';
-import { chooseNewCommand } from 'chooseNewCommand';
+import { chooseNewCommand } from 'src/chooseNewCommand';
 import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 
 const ButtonGrid: React.FC = () => {
@@ -17,26 +17,27 @@ const ButtonGrid: React.FC = () => {
     useEffect(() => {
         return monitorForElements({
             onDrop({ source, location }) {
+                console.log(source, location)
                 const [sx, sy] = (source.data.location as [number, number])
                 const destination = location.current.dropTargets[0]
                 if (!destination) return;
                 const [dx, dy] = (destination.data.location as [number, number])
 
-                moveButton(source.data.buttonName as string, [dx, dy])
-                if (buttonNameGrid[dx][dy]) // dropTarget non-empty? swap locations
-                    moveButton(buttonNameGrid[dx][dy], [sx, sy])
+                moveButton(source.data.buttonId as string, [dx, dy])
+                if (buttonIdGrid[dx][dy]) // dropTarget non-empty? swap locations
+                    moveButton(buttonIdGrid[dx][dy], [sx, sy])
             }
         })
     }, [buttonLocations])
 
 
-    const buttonNameGrid: Array<Array<string>> = useMemo(() => {
+    const buttonIdGrid: Array<Array<string>> = useMemo(() => {
         const arr = Array(numRows)
         for (let i = 0; i < numRows; i++)
             arr[i] = Array(numCols).fill('')
-        Object.entries(buttonLocations).forEach(([name, coord]) => {
+        Object.entries(buttonLocations).forEach(([id, coord]) => {
             if (coord[0] < numRows && coord[1] < numCols)
-                arr[coord[0]][coord[1]] = name;
+                arr[coord[0]][coord[1]] = id;
         })
         return arr
     }, [buttonLocations, numRows, numCols])
@@ -50,21 +51,21 @@ const ButtonGrid: React.FC = () => {
                         {child}
                     </GridSlot>
                 );
-                const buttonName = buttonNameGrid[i][j];
+                const buttonId = buttonIdGrid[i][j];
                 let child;
                 switch (true) {
-                    case buttonName && isEditing:
+                    case buttonId && isEditing:
                         child = (
-                            <DraggableButtonContainer location={[i, j]} buttonName={buttonName}>
-                                <GayButton buttonName={buttonName} />
+                            <DraggableButtonContainer location={[i, j]} buttonId={buttonId}>
+                                <GayButton buttonId={buttonId} />
                             </DraggableButtonContainer>
                         );
                         break;
-                    case !buttonName && isEditing:
+                    case !buttonId && isEditing:
                         child = (
                             <button style={{ width: '100%', height: '100%' }} onClick={async () => {
                                 if (plugin?.app) {
-                                    const { icon, onTapCommandId } = await chooseNewCommand(plugin);
+                                    const { icon, id: onTapCommandId } = await chooseNewCommand(plugin);
                                     const id = Date.now().toString(36)
                                     addButton(id, icon, onTapCommandId, [i, j])
                                     setTimeout(() => setSelectedButtonId(id), 0)
@@ -72,15 +73,15 @@ const ButtonGrid: React.FC = () => {
                             }}>+</button>
                         );
                         break;
-                    case buttonName && !isEditing:
-                        child = buttonName && (
+                    case buttonId && !isEditing:
+                        child = buttonId && (
                             <div className='gay-button-container'>
-                                <GayButton buttonName={buttonName} />
+                                <GayButton buttonId={buttonId} />
                             </div>
                         );
                         break;
-                    case !buttonName && !isEditing:
-                        child = buttonName && (
+                    case !buttonId && !isEditing:
+                        child = buttonId && (
                             <div className='gay-button-container'>
                             </div>
                         );

@@ -1,8 +1,8 @@
 import { App, Platform, Plugin, PluginSettingTab, Setting, WorkspaceLeaf } from 'obsidian';
 import { createRoot, Root } from "react-dom/client";
-import GayToolbar from './React/GayTOOLBAR';
-import DEFAULT_SETTINGS from './React/Settings/DEFAULT_SETTINGS';
-import { usePlugin, useSettings, useEditor } from './React/StateManagement'
+import GayToolbar from './src/GayTOOLBAR';
+import DEFAULT_SETTINGS from './src/Settings/DEFAULT_SETTINGS';
+import { usePlugin, useSettings, useEditor } from './src/StateManagement'
 import { GayToolbarSettings } from 'types';
 
 export default class GayToolbarPlugin extends Plugin {

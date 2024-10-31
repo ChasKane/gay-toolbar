@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { useSettings } from 'React/StateManagement';
+import { useSettings } from 'src/StateManagement';
 
 const SliderInputGroup: React.FC<{
     label: string,

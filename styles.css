@@ -29,6 +29,7 @@
 
 .gay-button {
     /* background: radial-gradient(black, pink) padding-box, conic-gradient(lightblue, pink, lightblue, pink) border-box; */
+    position: relative;
     border-radius: 8px;
     border: 4px solid transparent;
     width: 100%;
@@ -46,7 +47,7 @@
 }
 
 .wiggle {
-    animation: wiggle 0.5s infinite ease-in-out;
+    animation: wiggle .65s infinite ease-in-out;
 }
 
 @keyframes wiggle {
@@ -57,11 +58,11 @@
     }
 
     25% {
-        transform: rotate(-5deg);
+        transform: rotate(-3deg);
     }
 
     75% {
-        transform: rotate(5deg);
+        transform: rotate(3deg);
     }
 }
 
@@ -161,4 +162,12 @@
     height: auto;
     margin-right: 8px;
     box-shadow: 0 0 4px rgb(202, 11, 11)
+}
+
+.hold-icon {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    width: .6rem;
+    height: .6rem;
 }

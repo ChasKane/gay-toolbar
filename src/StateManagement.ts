@@ -9,16 +9,16 @@ export const useSettings = create<GayToolbarSettings & SettingsActions>()(
     (set, get) => ({
         ...emptySettings,
         setSettings: set,
-        moveButton: (buttonName, location) => set((prev: GayToolbarSettings) => ({
-            buttonLocations: { ...prev.buttonLocations, [buttonName as string]: location }
+        moveButton: (buttonId, location) => set((prev: GayToolbarSettings) => ({
+            buttonLocations: { ...prev.buttonLocations, [buttonId as string]: location }
         })),
         addButton: (id, icon, onTapCommandId, location) => set((prev: GayToolbarSettings) => ({
-            buttonNames: [...prev.buttonNames, id],
+            buttonIds: [...prev.buttonIds, id],
             buttonLocations: { ...prev.buttonLocations, [id]: location },
             buttons: {
                 ...prev.buttons, [id]: {
                     id: id,
-                    icon: icon,
+                    tapIcon: icon,
                     onTapCommandId: onTapCommandId,
                     backgroundColor: prideColors[Math.floor(Math.random() * prideColors.length)]
                 }
@@ -28,7 +28,7 @@ export const useSettings = create<GayToolbarSettings & SettingsActions>()(
             buttons: { ...prev.buttons, [id]: { ...prev.buttons[id], id: id, ...newSettings } },
         })),
         deleteButton: (id) => set((prev: GayToolbarSettings) => ({
-            buttonNames: prev.buttonNames.filter(s => s !== id),
+            buttonIds: prev.buttonIds.filter(s => s !== id),
             buttonLocations: { ...(delete prev.buttonLocations[id], prev.buttonLocations) },
             buttons: { ...(delete prev.buttons[id], prev.buttons) }
         })),

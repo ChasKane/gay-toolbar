@@ -2,10 +2,10 @@ export type Coord = [number, number];
 
 export type SettingsActions = {
     setSettings: (newSettings: Partial<GayToolbarSettings>) => void;
-    moveButton: (buttonName: string, location: Coord) => void;
-    addButton: (name: string, icon: string, onTapCommandId: string, location: Coord) => void;
-    updateButton: (name: string, newSettings: Partial<GayButtonSettings>) => void;
-    deleteButton: (name: string) => void;
+    moveButton: (buttonId: string, location: Coord) => void;
+    addButton: (id: string, icon: string, onTapCommandId: string, location: Coord) => void;
+    updateButton: (id: string, newSettings: Partial<GayButtonSettings>) => void;
+    deleteButton: (id: string) => void;
 }
 
 export type EditorState = {
@@ -19,7 +19,7 @@ export type EditorActions = {
 
 export type GayToolbarSettings = {
     mobileOnly: boolean
-    buttonNames: string[];
+    buttonIds: string[];
     buttonLocations: Record<string, Coord>
     buttons: Record<string, GayButtonSettings>;
     numRows: number;
@@ -34,7 +34,8 @@ export type GayToolbarSettings = {
 
 export type GayButtonSettings = {
     id: string;
-    icon: string;
+    tapIcon: string;
+    holdIcon?: string;
     backgroundColor: string;
     onTapCommandId: string;
     onHoldCommandId?: string;

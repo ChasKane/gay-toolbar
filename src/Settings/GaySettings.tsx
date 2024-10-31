@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import NumericInputGroup from './NumericInputGroup';
-import { useEditor, usePlugin, useSettings } from 'React/StateManagement';
-import ChooseIconModal from 'ChooseIconModal';
-import AddCommandModal from 'addCommandModal';
+import { useEditor, usePlugin, useSettings } from 'src/StateManagement';
+import ChooseIconModal from 'src/ChooseIconModal';
+import { AddCommandModal, chooseNewCommand } from '../chooseNewCommand';
 import { setIcon } from 'obsidian';
 
 
@@ -25,25 +25,36 @@ const GaySettings: React.FC = () => {
     const [modaL, setModal] = useState<boolean>(false)
 
     const listener = useRef<{ remove: () => {} } | null>(null)
-    const iconButtonRef = useRef<HTMLButtonElement | null>(null)
+    const tapCommandButtonRef = useRef<HTMLButtonElement | null>(null)
+    const holdCommandButtonRef = useRef<HTMLButtonElement | null>(null)
 
     useEffect(() => {
         if (!selectedButtonId)
             return
-        if (iconButtonRef.current) {
-            setIcon(iconButtonRef.current, buttons[selectedButtonId].icon || 'question-mark-glyph');
-            const svg = iconButtonRef.current.firstChild as HTMLElement;
+
+        const { tapIcon, holdIcon } = buttons[selectedButtonId]
+        console.log(tapIcon, holdIcon)
+        if (tapCommandButtonRef.current) {
+            setIcon(tapCommandButtonRef.current, tapIcon || 'question-mark-glyph');
+            const svg = tapCommandButtonRef.current.firstChild as HTMLElement;
             if (svg) {
                 svg.classList.add('gay-icon-lmao');
             }
         }
-    }, [iconButtonRef.current, buttons, selectedButtonId]);
+        if (holdCommandButtonRef.current && holdIcon) {
+            setIcon(holdCommandButtonRef.current, holdIcon);
+            const svg = holdCommandButtonRef.current.firstChild as HTMLElement;
+            if (svg) {
+                svg.classList.add('gay-icon-lmao');
+            }
+        }
+    }, [buttons, selectedButtonId]); // `buttons` object is immutable, so new icons change its reference
 
     useEffect(() => {
         if (modaL) {
             listener.current?.remove?.();
             listener.current = null;
-            return () => { }; // useEffectCallback must return same type in all return statements
+            return () => { }; // useEffect callback must return same type in all return statements
         }
 
         (async () => {
@@ -67,19 +78,21 @@ const GaySettings: React.FC = () => {
                             <div>
                                 <input className='gay-input-color' type='color' onChange={e => updateButton(selectedButtonId, { backgroundColor: e.target.value })}></input>
                             </div>
-                            <button ref={iconButtonRef} onClick={async () => {
+                            <button ref={tapCommandButtonRef} onClick={async () => {
+                                if (!plugin)
+                                    return;
                                 setModal(true)
-                                let icon = '';
+                                let command;
                                 try {
-                                    icon = await new ChooseIconModal(plugin).awaitSelection()
+                                    command = await chooseNewCommand(plugin)
                                 } catch (e) {
                                     setModal(false)
                                 }
-                                if (icon)
-                                    updateButton(selectedButtonId, { icon: icon })
+                                if (command)
+                                    updateButton(selectedButtonId, { onTapCommandId: command.id, tapIcon: command.icon })
                                 setModal(false)
                             }}></button>
-                            <button onClick={async () => {
+                            <button ref={holdCommandButtonRef} onClick={async () => {
                                 setModal(true)
                                 let command;
                                 try {
@@ -88,21 +101,9 @@ const GaySettings: React.FC = () => {
                                     setModal(false)
                                 }
                                 if (command)
-                                    updateButton(selectedButtonId, { onTapCommandId: command.id })
+                                    updateButton(selectedButtonId, { onHoldCommandId: command.id, holdIcon: command.icon })
                                 setModal(false)
-                            }}>Tap</button>
-                            <button onClick={async () => {
-                                setModal(true)
-                                let command;
-                                try {
-                                    command = await new AddCommandModal(plugin).awaitSelection()
-                                } catch (e) {
-                                    setModal(false)
-                                }
-                                if (command)
-                                    updateButton(selectedButtonId, { onHoldCommandId: command.id })
-                                setModal(false)
-                            }}>Hold</button>
+                            }}></button>
                         </div>
                     </div>
                     <button className='delete-button' onClick={() => { deleteButton(selectedButtonId); setSelectedButtonId(''); }}>Delete</button>
