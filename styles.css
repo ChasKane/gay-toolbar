@@ -205,6 +205,12 @@
     margin-top: 8px;
 }
 
+.gay-input-label {
+     display: block;
+     margin-top: 4px;
+     margin-bottom: 4px;
+}
+
 .gay-input {
     display: flex;
     justify-content: start;

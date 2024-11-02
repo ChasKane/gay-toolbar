@@ -54,7 +54,7 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
                 isEditing && buttonId === selectedButtonId ? 'button-halo' : '',
             ].join(' ')}
             style={{ backgroundColor: backgroundColor }}
-            onClick={isEditing ? e => {
+            onClick={e => {
                 !isEditing && e.preventDefault();
                 if (isEditing) {
                     if (selectedButtonId === buttonId)
@@ -62,15 +62,15 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
                     else
                         setSelectedButtonId(buttonId)
                 }
-            } : undefined}
+            }}
             onMouseDown={e => !isEditing && e.preventDefault()}
-            onPointerDown={!isEditing ? e => {
-                !isEditing && e.preventDefault()
+            onPointerDown={e => {
                 const el = buttonRef.current
                 el?.addClass('gay-button-tap')
 
                 const startTime = Date.now();
                 let pointerDown = true;
+
                 setTimeout(() => {
                     if (pointerDown && holdIcon)
                         el?.addClass('gay-button-hold')
@@ -82,31 +82,34 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
 
                 function pointerUpListener(e: PointerEvent) {
                     e.preventDefault()
-                    pointerDown = false;
-                    holdIcon && el?.removeClass('gay-button-hold')
-                    if (pointerInside(e, buttonRef.current)) {
-                        const delta = Date.now() - startTime;
-                        if (delta < 200) { // tap
-                            if (onTapCommandId)
-                                // @ts-ignore | app.commands exists; not sure why it's not in the API...
-                                plugin?.app.commands.executeCommandById(onTapCommandId)
+                    const endTime = Date.now()
+                    setTimeout(() => { // quick taps were causing menu rendering errors (eg Quick Actions Menu)
+                        pointerDown = false;
+                        holdIcon && el?.removeClass('gay-button-hold')
+                        if (pointerInside(e, buttonRef.current)) {
+                            const delta = endTime - startTime;
+                            if (delta < 200) { // tap
+                                if (onTapCommandId)
+                                    // @ts-ignore | app.commands exists; not sure why it's not in the API...
+                                    plugin?.app.commands.executeCommandById(onTapCommandId)
 
-                        } else { // hold
-                            if (!isEditing && onHoldCommandId)
-                                // @ts-ignore | app.commands exists; not sure why it's not in the API...
-                                plugin?.app.commands.executeCommandById(onHoldCommandId)
+                            } else { // hold
+                                if (!isEditing && onHoldCommandId)
+                                    // @ts-ignore | app.commands exists; not sure why it's not in the API...
+                                    plugin?.app.commands.executeCommandById(onHoldCommandId)
+                            }
+                        } else { // swipe
+                            // ...
                         }
-                    } else { // swipe
-                        // ...
-                    }
-                    document.body.removeEventListener('pointerup', pointerUpListener)
-                    document.body.removeEventListener('pointercancel', pointerCancelListener)
+                        document.body.removeEventListener('pointerup', pointerUpListener)
+                        document.body.removeEventListener('pointercancel', pointerCancelListener)
+                    }, 20)
                 }
                 function pointerCancelListener() {
                     document.body.removeEventListener('pointerup', pointerUpListener)
                     document.body.removeEventListener('pointercancel', pointerCancelListener)
                 }
-            } : undefined}
+            }}
         >
             <div className={holdIcon && 'tap-icon'} ref={tapIconRef}></div>
             {holdIcon && <div className='hold-icon' ref={holdIconRef}></div>}

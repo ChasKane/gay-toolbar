@@ -6,7 +6,7 @@ const Slot: React.FC<{
     location: [number, number];
     children: ReactNode;
 }> = ({ location, children }) => {
-    const ref = useRef(null)
+    const ref = useRef<HTMLDivElement>(null)
     const [entered, setEntered] = useState(false)
 
     useEffect(() => {

@@ -62,7 +62,7 @@ const ButtonGrid: React.FC = () => {
                         break;
                     case !buttonId && isEditing:
                         child = (
-                            <button style={{ width: '100%', height: '100%' }} onClick={async () => {
+                            <button className='gay-button-container' onClick={async () => {
                                 if (plugin?.app) {
                                     const { icon, id: onTapCommandId } = await chooseNewCommand(plugin);
                                     const id = Date.now().toString(36)

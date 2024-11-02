@@ -17,7 +17,7 @@ const SliderInputGroup: React.FC<{
 
     return (
         <div>
-            <label style={{ display: 'block', marginTop: '4x', marginBottom: '4px' }}>{label}</label>
+            <label className='gay-input-label'>{label}</label>
 
             <div className='gay-input'>
                 <button

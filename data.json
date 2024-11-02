@@ -1,57 +1,36 @@
 {
   "buttonIds": [
     "Bullet List Commands",
-    "Unindent list item",
     "Undo",
-    "Redo",
-    "Quick switcher: Open quick switcher",
-    "Audio recorder: Start recording audio",
     "Audio recorder: Stop recording audio",
     "Toggle heading",
     "Toggle bold",
-    "Toggle strikethrough",
     "Add internal link",
     "Insert attachment",
-    "Insert Markdown link",
     "Toggle highlight",
     "Cycle bullet/checkbox",
     "Move line up",
     "Move line down",
     "Move caret up",
     "Move caret down",
-    "Periodic Notes: Open daily note",
-    "Calendar: Open Weekly Note",
-    "Tasks: Create or edit task",
     "Toggle bullet list",
-    "🏳‍🌈 Gay Toolbar 🏳‍🌈: Toggle Edit Mode",
     "Delete paragraph",
-    "Command palette: Open command palette",
-    "Follow link under cursor"
+    "Follow link under cursor",
+    "m2wzopsn",
+    "m2wzqo5p",
+    "m2xmcyju",
+    "m2xn1mu1",
+    "m2xn4bng",
+    "m2xox3l6"
   ],
   "buttonLocations": {
     "Bullet List Commands": [
-      0,
-      0
-    ],
-    "Unindent list item": [
       1,
-      0
+      4
     ],
     "Undo": [
       0,
       5
-    ],
-    "Redo": [
-      0,
-      6
-    ],
-    "Quick switcher: Open quick switcher": [
-      2,
-      0
-    ],
-    "Audio recorder: Start recording audio": [
-      0,
-      2
     ],
     "Audio recorder: Stop recording audio": [
       0,
@@ -65,19 +44,11 @@
       0,
       4
     ],
-    "Toggle strikethrough": [
-      1,
-      4
-    ],
     "Add internal link": [
-      1,
-      1
+      2,
+      3
     ],
     "Insert attachment": [
-      2,
-      1
-    ],
-    "Insert Markdown link": [
       1,
       2
     ],
@@ -91,51 +62,55 @@
     ],
     "Move line up": [
       1,
-      5
+      6
     ],
     "Move line down": [
-      1,
+      2,
       6
     ],
     "Move caret up": [
-      2,
+      1,
       5
     ],
     "Move caret down": [
       2,
-      6
-    ],
-    "Periodic Notes: Open daily note": [
-      2,
-      8
-    ],
-    "Calendar: Open Weekly Note": [
-      1,
-      8
-    ],
-    "Tasks: Create or edit task": [
-      2,
-      3
+      5
     ],
     "Toggle bullet list": [
       2,
       4
     ],
-    "🏳‍🌈 Gay Toolbar 🏳‍🌈: Toggle Edit Mode": [
-      0,
-      8
-    ],
     "Delete paragraph": [
-      2,
-      7
+      0,
+      6
     ],
-    "Command palette: Open command palette": [
+    "Follow link under cursor": [
       1,
       7
     ],
-    "Follow link under cursor": [
+    "m2wzopsn": [
       0,
       7
+    ],
+    "m2wzqo5p": [
+      0,
+      2
+    ],
+    "m2xmcyju": [
+      2,
+      7
+    ],
+    "m2xn1mu1": [
+      1,
+      1
+    ],
+    "m2xn4bng": [
+      2,
+      0
+    ],
+    "m2xox3l6": [
+      2,
+      1
     ]
   },
   "buttons": {
@@ -143,43 +118,25 @@
       "id": "Bullet List Commands",
       "tapIcon": "lucide-indent",
       "backgroundColor": "#6e9faf",
-      "onTapCommandId": "editor:indent-list"
-    },
-    "Unindent list item": {
-      "id": "Unindent list item",
-      "tapIcon": "lucide-outdent",
-      "onTapCommandId": "editor:unindent-list",
-      "backgroundColor": "#411125"
+      "onTapCommandId": "editor:indent-list",
+      "onHoldCommandId": "editor:unindent-list",
+      "holdIcon": "lucide-outdent"
     },
     "Undo": {
       "id": "Undo",
       "tapIcon": "lucide-undo-2",
       "onTapCommandId": "editor:undo",
-      "backgroundColor": "#3a173a"
-    },
-    "Redo": {
-      "id": "Redo",
-      "tapIcon": "lucide-redo-2",
-      "onTapCommandId": "editor:redo",
-      "backgroundColor": "#5e265b"
-    },
-    "Quick switcher: Open quick switcher": {
-      "id": "Quick switcher: Open quick switcher",
-      "tapIcon": "lucide-navigation",
-      "onTapCommandId": "switcher:open",
-      "backgroundColor": "#00a832"
-    },
-    "Audio recorder: Start recording audio": {
-      "id": "Audio recorder: Start recording audio",
-      "tapIcon": "lucide-play-circle",
-      "onTapCommandId": "audio-recorder:start",
-      "backgroundColor": "black"
+      "backgroundColor": "#3a173a",
+      "onHoldCommandId": "editor:redo",
+      "holdIcon": "lucide-redo-2"
     },
     "Audio recorder: Stop recording audio": {
       "id": "Audio recorder: Stop recording audio",
-      "tapIcon": "lucide-stop-circle",
-      "onTapCommandId": "audio-recorder:stop",
-      "backgroundColor": "black"
+      "tapIcon": "lucide-play-circle",
+      "onTapCommandId": "audio-recorder:start",
+      "backgroundColor": "black",
+      "onHoldCommandId": "audio-recorder:stop",
+      "holdIcon": "lucide-stop-circle"
     },
     "Toggle heading": {
       "id": "Toggle heading",
@@ -191,30 +148,22 @@
       "id": "Toggle bold",
       "tapIcon": "lucide-bold",
       "onTapCommandId": "editor:toggle-bold",
-      "backgroundColor": "black"
-    },
-    "Toggle strikethrough": {
-      "id": "Toggle strikethrough",
-      "tapIcon": "lucide-strikethrough",
-      "onTapCommandId": "editor:toggle-strikethrough",
-      "backgroundColor": "black"
+      "backgroundColor": "black",
+      "onHoldCommandId": "editor:toggle-italics",
+      "holdIcon": "lucide-italic"
     },
     "Add internal link": {
       "id": "Add internal link",
       "tapIcon": "bracket-glyph",
       "onTapCommandId": "editor:insert-wikilink",
-      "backgroundColor": "black"
+      "backgroundColor": "black",
+      "onHoldCommandId": "editor:insert-link",
+      "holdIcon": "lucide-link"
     },
     "Insert attachment": {
       "id": "Insert attachment",
       "tapIcon": "lucide-paperclip",
       "onTapCommandId": "editor:attach-file",
-      "backgroundColor": "black"
-    },
-    "Insert Markdown link": {
-      "id": "Insert Markdown link",
-      "tapIcon": "lucide-link",
-      "onTapCommandId": "editor:insert-link",
       "backgroundColor": "black"
     },
     "Toggle highlight": {
@@ -227,7 +176,9 @@
       "id": "Cycle bullet/checkbox",
       "tapIcon": "lucide-check-square",
       "onTapCommandId": "editor:cycle-list-checklist",
-      "backgroundColor": "#165200"
+      "backgroundColor": "#165200",
+      "onHoldCommandId": "obsidian-tasks-plugin:edit-task",
+      "holdIcon": "pencil"
     },
     "Move line up": {
       "id": "Move line up",
@@ -253,35 +204,13 @@
       "onTapCommandId": "editor:move-caret-down",
       "backgroundColor": "#850000"
     },
-    "Periodic Notes: Open daily note": {
-      "id": "Periodic Notes: Open daily note",
-      "tapIcon": "check",
-      "onTapCommandId": "periodic-notes:open-daily-note",
-      "backgroundColor": "#8f3c00"
-    },
-    "Calendar: Open Weekly Note": {
-      "id": "Calendar: Open Weekly Note",
-      "tapIcon": "check-circle",
-      "onTapCommandId": "calendar:open-weekly-note",
-      "backgroundColor": "#c15101"
-    },
-    "Tasks: Create or edit task": {
-      "id": "Tasks: Create or edit task",
-      "tapIcon": "pencil",
-      "onTapCommandId": "obsidian-tasks-plugin:edit-task",
-      "backgroundColor": "#238500"
-    },
     "Toggle bullet list": {
       "id": "Toggle bullet list",
       "tapIcon": "lucide-list",
       "onTapCommandId": "editor:toggle-bullet-list",
-      "backgroundColor": "black"
-    },
-    "🏳‍🌈 Gay Toolbar 🏳‍🌈: Toggle Edit Mode": {
-      "tapIcon": "wrench",
-      "backgroundColor": "#ff6600",
-      "onTapCommandId": "gay-toolbar:edit-toolbar",
-      "id": "🏳‍🌈 Gay Toolbar 🏳‍🌈: Toggle Edit Mode"
+      "backgroundColor": "black",
+      "onHoldCommandId": "editor:toggle-blockquote",
+      "holdIcon": "lucide-quote"
     },
     "Delete paragraph": {
       "tapIcon": "lucide-scissors",
@@ -291,14 +220,6 @@
       "onTapCommandId": "editor:delete-paragraph",
       "holdIcon": "lucide-scissors"
     },
-    "Command palette: Open command palette": {
-      "id": "Command palette: Open command palette",
-      "tapIcon": "lucide-terminal-square",
-      "onTapCommandId": "command-palette:open",
-      "backgroundColor": "green",
-      "onHoldCommandId": "switcher:open",
-      "holdIcon": "lucide-navigation"
-    },
     "Follow link under cursor": {
       "tapIcon": "clock-2",
       "onTapCommandId": "obsidian-timestamper:obsidian-fast-timestamp",
@@ -306,13 +227,57 @@
       "id": "Follow link under cursor",
       "onHoldCommandId": "obsidian-timestamper:obsidian-fast-datestamp",
       "holdIcon": "calendar"
+    },
+    "m2wzopsn": {
+      "id": "m2wzopsn",
+      "tapIcon": "wrench",
+      "onTapCommandId": "gay-toolbar:edit-toolbar",
+      "backgroundColor": "red"
+    },
+    "m2wzqo5p": {
+      "id": "m2wzqo5p",
+      "tapIcon": "lucide-strikethrough",
+      "onTapCommandId": "editor:toggle-strikethrough",
+      "backgroundColor": "blue"
+    },
+    "m2xmcyju": {
+      "id": "m2xmcyju",
+      "tapIcon": "check",
+      "onTapCommandId": "periodic-notes:open-daily-note",
+      "backgroundColor": "green",
+      "onHoldCommandId": "calendar:open-weekly-note",
+      "holdIcon": "check-circle"
+    },
+    "m2xn1mu1": {
+      "id": "m2xn1mu1",
+      "tapIcon": "scan-line",
+      "onTapCommandId": "obsidian-editor-shortcuts:selectLine",
+      "backgroundColor": "blue",
+      "onHoldCommandId": "obsidian-editor-shortcuts:duplicateLine",
+      "holdIcon": "activity"
+    },
+    "m2xn4bng": {
+      "id": "m2xn4bng",
+      "tapIcon": "lucide-copy",
+      "onTapCommandId": "editor:copy",
+      "backgroundColor": "white",
+      "onHoldCommandId": "editor:paste",
+      "holdIcon": "lucide-clipboard-type"
+    },
+    "m2xox3l6": {
+      "id": "m2xox3l6",
+      "tapIcon": "lucide-navigation",
+      "onTapCommandId": "switcher:open",
+      "backgroundColor": "yellow",
+      "onHoldCommandId": "mobile:quick-action",
+      "holdIcon": "lucide-terminal-square"
     }
   },
   "numRows": 3,
-  "numCols": 9,
-  "rowHeight": 34,
-  "gridGap": 4,
-  "gridPadding": 4,
+  "numCols": 8,
+  "rowHeight": 29,
+  "gridGap": 3,
+  "gridPadding": 3,
   "backgroundColor": {
     "r": 255,
     "g": 115,
