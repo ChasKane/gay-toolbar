@@ -6,7 +6,7 @@ import { Platform } from 'obsidian';
 
 const GayToolbar: React.FC = () => {
     const isEditing = useEditor(state => state.isEditing);
-    const { backgroundColor: { r, g, b }, opacity, customBackground } = useSettings();
+    const { backgroundColor, customBackground } = useSettings();
 
     const ref: RefObject<HTMLDivElement> = useRef(null)
 
@@ -20,7 +20,7 @@ const GayToolbar: React.FC = () => {
     })
 
     return (
-        <div ref={ref} style={{ background: customBackground || `rgba(${[r, g, b, opacity].join(',')}` }} className='gay-toolbar'>
+        <div ref={ref} style={{ background: customBackground || backgroundColor }} className='gay-toolbar'>
             {isEditing && <GaySettings />}
             <ButtonGrid />
         </div>

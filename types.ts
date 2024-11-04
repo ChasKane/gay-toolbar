@@ -27,8 +27,7 @@ export type GayToolbarSettings = {
     rowHeight: number;
     gridGap: number;
     gridPadding: number;
-    backgroundColor: { r: number, g: number, b: number };
-    opacity: number;
+    backgroundColor: string;
     customBackground?: string;
 }
 

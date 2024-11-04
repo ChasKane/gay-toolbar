@@ -3,7 +3,10 @@ import { emptySettings } from './Settings/DEFAULT_SETTINGS'
 import GayToolbarPlugin from '../main';
 import { GayToolbarSettings, SettingsActions, EditorActions, EditorState } from '../types';
 
+// TODO: move this to settings state so it can be user-modified and idx saved
+// TODO: for fun and aesthetics, convert this to itterator
 const prideColors: string[] = ['lightblue', 'lightpink', 'white', 'red', 'orange', 'yellow', 'green', 'blue', 'purple'];
+let prideIdx = 0;
 
 export const useSettings = create<GayToolbarSettings & SettingsActions>()(
     (set, get) => ({
@@ -20,7 +23,7 @@ export const useSettings = create<GayToolbarSettings & SettingsActions>()(
                     id: id,
                     tapIcon: icon,
                     onTapCommandId: onTapCommandId,
-                    backgroundColor: prideColors[Math.floor(Math.random() * prideColors.length)]
+                    backgroundColor: prideColors[++prideIdx === prideColors.length ? prideIdx = 0 : prideIdx],
                 }
             },
         })),

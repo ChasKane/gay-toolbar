@@ -18,7 +18,7 @@ const rgbToHex = ({ r, g, b }: { r: number, g: number, b: number }) =>
 const GaySettings: React.FC = () => {
     const plugin = usePlugin(state => state.plugin)
     const { setIsEditing, selectedButtonId, setSelectedButtonId } = useEditor();
-    const { updateButton, deleteButton, backgroundColor, opacity, customBackground, mobileOnly, setSettings, buttons } = useSettings();
+    const { updateButton, deleteButton, backgroundColor, customBackground, mobileOnly, setSettings, buttons } = useSettings();
 
     const [useCustomCSS, setUseCustomCSS] = useState(!!customBackground)
     const [modaL, setModal] = useState<boolean>(false)
@@ -150,11 +150,10 @@ const GaySettings: React.FC = () => {
                                     <input
                                         className='gay-input-color'
                                         type='color'
-                                        defaultValue={rgbToHex(backgroundColor)}
-                                        onChange={e => setSettings({ backgroundColor: hexToRgb(e.target.value) })}
+                                        defaultValue={backgroundColor}
+                                        onChange={e => setSettings({ backgroundColor: e.target.value })}
                                         name='backgroundColor'
                                     ></input>
-                                    <NumericInputGroup label="Opacity" name='opacity' bounds={[0, 1]} step={.01} />
                                 </div>
                             }
                         </div>
