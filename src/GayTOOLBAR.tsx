@@ -4,7 +4,7 @@ import GaySettings from './Settings/GaySettings';
 import { useEditor, useSettings } from './StateManagement';
 import { Platform } from 'obsidian';
 
-const GayToolbar: React.FC<{ settingsContainerEl: HTMLElement }> = ({ settingsContainerEl }) => {
+const GayToolbar: React.FC = () => {
     const isEditing = useEditor(state => state.isEditing);
     const { backgroundColor: { r, g, b }, opacity, customBackground } = useSettings();
 
@@ -16,6 +16,7 @@ const GayToolbar: React.FC<{ settingsContainerEl: HTMLElement }> = ({ settingsCo
         const statusBar: HTMLDivElement | null = document.querySelector('.status-bar')
         if (statusBar)
             statusBar.style.bottom = (ref.current?.getBoundingClientRect().height || 0) + 'px'
+        return () => { if (statusBar) statusBar.style.bottom = '0px' }
     })
 
     return (

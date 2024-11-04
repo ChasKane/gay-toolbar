@@ -72,10 +72,12 @@ const GaySettings: React.FC = () => {
             {selectedButtonId ?
                 <>
                     <div className='settings-main scrollable button-settings'>
-                        <div style={{ backgroundColor: buttons[selectedButtonId].backgroundColor }} onClick={e => e.preventDefault()}>
-                            <div>
-                                <input className='gay-input-color' type='color' onChange={e => updateButton(selectedButtonId, { backgroundColor: e.target.value })}></input>
-                            </div>
+                        <div style={{ backgroundColor: buttons[selectedButtonId].backgroundColor }}>
+                            <input
+                                className='gay-input-color'
+                                type='color'
+                                onChange={e => updateButton(selectedButtonId, { backgroundColor: e.target.value })}
+                            ></input>
                             <button ref={tapCommandButtonRef} onClick={async () => {
                                 if (!plugin)
                                     return;

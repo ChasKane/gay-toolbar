@@ -14,9 +14,6 @@ export default class GayToolbarPlugin extends Plugin {
     async onload() {
         await this.loadSettings()
 
-        const settingsTab = new GayToolbarSettingTab(this.app, this);
-        this.addSettingTab(settingsTab);
-
         if (this.settings.mobileOnly && Platform.isDesktop)
             return;
 
@@ -44,7 +41,7 @@ export default class GayToolbarPlugin extends Plugin {
             if (parentNode) {
                 this.toolbarNode = createDiv('gay-toolbar-container');
                 this.toolbarRoot = createRoot(this.toolbarNode);
-                this.toolbarRoot.render(<GayToolbar settingsContainerEl={settingsTab.containerEl} />);
+                this.toolbarRoot.render(<GayToolbar />);
                 parentNode.insertBefore(this.toolbarNode, parentNode.querySelector('.status-bar'));
             }
         });
@@ -76,23 +73,13 @@ export default class GayToolbarPlugin extends Plugin {
     }
 
     onunload() {
+        console.log(
+            'unmount',
+            this.toolbarRoot,
+            this.toolbarNode,
+        )
         this.toolbarRoot?.unmount?.();
         this.toolbarNode?.remove();
         this.unsubscribePositionStore?.();
-    }
-}
-
-class GayToolbarSettingTab extends PluginSettingTab {
-    plugin: GayToolbarPlugin;
-
-    constructor(app: App, plugin: GayToolbarPlugin) {
-        super(app, plugin);
-        this.plugin = plugin;
-    }
-
-    display(): void {
-    }
-
-    hide(): void {
     }
 }

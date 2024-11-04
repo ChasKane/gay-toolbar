@@ -148,7 +148,7 @@
       "id": "Toggle bold",
       "tapIcon": "lucide-bold",
       "onTapCommandId": "editor:toggle-bold",
-      "backgroundColor": "black",
+      "backgroundColor": "#673737",
       "onHoldCommandId": "editor:toggle-italics",
       "holdIcon": "lucide-italic"
     },
