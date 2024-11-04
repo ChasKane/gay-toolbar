@@ -278,11 +278,7 @@
   "rowHeight": 29,
   "gridGap": 3,
   "gridPadding": 3,
-  "backgroundColor": {
-    "r": 255,
-    "g": 115,
-    "b": 0
-  },
+  "backgroundColor": "#2300ff",
   "opacity": 0.5,
   "mobileOnly": false,
   "transparency": 0.5,

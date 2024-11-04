@@ -155,6 +155,7 @@
 .background-options-header {
     display: flex;
     justify-content: space-between;
+    padding-bottom: 4px;
 }
 
 .scrollable {
@@ -167,6 +168,14 @@
 .settings-main {
     display: grid;
     grid-template-columns: 1fr 1fr;
+}
+
+.toolbar-setting-wrapper {
+    margin-top: 4px;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .button-settings {
@@ -207,7 +216,6 @@
 
 .gay-input-label {
      display: block;
-     margin-top: 4px;
      margin-bottom: 4px;
 }
 

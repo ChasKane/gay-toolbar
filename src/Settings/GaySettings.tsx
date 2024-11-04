@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import NumericInputGroup from './NumericInputGroup';
 import { useEditor, usePlugin, useSettings } from 'src/StateManagement';
 import { AddCommandModal, chooseNewCommand } from '../chooseNewCommand';
@@ -67,11 +67,13 @@ const GaySettings: React.FC = () => {
 
     }, [setIsEditing, modaL])
 
+    const wrapToolbarSettings = (nodes: ReactNode[]) => nodes.map((n, idx) => <div key={idx} className='toolbar-setting-wrapper'>{n}</div>)
+
     return (
         <div className='gay-settings-container'>
             {selectedButtonId ?
                 <>
-                    <div className='settings-main scrollable button-settings'>
+                    <div className='button-settings scrollable'>
                         <div style={{ backgroundColor: buttons[selectedButtonId].backgroundColor }}>
                             <input
                                 className='gay-input-color'
@@ -112,18 +114,26 @@ const GaySettings: React.FC = () => {
                 </>
                 :
                 <div className='settings-main scrollable'>
-                    <NumericInputGroup label="Columns" name='numCols' bounds={[1, 20]} />
-                    <NumericInputGroup label="Rows" name='numRows' bounds={[1, 10]} />
-                    <NumericInputGroup label="Row Height" name='rowHeight' bounds={[5, 70]} />
-                    <NumericInputGroup label="Gap" name='gridGap' bounds={[0, 20]} />
-                    <NumericInputGroup label="Padding" name='gridPadding' bounds={[0, 20]} />
-                    <div>
-                        <label style={{ paddingRight: '8px' }} htmlFor='mobile-only'>Mobile Only</label>
-                        <input id='mobile-only' type='checkbox' defaultChecked={mobileOnly} onChange={e => setSettings({ mobileOnly: e.target.checked })}></input>
-                    </div>
+                    {wrapToolbarSettings([
+                        (
+                            <div>
+                                <label style={{ paddingRight: '8px' }} htmlFor='mobile-only'>Mobile Only</label>
+                                <input id='mobile-only' type='checkbox' defaultChecked={mobileOnly} onChange={e => setSettings({ mobileOnly: e.target.checked })}></input>
+                            </div>
+                        ),
+                        <NumericInputGroup label="Columns" name='numCols' bounds={[1, 20]} />,
+                        <NumericInputGroup label="Rows" name='numRows' bounds={[1, 10]} />,
+                        <NumericInputGroup label="Row Height" name='rowHeight' bounds={[5, 70]} />,
+                        <NumericInputGroup label="Gap" name='gridGap' bounds={[0, 20]} />,
+                        <NumericInputGroup label="Padding" name='gridPadding' bounds={[0, 20]} />,
+                    ])}
                     <div className='background-options'>
                         <div className='background-options-header'>
-                            <label>Background</label>
+                            <label>{
+                                useCustomCSS
+                                    ? <>Custom CSS <a href='https://developer.mozilla.org/en-US/docs/Web/CSS/background'>background</a> value</>
+                                    : "Background"
+                            }</label>
                             <div>
                                 <label style={{ paddingRight: '8px' }} htmlFor='custom-css'>Custom CSS</label>
                                 <input id='custom-css' type='checkbox' defaultChecked={useCustomCSS} onChange={e => {
@@ -136,8 +146,11 @@ const GaySettings: React.FC = () => {
                         <div>
                             {useCustomCSS ?
                                 <label htmlFor='customBackground'>
-                                    Custom CSS <a href='https://developer.mozilla.org/en-US/docs/Web/CSS/background'>background</a> value
                                     <input
+                                        style={{
+                                            width: '100%',
+                                            display: 'inline-grid',
+                                        }}
                                         type='text'
                                         placeholder='no "background: " and no ";"'
                                         defaultValue={customBackground}
