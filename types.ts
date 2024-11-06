@@ -34,8 +34,8 @@ export type GayToolbarSettings = {
 export type GayButtonSettings = {
     id: string;
     tapIcon: string;
-    holdIcon?: string;
+    pressIcon?: string;
     backgroundColor: string;
     onTapCommandId: string;
-    onHoldCommandId?: string;
+    onPressCommandId?: string;
 }

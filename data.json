@@ -2,7 +2,6 @@
   "buttonIds": [
     "Bullet List Commands",
     "Undo",
-    "Audio recorder: Stop recording audio",
     "Toggle heading",
     "Toggle bold",
     "Add internal link",
@@ -21,7 +20,9 @@
     "m2xmcyju",
     "m2xn1mu1",
     "m2xn4bng",
-    "m2xox3l6"
+    "m2xox3l6",
+    "m32ryv07",
+    "m32s1bmh"
   ],
   "buttonLocations": {
     "Bullet List Commands": [
@@ -31,10 +32,6 @@
     "Undo": [
       0,
       5
-    ],
-    "Audio recorder: Stop recording audio": [
-      0,
-      1
     ],
     "Toggle heading": [
       0,
@@ -105,12 +102,20 @@
       1
     ],
     "m2xn4bng": [
-      2,
-      0
+      0,
+      1
     ],
     "m2xox3l6": [
       2,
       1
+    ],
+    "m32ryv07": [
+      1,
+      0
+    ],
+    "m32s1bmh": [
+      2,
+      0
     ]
   },
   "buttons": {
@@ -130,14 +135,6 @@
       "onHoldCommandId": "editor:redo",
       "holdIcon": "lucide-redo-2"
     },
-    "Audio recorder: Stop recording audio": {
-      "id": "Audio recorder: Stop recording audio",
-      "tapIcon": "lucide-play-circle",
-      "onTapCommandId": "audio-recorder:start",
-      "backgroundColor": "black",
-      "onHoldCommandId": "audio-recorder:stop",
-      "holdIcon": "lucide-stop-circle"
-    },
     "Toggle heading": {
       "id": "Toggle heading",
       "tapIcon": "heading-glyph",
@@ -148,7 +145,7 @@
       "id": "Toggle bold",
       "tapIcon": "lucide-bold",
       "onTapCommandId": "editor:toggle-bold",
-      "backgroundColor": "#673737",
+      "backgroundColor": "black",
       "onHoldCommandId": "editor:toggle-italics",
       "holdIcon": "lucide-italic"
     },
@@ -232,7 +229,7 @@
       "id": "m2wzopsn",
       "tapIcon": "wrench",
       "onTapCommandId": "gay-toolbar:edit-toolbar",
-      "backgroundColor": "red"
+      "backgroundColor": "#ff00d0"
     },
     "m2wzqo5p": {
       "id": "m2wzqo5p",
@@ -253,8 +250,8 @@
       "tapIcon": "scan-line",
       "onTapCommandId": "obsidian-editor-shortcuts:selectLine",
       "backgroundColor": "blue",
-      "onHoldCommandId": "obsidian-editor-shortcuts:duplicateLine",
-      "holdIcon": "activity"
+      "onHoldCommandId": "obsidian-editor-shortcuts:joinLines",
+      "holdIcon": "arrow-up-left"
     },
     "m2xn4bng": {
       "id": "m2xn4bng",
@@ -269,8 +266,24 @@
       "tapIcon": "lucide-navigation",
       "onTapCommandId": "switcher:open",
       "backgroundColor": "yellow",
-      "onHoldCommandId": "mobile:quick-action",
+      "onHoldCommandId": "command-palette:open",
       "holdIcon": "lucide-terminal-square"
+    },
+    "m32ryv07": {
+      "id": "m32ryv07",
+      "tapIcon": "arrow-left",
+      "onTapCommandId": "obsidian-editor-shortcuts:goToPreviousWord",
+      "backgroundColor": "purple",
+      "onHoldCommandId": "obsidian-editor-shortcuts:goToLineStart",
+      "holdIcon": "skip-back"
+    },
+    "m32s1bmh": {
+      "id": "m32s1bmh",
+      "tapIcon": "arrow-right",
+      "onTapCommandId": "obsidian-editor-shortcuts:goToNextWord",
+      "backgroundColor": "green",
+      "onHoldCommandId": "obsidian-editor-shortcuts:goToLineEnd",
+      "holdIcon": "skip-forward"
     }
   },
   "numRows": 3,
@@ -278,8 +291,12 @@
   "rowHeight": 29,
   "gridGap": 3,
   "gridPadding": 3,
-  "backgroundColor": "#2300ff",
-  "opacity": 0.5,
+  "backgroundColor": {
+    "r": 255,
+    "g": 115,
+    "b": 0
+  },
+  "opacity": 1,
   "mobileOnly": false,
   "transparency": 0.5,
   "customBackground": ""

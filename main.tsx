@@ -40,6 +40,8 @@ export default class GayToolbarPlugin extends Plugin {
             const parentNode = document.querySelector('.app-container')
             if (parentNode) {
                 this.toolbarNode = createDiv('gay-toolbar-container');
+                // prevents long-presses on mobie from removing the keyboard
+                this.toolbarNode.addEventListener('touchcancel', e => e.preventDefault(), { capture: true })
                 this.toolbarRoot = createRoot(this.toolbarNode);
                 this.toolbarRoot.render(<GayToolbar />);
                 parentNode.insertBefore(this.toolbarNode, parentNode.querySelector('.status-bar'));
@@ -74,7 +76,7 @@ export default class GayToolbarPlugin extends Plugin {
 
     onunload() {
         console.log(
-            'unmount',
+            'gay-toolbar unmount',
             this.toolbarRoot,
             this.toolbarNode,
         )

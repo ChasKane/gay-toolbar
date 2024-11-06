@@ -63,10 +63,10 @@
     }
 }
 
-.gay-button-hold {
+.gay-button-press {
     z-index: 2;
 }
-.gay-button-hold::after {
+.gay-button-press::after {
     content: "";
     position: absolute;
     top: 50%;
@@ -245,7 +245,7 @@
     width: 80%;
     height: 80%;
 }
-.hold-icon>svg {
+.press-icon>svg {
     position: absolute;
     top: -2px;
     left: -2px;

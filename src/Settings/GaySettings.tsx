@@ -25,13 +25,13 @@ const GaySettings: React.FC = () => {
 
     const listener = useRef<{ remove: () => {} } | null>(null)
     const tapCommandButtonRef = useRef<HTMLButtonElement | null>(null)
-    const holdCommandButtonRef = useRef<HTMLButtonElement | null>(null)
+    const pressCommandButtonRef = useRef<HTMLButtonElement | null>(null)
 
     useEffect(() => {
         if (!selectedButtonId)
             return
 
-        const { tapIcon, holdIcon } = buttons[selectedButtonId]
+        const { tapIcon, pressIcon } = buttons[selectedButtonId]
         if (tapCommandButtonRef.current) {
             setIcon(tapCommandButtonRef.current, tapIcon || 'question-mark-glyph');
             const svg = tapCommandButtonRef.current.firstChild as HTMLElement;
@@ -39,9 +39,9 @@ const GaySettings: React.FC = () => {
                 svg.classList.add('gay-icon-lmao');
             }
         }
-        if (holdCommandButtonRef.current && holdIcon) {
-            setIcon(holdCommandButtonRef.current, holdIcon);
-            const svg = holdCommandButtonRef.current.firstChild as HTMLElement;
+        if (pressCommandButtonRef.current && pressIcon) {
+            setIcon(pressCommandButtonRef.current, pressIcon);
+            const svg = pressCommandButtonRef.current.firstChild as HTMLElement;
             if (svg) {
                 svg.classList.add('gay-icon-lmao');
             }
@@ -94,7 +94,7 @@ const GaySettings: React.FC = () => {
                                     updateButton(selectedButtonId, { onTapCommandId: command.id, tapIcon: command.icon })
                                 setModal(false)
                             }}></button>
-                            <button ref={holdCommandButtonRef} onClick={async () => {
+                            <button ref={pressCommandButtonRef} onClick={async () => {
                                 if (!plugin)
                                     return;
                                 setModal(true)
@@ -105,7 +105,7 @@ const GaySettings: React.FC = () => {
                                     setModal(false)
                                 }
                                 if (command)
-                                    updateButton(selectedButtonId, { onHoldCommandId: command.id, holdIcon: command.icon })
+                                    updateButton(selectedButtonId, { onPressCommandId: command.id, pressIcon: command.icon })
                                 setModal(false)
                             }}></button>
                         </div>

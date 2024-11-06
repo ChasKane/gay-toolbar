@@ -20,11 +20,11 @@ const pointerInside = (t: PointerEvent, el: HTMLElement | null) => {
 const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
     const buttonRef = useRef<HTMLButtonElement>(null);
     const tapIconRef = useRef<HTMLDivElement>(null);
-    const holdIconRef = useRef<HTMLDivElement>(null);
+    const pressIconRef = useRef<HTMLDivElement>(null);
 
     const plugin = usePlugin(state => state.plugin)
     const { isEditing, selectedButtonId, setSelectedButtonId } = useEditor();
-    const { backgroundColor, tapIcon, holdIcon, onTapCommandId, onHoldCommandId } = useSettings(state => state.buttons[buttonId]);
+    const { backgroundColor, tapIcon, pressIcon, onTapCommandId, onPressCommandId } = useSettings(state => state.buttons[buttonId]);
 
     useEffect(() => {
         if (tapIconRef.current) {
@@ -34,14 +34,14 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
                 svg.classList.add('gay-icon-lmao');
             }
         }
-        if (holdIconRef.current && holdIcon) {
-            setIcon(holdIconRef.current, holdIcon);
-            const svg = holdIconRef.current.firstChild as HTMLElement;
+        if (pressIconRef.current && pressIcon) {
+            setIcon(pressIconRef.current, pressIcon);
+            const svg = pressIconRef.current.firstChild as HTMLElement;
             if (svg) {
                 svg.classList.add('gay-icon-lmao');
             }
         }
-    }, [isEditing, tapIcon, holdIcon]);
+    }, [isEditing, tapIcon, pressIcon]);
 
     return (
         <button
@@ -65,6 +65,8 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
             }}
             onMouseDown={e => !isEditing && e.preventDefault()}
             onPointerDown={e => {
+                if (isEditing)
+                    return;
                 const el = buttonRef.current
                 el?.addClass('gay-button-tap')
 
@@ -72,8 +74,8 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
                 let pointerDown = true;
 
                 setTimeout(() => {
-                    if (pointerDown && holdIcon)
-                        el?.addClass('gay-button-hold')
+                    if (pointerDown && onPressCommandId)
+                        el?.addClass('gay-button-press')
                     el?.removeClass('gay-button-tap')
                 }, 200)
 
@@ -85,7 +87,7 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
                     const endTime = Date.now()
                     setTimeout(() => { // quick taps were causing menu rendering errors (eg Quick Actions Menu)
                         pointerDown = false;
-                        holdIcon && el?.removeClass('gay-button-hold')
+                        onPressCommandId && el?.removeClass('gay-button-press')
                         if (pointerInside(e, buttonRef.current)) {
                             const delta = endTime - startTime;
                             if (delta < 200) { // tap
@@ -93,10 +95,10 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
                                     // @ts-ignore | app.commands exists; not sure why it's not in the API...
                                     plugin?.app.commands.executeCommandById(onTapCommandId)
 
-                            } else { // hold
-                                if (!isEditing && onHoldCommandId)
+                            } else { // long-press
+                                if (!isEditing && onPressCommandId)
                                     // @ts-ignore | app.commands exists; not sure why it's not in the API...
-                                    plugin?.app.commands.executeCommandById(onHoldCommandId)
+                                    plugin?.app.commands.executeCommandById(onPressCommandId)
                             }
                         } else { // swipe
                             // ...
@@ -111,8 +113,8 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
                 }
             }}
         >
-            <div className={holdIcon && 'tap-icon'} ref={tapIconRef}></div>
-            {holdIcon && <div className='hold-icon' ref={holdIconRef}></div>}
+            <div className={pressIcon && 'tap-icon'} ref={tapIconRef}></div>
+            {pressIcon && <div className='press-icon' ref={pressIconRef}></div>}
         </button >
 
     )
