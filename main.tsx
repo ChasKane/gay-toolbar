@@ -21,8 +21,14 @@ export default class GayToolbarPlugin extends Plugin {
             id: "edit-toolbar",
             name: "Toggle Edit Mode",
             callback: () => {
-                (document.querySelector('.mod-active .workspace-tab-container') as HTMLElement)?.blur()
-                useEditor.setState(prev => ({ isEditing: !prev.isEditing }))
+                useEditor.setState(prev => {
+                    // drag ops (on android at least) hide keyboard and there's no way around it,
+                    // so this ensures consistency at least
+                    // @ts-ignore Capacitor exists on mobile because Obsidian mobile is built on it
+                    Platform.isMobile && window.Capacitor.Plugins.Keyboard.hide();
+
+                    return { isEditing: !prev.isEditing }
+                })
             },
         });
         this.addCommand({

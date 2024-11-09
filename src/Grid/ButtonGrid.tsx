@@ -16,6 +16,20 @@ const ButtonGrid: React.FC = () => {
     const ref = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
+        // prevents long-presses on mobie from removing the keyboard
+        // prevents bug where submenus would auto-close on button tap
+        const preventDefault = (e: TouchEvent | MouseEvent) => e.preventDefault();
+        if (ref.current && !isEditing) {
+            ref.current.addEventListener('touchstart', preventDefault, { passive: false })
+        }
+        return () => {
+            if (ref.current && !isEditing) {
+                ref.current.removeEventListener('touchstart', preventDefault)
+            }
+        }
+    }, [isEditing])
+
+    useEffect(() => {
         return monitorForElements({
             onDrop({ source, location }) {
                 const [sx, sy] = (source.data.location as [number, number])
@@ -24,7 +38,7 @@ const ButtonGrid: React.FC = () => {
                 const [dx, dy] = (destination.data.location as [number, number])
 
                 moveButton(source.data.buttonId as string, [dx, dy])
-                if (buttonIdGrid[dx][dy]) // dropTarget non-empty? swap locations
+                if (buttonIdGrid[dx][dy]) // swap locations if dropTarget isn't empty
                     moveButton(buttonIdGrid[dx][dy], [sx, sy])
             }
         })
@@ -103,12 +117,6 @@ const ButtonGrid: React.FC = () => {
                 gap: `${gridGap}px ${gridGap}px`,
                 padding: `${gridPadding}px`,
             }}
-        // onClickCapture={e => e.preventDefault()}
-        // onMouseDownCapture={e => e.preventDefault()}
-        // onMouseUpCapture={e => e.preventDefault()}
-        // onTouchStartCapture={e => e.preventDefault()}
-        // onTouchEndCapture={e => e.preventDefault()}
-        // onTouchCancelCapture={e => e.preventDefault()}
         >
             {Grid()}
         </div>

@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { emptySettings } from './Settings/DEFAULT_SETTINGS'
 import GayToolbarPlugin from '../main';
 import { GayToolbarSettings, SettingsActions, EditorActions, EditorState } from '../types';
+import { Platform } from 'obsidian';
 
 // TODO: move this to settings state so it can be user-modified and idx saved
 // TODO: for fun and aesthetics, convert this to itterator
@@ -50,7 +51,14 @@ export const useEditor = create<EditorState & EditorActions>()(
         isEditing: false,
         selectedButtonId: '',
 
-        setIsEditing: (isEditing) => set({ isEditing: isEditing }),
+        setIsEditing: (isEditing) => {
+            // drag ops (on android at least) hide keyboard and there's no way around it,
+            // so this ensures consistency at least
+            // @ts-ignore Capacitor exists on mobile because Obsidian mobile is built on it
+            Platform.isMobile && window.Capacitor.Plugins.Keyboard.hide();
+
+            set({ isEditing: isEditing });
+        },
         setSelectedButtonId: (id) => set({ selectedButtonId: id }),
     })
 );

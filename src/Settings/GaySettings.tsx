@@ -10,7 +10,7 @@ const GaySettings: React.FC = () => {
     const { updateButton, deleteButton, backgroundColor, customBackground, mobileOnly, setSettings, buttons } = useSettings();
 
     const [useCustomCSS, setUseCustomCSS] = useState(!!customBackground)
-    const [modaL, setModal] = useState<boolean>(false)
+    const [subMenu, setSubMenu] = useState<boolean>(false)
 
     const listener = useRef<{ remove: () => {} } | null>(null)
     const tapCommandButtonRef = useRef<HTMLButtonElement | null>(null)
@@ -39,7 +39,7 @@ const GaySettings: React.FC = () => {
 
     // listen for back button on android to exit edit mode
     useEffect(() => {
-        if (modaL) {
+        if (subMenu) {
             listener.current?.remove?.();
             listener.current = null;
             return () => { }; // useEffect callback must return same type in all return statements
@@ -55,7 +55,7 @@ const GaySettings: React.FC = () => {
         })()
         return () => listener.current?.remove?.()
 
-    }, [setIsEditing, modaL])
+    }, [setIsEditing, subMenu])
 
     const wrapToolbarSettings = (nodes: ReactNode[]) => nodes.map((n, idx) => <div key={idx} className='toolbar-setting-wrapper'>{n}</div>)
 
@@ -74,30 +74,30 @@ const GaySettings: React.FC = () => {
                             <button ref={tapCommandButtonRef} onClick={async () => {
                                 if (!plugin)
                                     return;
-                                setModal(true)
+                                setSubMenu(true)
                                 let command;
                                 try {
                                     command = await chooseNewCommand(plugin)
                                 } catch (e) {
-                                    setModal(false)
+                                    setSubMenu(false)
                                 }
                                 if (command)
                                     updateButton(selectedButtonId, { onTapCommandId: command.id, tapIcon: command.icon })
-                                setModal(false)
+                                setSubMenu(false)
                             }}></button>
                             <button ref={pressCommandButtonRef} onClick={async () => {
                                 if (!plugin)
                                     return;
-                                setModal(true)
+                                setSubMenu(true)
                                 let command;
                                 try {
                                     command = await chooseNewCommand(plugin)
                                 } catch (e) {
-                                    setModal(false)
+                                    setSubMenu(false)
                                 }
                                 if (command)
                                     updateButton(selectedButtonId, { onPressCommandId: command.id, pressIcon: command.icon })
-                                setModal(false)
+                                setSubMenu(false)
                             }}></button>
                         </div>
                     </div>
