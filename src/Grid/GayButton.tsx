@@ -1,23 +1,54 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { setIcon } from 'obsidian';
 import { usePlugin, useSettings, useEditor } from '../StateManagement';
+import chroma from 'chroma-js';
 
-const pointerInside = (t: PointerEvent, el: HTMLElement | null) => {
+
+const pointerInside = (event: React.PointerEvent<HTMLButtonElement>, el: HTMLElement | null) => {
     if (!el)
         return false;
 
     const { x, y, width, height } = el.getBoundingClientRect()
-    if (t.clientX >= x
-        && t.clientX <= x + width
-        && t.clientY >= y
-        && t.clientY <= y + height
+    if (event.clientX >= x
+        && event.clientX <= x + width
+        && event.clientY >= y
+        && event.clientY <= y + height
     )
         return true;
 
     return false;
 }
 
+function getLuminanceGuidedIconColor(bgColor: string, contrastThreshold = 4.5) {
+    const bgLuminance = chroma(bgColor).luminance();
+    let iconColor;
+
+    if (bgLuminance > 0.7) {
+        iconColor = chroma(bgColor).set('lab.l', 40);
+    } else if (bgLuminance < 0.3) {
+        iconColor = chroma(bgColor).set('lab.l', 90);
+    } else { // mid-range
+        iconColor = bgLuminance >= 0.5
+            ? chroma(bgColor).set('lab.l', 10)
+            : chroma(bgColor).set('lab.l', 90);
+    }
+
+    // Additional contrast adjustments for edge cases
+    if (chroma.contrast(bgColor, iconColor) < contrastThreshold) {
+        iconColor = bgLuminance > 0.5 ? iconColor.darken(1.5) : iconColor.brighten(1.5);
+    }
+
+    return iconColor.hex();
+}
+
+
 const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
+    const pointerDataRef = useRef<{
+        timeout: ReturnType<typeof setTimeout> | null,
+        pointerDown: boolean,
+        startTime: number,
+    }>({ timeout: null, pointerDown: false, startTime: Date.now() })
+
     const buttonRef = useRef<HTMLButtonElement>(null);
     const tapIconRef = useRef<HTMLDivElement>(null);
     const pressIconRef = useRef<HTMLDivElement>(null);
@@ -32,6 +63,9 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
             const svg = tapIconRef.current.firstChild as HTMLElement;
             if (svg) {
                 svg.classList.add('gay-icon-lmao');
+                if (buttonRef.current) {
+                    svg.style.color = getLuminanceGuidedIconColor(backgroundColor);
+                }
             }
         }
         if (pressIconRef.current && pressIcon) {
@@ -39,9 +73,12 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
             const svg = pressIconRef.current.firstChild as HTMLElement;
             if (svg) {
                 svg.classList.add('gay-icon-lmao');
+                if (buttonRef.current) {
+                    svg.style.color = getLuminanceGuidedIconColor(backgroundColor);
+                }
             }
         }
-    }, [isEditing, tapIcon, pressIcon]);
+    }, [isEditing, tapIcon, pressIcon, backgroundColor]);
 
     return (
         <button
@@ -50,66 +87,54 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
             key={buttonId + "__button-key"}
             className={[
                 'gay-button',
-                isEditing && 'wiggle',
+                isEditing ? 'wiggle' : '',
                 isEditing && buttonId === selectedButtonId ? 'button-halo' : '',
             ].join(' ')}
             style={{ backgroundColor: backgroundColor }}
-            onClick={e => {
-                !isEditing && e.preventDefault();
-                if (isEditing) {
-                    if (selectedButtonId === buttonId)
-                        setSelectedButtonId('')
-                    else
-                        setSelectedButtonId(buttonId)
-                }
+            onClick={() => {
             }}
-            onMouseDown={e => !isEditing && e.preventDefault()}
-            onPointerDown={e => {
+            onPointerDown={() => {
                 if (isEditing)
                     return;
+
                 const el = buttonRef.current
                 el?.addClass('gay-button-tap')
 
-                const startTime = Date.now();
-                let pointerDown = true;
+                pointerDataRef.current.startTime = Date.now();
+                pointerDataRef.current.pointerDown = true;
 
-                setTimeout(() => {
-                    if (pointerDown && onPressCommandId)
+                pointerDataRef.current.timeout = setTimeout(() => {
+                    if (pointerDataRef.current.pointerDown && onPressCommandId)
                         el?.addClass('gay-button-press')
                     el?.removeClass('gay-button-tap')
                 }, 200)
-
-                document.body.addEventListener('pointerup', pointerUpListener)
-                document.body.addEventListener('pointercancel', pointerCancelListener)
-
-                function pointerUpListener(e: PointerEvent) {
-                    e.preventDefault()
-                    const endTime = Date.now()
-                    setTimeout(() => { // quick taps were causing menu rendering errors (eg Quick Actions Menu)
-                        pointerDown = false;
-                        onPressCommandId && el?.removeClass('gay-button-press')
-                        if (pointerInside(e, buttonRef.current)) {
-                            const delta = endTime - startTime;
-                            if (delta < 200) { // tap
-                                if (onTapCommandId)
-                                    // @ts-ignore | app.commands exists; not sure why it's not in the API...
-                                    plugin?.app.commands.executeCommandById(onTapCommandId)
-
-                            } else { // long-press
-                                if (!isEditing && onPressCommandId)
-                                    // @ts-ignore | app.commands exists; not sure why it's not in the API...
-                                    plugin?.app.commands.executeCommandById(onPressCommandId)
-                            }
-                        } else { // swipe
-                            // ...
-                        }
-                        document.body.removeEventListener('pointerup', pointerUpListener)
-                        document.body.removeEventListener('pointercancel', pointerCancelListener)
-                    }, 20)
+            }}
+            onPointerUp={e => {
+                if (isEditing) {
+                    if (selectedButtonId === buttonId)
+                        setSelectedButtonId('');
+                    else
+                        setSelectedButtonId(buttonId);
+                    return;
                 }
-                function pointerCancelListener() {
-                    document.body.removeEventListener('pointerup', pointerUpListener)
-                    document.body.removeEventListener('pointercancel', pointerCancelListener)
+                const el = buttonRef.current
+                const endTime = Date.now()
+                pointerDataRef.current.pointerDown = false;
+                onPressCommandId && el?.removeClass('gay-button-press')
+                if (pointerInside(e, buttonRef.current)) {
+                    const delta = endTime - pointerDataRef.current.startTime;
+                    if (delta < 200) { // tap
+                        if (onTapCommandId)
+                            // @ts-ignore | app.commands exists; not sure why it's not in the API...
+                            plugin?.app.commands.executeCommandById(onTapCommandId)
+
+                    } else { // long-press
+                        if (!isEditing && onPressCommandId)
+                            // @ts-ignore | app.commands exists; not sure why it's not in the API...
+                            plugin?.app.commands.executeCommandById(onPressCommandId)
+                    }
+                } else { // swipe
+                    // ...
                 }
             }}
         >

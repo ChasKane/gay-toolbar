@@ -47,18 +47,18 @@
     transform: translate(-50%, -50%);
     opacity: 0.8;           /* Starting opacity */
     z-index: 1;
-    animation: expandRing .15s ease-out forwards;
+    animation: tapRing .15s ease-out forwards;
   }
   
-@keyframes expandRing {
+@keyframes tapRing {
     0% {
       width: 10px;
       height: 10px;
       opacity: 0.8;
     }
     100% {
-      width: 150px;          /* Adjust final size */
-      height: 150px;
+      width: 100px;          /* Adjust final size */
+      height: 100px;
       opacity: .3;            /* Fades as it expands */
     }
 }
@@ -71,24 +71,26 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 10px;             /* Starting diameter of the ring */
-    height: 10px;
+    width: 100px;             /* Starting diameter of the ring */
+    height: 100px;
     background-color: inherit; /* Use the background color of the element */
     border-radius: 50%;      /* Make it circular */
     transform: translate(-50%, -50%);
     opacity: 0.8;   
     z-index: 1;         /* Starting opacity */
-    animation: pulseRing .05s ease forwards;
+    animation: pressRing .05s ease forwards;
 
 }
-@keyframes pulseRing {
+@keyframes pressRing {
     0% {
-      width: 150px;
-      height: 150px;
+      width: 100px;
+      height: 100px;
       opacity: 0.3;
     }
     50% {
-        opacity: 1;
+      width: 180px;          
+      height: 180px;
+      opacity: 0.5;            
     }
     100% {
       width: 150px;          
@@ -193,7 +195,6 @@
     
     padding: 8px 8px;
     border-radius: 8px;
-    /* border: 4px solid red; */
 }
 
 .delete-button {
@@ -235,7 +236,8 @@
 .gay-input-color {
     height: auto;
     margin-right: 8px;
-    box-shadow: 0 0 4px rgb(202, 11, 11)
+    border-radius: 4px;
+    box-shadow: 0 0 4px grey
 }
 
 .tap-icon>svg {

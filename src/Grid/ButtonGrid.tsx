@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useMemo } from 'react'
+import { ReactNode, useEffect, useMemo, useRef } from 'react'
 import GayButton from './GayButton';
 import GridSlot from './GridSlot';
 import DraggableButtonContainer from './DraggableButtonContainer';
@@ -13,6 +13,7 @@ const ButtonGrid: React.FC = () => {
     const isEditing = useEditor(state => state.isEditing);
     const { buttonLocations, numRows, numCols, rowHeight, gridGap, gridPadding } = useSettings(state => state)
     const plugin = usePlugin(state => state.plugin)
+    const ref = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         return monitorForElements({
@@ -92,15 +93,23 @@ const ButtonGrid: React.FC = () => {
         return grid
     }
 
-
     return (
-        <div style={{
-            display: 'grid',
-            gridTemplateRows: `repeat(${numRows}, ${rowHeight}px)`,
-            gridTemplateColumns: `repeat(${numCols}, minmax(0, 1fr))`,
-            gap: `${gridGap}px ${gridGap}px`,
-            padding: `${gridPadding}px`,
-        }}>
+        <div
+            ref={ref}
+            style={{
+                display: 'grid',
+                gridTemplateRows: `repeat(${numRows}, ${rowHeight}px)`,
+                gridTemplateColumns: `repeat(${numCols}, minmax(0, 1fr))`,
+                gap: `${gridGap}px ${gridGap}px`,
+                padding: `${gridPadding}px`,
+            }}
+        // onClickCapture={e => e.preventDefault()}
+        // onMouseDownCapture={e => e.preventDefault()}
+        // onMouseUpCapture={e => e.preventDefault()}
+        // onTouchStartCapture={e => e.preventDefault()}
+        // onTouchEndCapture={e => e.preventDefault()}
+        // onTouchCancelCapture={e => e.preventDefault()}
+        >
             {Grid()}
         </div>
     );

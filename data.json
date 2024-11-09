@@ -15,14 +15,14 @@
     "Toggle bullet list",
     "Delete paragraph",
     "Follow link under cursor",
-    "m2wzopsn",
     "m2wzqo5p",
     "m2xmcyju",
     "m2xn1mu1",
     "m2xn4bng",
     "m2xox3l6",
     "m32ryv07",
-    "m32s1bmh"
+    "m32s1bmh",
+    "m35ng39d"
   ],
   "buttonLocations": {
     "Bullet List Commands": [
@@ -85,10 +85,6 @@
       1,
       7
     ],
-    "m2wzopsn": [
-      0,
-      7
-    ],
     "m2wzqo5p": [
       0,
       2
@@ -116,6 +112,10 @@
     "m32s1bmh": [
       2,
       0
+    ],
+    "m35ng39d": [
+      0,
+      7
     ]
   },
   "buttons": {
@@ -124,16 +124,16 @@
       "tapIcon": "lucide-indent",
       "backgroundColor": "#6e9faf",
       "onTapCommandId": "editor:indent-list",
-      "onHoldCommandId": "editor:unindent-list",
-      "holdIcon": "lucide-outdent"
+      "onPressCommandId": "editor:unindent-list",
+      "pressIcon": "lucide-outdent"
     },
     "Undo": {
       "id": "Undo",
       "tapIcon": "lucide-undo-2",
       "onTapCommandId": "editor:undo",
       "backgroundColor": "#3a173a",
-      "onHoldCommandId": "editor:redo",
-      "holdIcon": "lucide-redo-2"
+      "onPressCommandId": "editor:redo",
+      "pressIcon": "lucide-redo-2"
     },
     "Toggle heading": {
       "id": "Toggle heading",
@@ -146,16 +146,16 @@
       "tapIcon": "lucide-bold",
       "onTapCommandId": "editor:toggle-bold",
       "backgroundColor": "black",
-      "onHoldCommandId": "editor:toggle-italics",
-      "holdIcon": "lucide-italic"
+      "onPressCommandId": "editor:toggle-italics",
+      "pressIcon": "lucide-italic"
     },
     "Add internal link": {
       "id": "Add internal link",
       "tapIcon": "bracket-glyph",
       "onTapCommandId": "editor:insert-wikilink",
       "backgroundColor": "black",
-      "onHoldCommandId": "editor:insert-link",
-      "holdIcon": "lucide-link"
+      "onPressCommandId": "editor:insert-link",
+      "pressIcon": "lucide-link"
     },
     "Insert attachment": {
       "id": "Insert attachment",
@@ -167,15 +167,15 @@
       "id": "Toggle highlight",
       "tapIcon": "lucide-highlighter",
       "onTapCommandId": "editor:toggle-highlight",
-      "backgroundColor": "#bdb70f"
+      "backgroundColor": "#fff700"
     },
     "Cycle bullet/checkbox": {
       "id": "Cycle bullet/checkbox",
       "tapIcon": "lucide-check-square",
       "onTapCommandId": "editor:cycle-list-checklist",
       "backgroundColor": "#165200",
-      "onHoldCommandId": "obsidian-tasks-plugin:edit-task",
-      "holdIcon": "pencil"
+      "onPressCommandId": "obsidian-tasks-plugin:edit-task",
+      "pressIcon": "pencil"
     },
     "Move line up": {
       "id": "Move line up",
@@ -206,84 +206,84 @@
       "tapIcon": "lucide-list",
       "onTapCommandId": "editor:toggle-bullet-list",
       "backgroundColor": "black",
-      "onHoldCommandId": "editor:toggle-blockquote",
-      "holdIcon": "lucide-quote"
+      "onPressCommandId": "editor:toggle-blockquote",
+      "pressIcon": "lucide-quote"
     },
     "Delete paragraph": {
       "tapIcon": "lucide-scissors",
-      "backgroundColor": "#ff0000",
+      "backgroundColor": "#0040ff",
       "id": "Delete paragraph",
-      "onHoldCommandId": "editor:cut",
+      "onPressCommandId": "editor:cut",
       "onTapCommandId": "editor:delete-paragraph",
-      "holdIcon": "lucide-scissors"
+      "pressIcon": "lucide-scissors"
     },
     "Follow link under cursor": {
       "tapIcon": "clock-2",
       "onTapCommandId": "obsidian-timestamper:obsidian-fast-timestamp",
       "backgroundColor": "purple",
       "id": "Follow link under cursor",
-      "onHoldCommandId": "obsidian-timestamper:obsidian-fast-datestamp",
-      "holdIcon": "calendar"
-    },
-    "m2wzopsn": {
-      "id": "m2wzopsn",
-      "tapIcon": "wrench",
-      "onTapCommandId": "gay-toolbar:edit-toolbar",
-      "backgroundColor": "#ff00d0"
+      "onPressCommandId": "obsidian-timestamper:obsidian-fast-datestamp",
+      "pressIcon": "calendar"
     },
     "m2wzqo5p": {
       "id": "m2wzqo5p",
       "tapIcon": "lucide-strikethrough",
       "onTapCommandId": "editor:toggle-strikethrough",
-      "backgroundColor": "blue"
+      "backgroundColor": "#0400ff"
     },
     "m2xmcyju": {
       "id": "m2xmcyju",
       "tapIcon": "check",
       "onTapCommandId": "periodic-notes:open-daily-note",
-      "backgroundColor": "green",
-      "onHoldCommandId": "calendar:open-weekly-note",
-      "holdIcon": "check-circle"
+      "backgroundColor": "#ffffff",
+      "onPressCommandId": "calendar:open-weekly-note",
+      "pressIcon": "check-circle"
     },
     "m2xn1mu1": {
       "id": "m2xn1mu1",
       "tapIcon": "scan-line",
       "onTapCommandId": "obsidian-editor-shortcuts:selectLine",
       "backgroundColor": "blue",
-      "onHoldCommandId": "obsidian-editor-shortcuts:joinLines",
-      "holdIcon": "arrow-up-left"
+      "onPressCommandId": "obsidian-editor-shortcuts:joinLines",
+      "pressIcon": "arrow-up-left"
     },
     "m2xn4bng": {
       "id": "m2xn4bng",
       "tapIcon": "lucide-copy",
       "onTapCommandId": "editor:copy",
       "backgroundColor": "white",
-      "onHoldCommandId": "editor:paste",
-      "holdIcon": "lucide-clipboard-type"
+      "onPressCommandId": "editor:paste",
+      "pressIcon": "lucide-clipboard-type"
     },
     "m2xox3l6": {
       "id": "m2xox3l6",
       "tapIcon": "lucide-navigation",
       "onTapCommandId": "switcher:open",
-      "backgroundColor": "yellow",
-      "onHoldCommandId": "command-palette:open",
-      "holdIcon": "lucide-terminal-square"
+      "backgroundColor": "#f37803",
+      "onPressCommandId": "command-palette:open",
+      "pressIcon": "lucide-terminal-square"
     },
     "m32ryv07": {
       "id": "m32ryv07",
       "tapIcon": "arrow-left",
       "onTapCommandId": "obsidian-editor-shortcuts:goToPreviousWord",
       "backgroundColor": "purple",
-      "onHoldCommandId": "obsidian-editor-shortcuts:goToLineStart",
-      "holdIcon": "skip-back"
+      "onPressCommandId": "obsidian-editor-shortcuts:goToLineStart",
+      "pressIcon": "skip-back"
     },
     "m32s1bmh": {
       "id": "m32s1bmh",
       "tapIcon": "arrow-right",
       "onTapCommandId": "obsidian-editor-shortcuts:goToNextWord",
       "backgroundColor": "green",
-      "onHoldCommandId": "obsidian-editor-shortcuts:goToLineEnd",
-      "holdIcon": "skip-forward"
+      "onPressCommandId": "obsidian-editor-shortcuts:goToLineEnd",
+      "pressIcon": "skip-forward"
+    },
+    "m35ng39d": {
+      "id": "m35ng39d",
+      "tapIcon": "wrench",
+      "onTapCommandId": "gay-toolbar:edit-toolbar",
+      "backgroundColor": "#ff7700"
     }
   },
   "numRows": 3,
@@ -291,13 +291,9 @@
   "rowHeight": 29,
   "gridGap": 3,
   "gridPadding": 3,
-  "backgroundColor": {
-    "r": 255,
-    "g": 115,
-    "b": 0
-  },
+  "backgroundColor": "#e04f00",
   "opacity": 1,
-  "mobileOnly": false,
+  "mobileOnly": true,
   "transparency": 0.5,
   "customBackground": ""
 }

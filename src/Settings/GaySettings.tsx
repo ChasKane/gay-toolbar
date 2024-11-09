@@ -4,17 +4,6 @@ import { useEditor, usePlugin, useSettings } from 'src/StateManagement';
 import { AddCommandModal, chooseNewCommand } from '../chooseNewCommand';
 import { setIcon } from 'obsidian';
 
-
-function hexToRgb(hex: string) {
-    hex = hex.replace('#', '');
-    const r = parseInt(hex.substring(0, 2), 16);
-    const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
-    return { r, g, b };
-}
-const rgbToHex = ({ r, g, b }: { r: number, g: number, b: number }) =>
-    `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
-
 const GaySettings: React.FC = () => {
     const plugin = usePlugin(state => state.plugin)
     const { setIsEditing, selectedButtonId, setSelectedButtonId } = useEditor();
@@ -48,6 +37,7 @@ const GaySettings: React.FC = () => {
         }
     }, [buttons, selectedButtonId]); // `buttons` object is immutable, so new icons change its reference
 
+    // listen for back button on android to exit edit mode
     useEffect(() => {
         if (modaL) {
             listener.current?.remove?.();
@@ -78,6 +68,7 @@ const GaySettings: React.FC = () => {
                             <input
                                 className='gay-input-color'
                                 type='color'
+                                value={buttons[selectedButtonId]?.backgroundColor}
                                 onChange={e => updateButton(selectedButtonId, { backgroundColor: e.target.value })}
                             ></input>
                             <button ref={tapCommandButtonRef} onClick={async () => {
@@ -174,7 +165,7 @@ const GaySettings: React.FC = () => {
                 </div>
 
             }
-            <button className='close-button' onClick={() => { setIsEditing(false); setSelectedButtonId('') }} onMouseDown={e => e.preventDefault()}>Close</button>
+            <button className='close-button' onClick={() => { setIsEditing(false); setSelectedButtonId('') }}>X</button>
         </div>
     );
 };

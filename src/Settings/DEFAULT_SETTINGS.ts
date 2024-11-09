@@ -9,7 +9,7 @@ export const emptySettings = {
     rowHeight: 20,
     gridGap: 2,
     gridPadding: 2,
-    backgroundColor: { r: 255, g: 0, b: 0 },
+    backgroundColor: 'pink',
     opacity: .5,
     mobileOnly: false,
 } as GayToolbarSettings;
@@ -290,7 +290,7 @@ export default {
     "rowHeight": 40,
     "gridGap": 2,
     "gridPadding": 2,
-    "backgroundColor": { "r": 255, "g": 0, "b": 0 },
+    "backgroundColor": 'pink',
     "opacity": .5,
     "mobileOnly": false
 } as GayToolbarSettings;
