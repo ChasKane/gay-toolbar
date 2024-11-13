@@ -22,7 +22,8 @@
     "m2xox3l6",
     "m32ryv07",
     "m32s1bmh",
-    "m35ng39d"
+    "m35ng39d",
+    "m3esbxi5"
   ],
   "buttonLocations": {
     "Bullet List Commands": [
@@ -116,6 +117,10 @@
     "m35ng39d": [
       0,
       7
+    ],
+    "m3esbxi5": [
+      0,
+      0
     ]
   },
   "buttons": {
@@ -167,7 +172,9 @@
       "id": "Toggle highlight",
       "tapIcon": "lucide-highlighter",
       "onTapCommandId": "editor:toggle-highlight",
-      "backgroundColor": "#fff700"
+      "backgroundColor": "#fff700",
+      "onPressCommandId": "editor:follow-link",
+      "pressIcon": "lucide-link"
     },
     "Cycle bullet/checkbox": {
       "id": "Cycle bullet/checkbox",
@@ -211,7 +218,7 @@
     },
     "Delete paragraph": {
       "tapIcon": "lucide-scissors",
-      "backgroundColor": "#0040ff",
+      "backgroundColor": "#ff0000",
       "id": "Delete paragraph",
       "onPressCommandId": "editor:cut",
       "onTapCommandId": "editor:delete-paragraph",
@@ -235,7 +242,7 @@
       "id": "m2xmcyju",
       "tapIcon": "check",
       "onTapCommandId": "periodic-notes:open-daily-note",
-      "backgroundColor": "#ffffff",
+      "backgroundColor": "#00ffea",
       "onPressCommandId": "calendar:open-weekly-note",
       "pressIcon": "check-circle"
     },
@@ -284,6 +291,14 @@
       "tapIcon": "wrench",
       "onTapCommandId": "gay-toolbar:edit-toolbar",
       "backgroundColor": "#ff7700"
+    },
+    "m3esbxi5": {
+      "id": "m3esbxi5",
+      "tapIcon": "lucide-search",
+      "onTapCommandId": "editor:open-search",
+      "backgroundColor": "lightpink",
+      "onPressCommandId": "global-search:open",
+      "pressIcon": "lucide-glasses"
     }
   },
   "numRows": 3,
@@ -293,7 +308,7 @@
   "gridPadding": 3,
   "backgroundColor": "#e04f00",
   "opacity": 1,
-  "mobileOnly": true,
+  "mobileOnly": false,
   "transparency": 0.5,
   "customBackground": ""
 }

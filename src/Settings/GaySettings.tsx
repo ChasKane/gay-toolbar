@@ -1,7 +1,7 @@
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import NumericInputGroup from './NumericInputGroup';
 import { useEditor, usePlugin, useSettings } from 'src/StateManagement';
-import { AddCommandModal, chooseNewCommand } from '../chooseNewCommand';
+import { AddCommandModal, chooseNewCommand } from './chooseNewCommand';
 import { setIcon } from 'obsidian';
 
 const GaySettings: React.FC = () => {
@@ -108,13 +108,13 @@ const GaySettings: React.FC = () => {
                     {wrapToolbarSettings([
                         (
                             <div>
-                                <label style={{ paddingRight: '8px' }} htmlFor='mobile-only'>Mobile Only</label>
+                                <label style={{ paddingRight: '8px' }} htmlFor='mobile-only'>Mobile only</label>
                                 <input id='mobile-only' type='checkbox' defaultChecked={mobileOnly} onChange={e => setSettings({ mobileOnly: e.target.checked })}></input>
                             </div>
                         ),
                         <NumericInputGroup label="Columns" name='numCols' bounds={[1, 20]} />,
                         <NumericInputGroup label="Rows" name='numRows' bounds={[1, 10]} />,
-                        <NumericInputGroup label="Row Height" name='rowHeight' bounds={[5, 70]} />,
+                        <NumericInputGroup label="Row height" name='rowHeight' bounds={[5, 70]} />,
                         <NumericInputGroup label="Gap" name='gridGap' bounds={[0, 20]} />,
                         <NumericInputGroup label="Padding" name='gridPadding' bounds={[0, 20]} />,
                     ])}
@@ -143,7 +143,7 @@ const GaySettings: React.FC = () => {
                                             display: 'inline-grid',
                                         }}
                                         type='text'
-                                        placeholder='no "background: " and no ";"'
+                                        placeholder='No "background: " and no ";"'
                                         defaultValue={customBackground}
                                         onChange={e => setSettings({ customBackground: e.target.value })}
                                         name='customBackground'

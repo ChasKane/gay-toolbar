@@ -3,7 +3,7 @@ import GayButton from './GayButton';
 import GridSlot from './GridSlot';
 import DraggableButtonContainer from './DraggableButtonContainer';
 import { useSettings, usePlugin, useEditor } from '../StateManagement';
-import { chooseNewCommand } from 'src/chooseNewCommand';
+import { chooseNewCommand } from 'src/Settings/chooseNewCommand';
 import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 
 const ButtonGrid: React.FC = () => {

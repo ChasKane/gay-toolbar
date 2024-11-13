@@ -163,7 +163,7 @@
 .scrollable {
     overflow-x: hidden;
     overflow-y: auto;
-    max-height: 50vh;
+    max-height: max-content;
     padding-right: .3rem; /* Width of typical scrollbar */
 }
 

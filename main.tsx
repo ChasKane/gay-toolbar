@@ -14,8 +14,10 @@ export default class GayToolbarPlugin extends Plugin {
     async onload() {
         await this.loadSettings()
 
-        if (this.settings.mobileOnly && Platform.isDesktop)
+        if (this.settings.mobileOnly && Platform.isDesktop) {
+            this.addSettingTab(new GayToolbarSettingsTab(this.app, this));
             return;
+        }
 
         this.addCommand({
             id: "edit-toolbar",
@@ -26,14 +28,13 @@ export default class GayToolbarPlugin extends Plugin {
                     // so this ensures consistency at least
                     // @ts-ignore Capacitor exists on mobile because Obsidian mobile is built on it
                     Platform.isMobile && window.Capacitor.Plugins.Keyboard.hide();
-
                     return { isEditing: !prev.isEditing }
                 })
             },
         });
         this.addCommand({
-            id: "load-from-backup",
-            name: "Load Settings from Backup",
+            id: "load-default-settings",
+            name: "Load default settings",
             callback: () => {
                 useSettings.setState(DEFAULT_SETTINGS);
             },
@@ -80,14 +81,40 @@ export default class GayToolbarPlugin extends Plugin {
     }
 
     onunload() {
-        console.log(
-            'gay-toolbar unmount',
-            this.toolbarRoot,
-            this.toolbarNode,
-        )
         this.toolbarRoot?.unmount?.();
         this.toolbarNode?.remove();
         document.querySelector('.gay-toolbar-container')?.remove() // not sure why this is sometimes necessary
         this.unsubscribePositionStore?.();
+    }
+}
+
+class GayToolbarSettingsTab extends PluginSettingTab {
+    plugin: GayToolbarPlugin;
+
+    constructor(app: App, plugin: GayToolbarPlugin) {
+        super(app, plugin);
+        this.plugin = plugin;
+    }
+
+    display(): void {
+        const { containerEl } = this;
+
+        // Clear previous settings
+        containerEl.empty();
+
+        containerEl.createEl("h2", { text: "Gay Toolbar Settings" });
+
+        // Setting: settingTwo (toggle)
+        new Setting(containerEl)
+            .setName("Mobile only")
+            .setDesc("Restart to apply changes")
+            .addToggle(toggle =>
+                toggle
+                    .setValue(this.plugin.settings.mobileOnly)
+                    .onChange(async (value) => {
+                        this.plugin.settings.mobileOnly = value;
+                        await this.plugin.saveSettings();
+                    })
+            );
     }
 }
