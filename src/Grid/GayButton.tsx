@@ -56,13 +56,14 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
     const plugin = usePlugin(state => state.plugin)
     const { isEditing, selectedButtonId, setSelectedButtonId } = useEditor();
     const { backgroundColor, tapIcon, pressIcon, onTapCommandId, onPressCommandId } = useSettings(state => state.buttons[buttonId]);
+    const pressDelayMs = useSettings(state => state.pressDelayMs)
 
     useEffect(() => {
         if (tapIconRef.current) {
             setIcon(tapIconRef.current, tapIcon || 'question-mark-glyph');
             const svg = tapIconRef.current.firstChild as HTMLElement;
             if (svg) {
-                svg.classList.add('gay-icon-lmao');
+                svg.classList.add('gay-icon--lmao');
                 if (buttonRef.current) {
                     svg.style.color = getLuminanceGuidedIconColor(backgroundColor);
                 }
@@ -72,7 +73,7 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
             setIcon(pressIconRef.current, pressIcon);
             const svg = pressIconRef.current.firstChild as HTMLElement;
             if (svg) {
-                svg.classList.add('gay-icon-lmao');
+                svg.classList.add('gay-icon--lmao');
                 if (buttonRef.current) {
                     svg.style.color = getLuminanceGuidedIconColor(backgroundColor);
                 }
@@ -107,7 +108,7 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
                     if (pointerDataRef.current.pointerDown && onPressCommandId)
                         el?.addClass('gay-button-press')
                     el?.removeClass('gay-button-tap')
-                }, 200)
+                }, pressDelayMs)
             }}
             onPointerUp={e => {
                 if (isEditing) {
@@ -123,7 +124,7 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
                 onPressCommandId && el?.removeClass('gay-button-press')
                 if (pointerInside(e, buttonRef.current)) {
                     const delta = endTime - pointerDataRef.current.startTime;
-                    if (delta < 200) { // tap
+                    if (delta < pressDelayMs) { // tap
                         if (onTapCommandId)
                             // @ts-ignore | app.commands exists; not sure why it's not in the API...
                             plugin?.app.commands.executeCommandById(onTapCommandId)

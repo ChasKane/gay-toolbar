@@ -6,7 +6,7 @@ import { setIcon } from 'obsidian';
 
 const GaySettings: React.FC = () => {
     const plugin = usePlugin(state => state.plugin)
-    const { setIsEditing, selectedButtonId, setSelectedButtonId } = useEditor();
+    const { setIsEditing, selectedButtonId, setSelectedButtonId } = useEditor(state => state);
     const { updateButton, deleteButton, backgroundColor, customBackground, mobileOnly, setSettings, buttons } = useSettings();
 
     const [useCustomCSS, setUseCustomCSS] = useState(!!customBackground)
@@ -22,17 +22,20 @@ const GaySettings: React.FC = () => {
 
         const { tapIcon, pressIcon } = buttons[selectedButtonId]
         if (tapCommandButtonRef.current) {
-            setIcon(tapCommandButtonRef.current, tapIcon || 'question-mark-glyph');
+            setIcon(tapCommandButtonRef.current, tapIcon);
             const svg = tapCommandButtonRef.current.firstChild as HTMLElement;
             if (svg) {
-                svg.classList.add('gay-icon-lmao');
+                svg.classList.add('gay-icon--lmao');
             }
         }
-        if (pressCommandButtonRef.current && pressIcon) {
-            setIcon(pressCommandButtonRef.current, pressIcon);
+        if (pressCommandButtonRef.current) {
+            setIcon(pressCommandButtonRef.current, pressIcon || 'question-mark-glyph');
             const svg = pressCommandButtonRef.current.firstChild as HTMLElement;
             if (svg) {
-                svg.classList.add('gay-icon-lmao');
+                if (!pressIcon)   // really wish the Obsidian team would expose the icons directly instead of
+                    svg.remove(); // forcing us to rely on setIcon for this aspect of DOM manipulation.
+                else
+                    svg.classList.add('gay-icon--lmao');
             }
         }
     }, [buttons, selectedButtonId]); // `buttons` object is immutable, so new icons change its reference
@@ -65,26 +68,6 @@ const GaySettings: React.FC = () => {
                 <>
                     <div className='button-settings scrollable'>
                         <div style={{ backgroundColor: buttons[selectedButtonId].backgroundColor }}>
-                            <input
-                                className='gay-input-color'
-                                type='color'
-                                value={buttons[selectedButtonId]?.backgroundColor}
-                                onChange={e => updateButton(selectedButtonId, { backgroundColor: e.target.value })}
-                            ></input>
-                            <button ref={tapCommandButtonRef} onClick={async () => {
-                                if (!plugin)
-                                    return;
-                                setSubMenu(true)
-                                let command;
-                                try {
-                                    command = await chooseNewCommand(plugin)
-                                } catch (e) {
-                                    setSubMenu(false)
-                                }
-                                if (command)
-                                    updateButton(selectedButtonId, { onTapCommandId: command.id, tapIcon: command.icon })
-                                setSubMenu(false)
-                            }}></button>
                             <button ref={pressCommandButtonRef} onClick={async () => {
                                 if (!plugin)
                                     return;
@@ -99,6 +82,27 @@ const GaySettings: React.FC = () => {
                                     updateButton(selectedButtonId, { onPressCommandId: command.id, pressIcon: command.icon })
                                 setSubMenu(false)
                             }}></button>
+                            <input
+                                className='gay-input-color'
+                                type='color'
+                                value={buttons[selectedButtonId]?.backgroundColor}
+                                onChange={e => updateButton(selectedButtonId, { backgroundColor: e.target.value })}
+                            ></input>
+                            <div></div>
+                            <button ref={tapCommandButtonRef} onClick={async () => {
+                                if (!plugin)
+                                    return;
+                                setSubMenu(true)
+                                let command;
+                                try {
+                                    command = await chooseNewCommand(plugin)
+                                } catch (e) {
+                                    setSubMenu(false)
+                                }
+                                if (command)
+                                    updateButton(selectedButtonId, { onTapCommandId: command.id, tapIcon: command.icon })
+                                setSubMenu(false)
+                            }}></button>
                         </div>
                     </div>
                     <button className='delete-button' onClick={() => { deleteButton(selectedButtonId); setSelectedButtonId(''); }}>Delete</button>
@@ -106,6 +110,12 @@ const GaySettings: React.FC = () => {
                 :
                 <div className='settings-main scrollable'>
                     {wrapToolbarSettings([
+                        (
+                            <a href="https://www.buymeacoffee.com/ChasKane" className="buy-me-a-coffee-button">
+                                <span className="buy-me-a-coffee-emoji">🎟️</span>
+                                Buy me a plane ticket
+                            </a>
+                        ),
                         (
                             <div>
                                 <label style={{ paddingRight: '8px' }} htmlFor='mobile-only'>Mobile only</label>
@@ -117,6 +127,7 @@ const GaySettings: React.FC = () => {
                         <NumericInputGroup label="Row height" name='rowHeight' bounds={[5, 70]} />,
                         <NumericInputGroup label="Gap" name='gridGap' bounds={[0, 20]} />,
                         <NumericInputGroup label="Padding" name='gridPadding' bounds={[0, 20]} />,
+                        <NumericInputGroup label="Long-press delay" name='pressDelayMs' bounds={[1, 400]} />,
                     ])}
                     <div className='background-options'>
                         <div className='background-options-header'>

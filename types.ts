@@ -29,6 +29,7 @@ export type GayToolbarSettings = {
     gridPadding: number;
     backgroundColor: string;
     customBackground?: string;
+    pressDelayMs: number;
 }
 
 export type GayButtonSettings = {

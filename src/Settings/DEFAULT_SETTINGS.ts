@@ -12,11 +12,12 @@ export const emptySettings = {
     backgroundColor: 'pink',
     opacity: .5,
     mobileOnly: false,
+    pressDelayMs: 200,
 } as GayToolbarSettings;
 
 export default {
     "buttonIds": [
-        "Bullet List Commands",
+        "Bullet list commands",
         "Unindent list item",
         "Undo",
         "Redo",
@@ -42,7 +43,7 @@ export default {
         "🏳‍🌈 Gay Toolbar 🏳‍🌈: Toggle Edit Mode"
     ],
     "buttonLocations": {
-        "Bullet List Commands": [
+        "Bullet list commands": [
             0,
             0
         ],
@@ -141,7 +142,7 @@ export default {
     },
     "buttons": {
         "Bullet List Commands": {
-            "id": "Bullet List Commands",
+            "id": "Bullet list commands",
             "tapIcon": "lucide-indent",
             "backgroundColor": "#691b3c",
             "onTapCommandId": "editor:indent-list"
@@ -292,5 +293,6 @@ export default {
     "gridPadding": 2,
     "backgroundColor": 'pink',
     "opacity": .5,
-    "mobileOnly": false
+    "mobileOnly": false,
+    "pressDelayMs": 200
 } as GayToolbarSettings;

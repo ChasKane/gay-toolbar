@@ -136,7 +136,7 @@
       "id": "Undo",
       "tapIcon": "lucide-undo-2",
       "onTapCommandId": "editor:undo",
-      "backgroundColor": "#3a173a",
+      "backgroundColor": "#8b3b94",
       "onPressCommandId": "editor:redo",
       "pressIcon": "lucide-redo-2"
     },
@@ -144,13 +144,15 @@
       "id": "Toggle heading",
       "tapIcon": "heading-glyph",
       "onTapCommandId": "editor:set-heading",
-      "backgroundColor": "black"
+      "backgroundColor": "#ffe561",
+      "onPressCommandId": "sync:open-sync-log",
+      "pressIcon": "lucide-activity"
     },
     "Toggle bold": {
       "id": "Toggle bold",
       "tapIcon": "lucide-bold",
       "onTapCommandId": "editor:toggle-bold",
-      "backgroundColor": "black",
+      "backgroundColor": "#293bff",
       "onPressCommandId": "editor:toggle-italics",
       "pressIcon": "lucide-italic"
     },
@@ -158,7 +160,7 @@
       "id": "Add internal link",
       "tapIcon": "bracket-glyph",
       "onTapCommandId": "editor:insert-wikilink",
-      "backgroundColor": "black",
+      "backgroundColor": "#ff9500",
       "onPressCommandId": "editor:insert-link",
       "pressIcon": "lucide-link"
     },
@@ -166,7 +168,7 @@
       "id": "Insert attachment",
       "tapIcon": "lucide-paperclip",
       "onTapCommandId": "editor:attach-file",
-      "backgroundColor": "black"
+      "backgroundColor": "#dc69ff"
     },
     "Toggle highlight": {
       "id": "Toggle highlight",
@@ -212,7 +214,7 @@
       "id": "Toggle bullet list",
       "tapIcon": "lucide-list",
       "onTapCommandId": "editor:toggle-bullet-list",
-      "backgroundColor": "black",
+      "backgroundColor": "#2e5e33",
       "onPressCommandId": "editor:toggle-blockquote",
       "pressIcon": "lucide-quote"
     },
@@ -236,7 +238,9 @@
       "id": "m2wzqo5p",
       "tapIcon": "lucide-strikethrough",
       "onTapCommandId": "editor:toggle-strikethrough",
-      "backgroundColor": "#0400ff"
+      "backgroundColor": "#0400ff",
+      "onPressCommandId": "app:reload",
+      "pressIcon": "lucide-rotate-ccw"
     },
     "m2xmcyju": {
       "id": "m2xmcyju",
@@ -258,7 +262,7 @@
       "id": "m2xn4bng",
       "tapIcon": "lucide-copy",
       "onTapCommandId": "editor:copy",
-      "backgroundColor": "white",
+      "backgroundColor": "#c978ff",
       "onPressCommandId": "editor:paste",
       "pressIcon": "lucide-clipboard-type"
     },
@@ -309,6 +313,7 @@
   "backgroundColor": "#e04f00",
   "opacity": 1,
   "mobileOnly": false,
+  "pressDelayMs": 130,
   "transparency": 0.5,
   "customBackground": ""
 }

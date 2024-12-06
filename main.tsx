@@ -21,7 +21,7 @@ export default class GayToolbarPlugin extends Plugin {
 
         this.addCommand({
             id: "edit-toolbar",
-            name: "Toggle Edit Mode",
+            name: "Toggle edit mode",
             callback: () => {
                 useEditor.setState(prev => {
                     // drag ops (on android at least) hide keyboard and there's no way around it,
