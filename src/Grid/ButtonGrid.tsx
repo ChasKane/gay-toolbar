@@ -50,7 +50,7 @@ const ButtonGrid: React.FC = () => {
         for (let i = 0; i < numRows; i++)
             arr[i] = Array(numCols).fill('')
         Object.entries(buttonLocations).forEach(([id, coord]) => {
-            if (coord[0] < numRows && coord[1] < numCols)
+            if (coord[0] < numRows && coord[1] < numCols) // this should be unnecessary
                 arr[coord[0]][coord[1]] = id;
         })
         return arr
