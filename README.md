@@ -5,6 +5,7 @@ A vibrant, fully customizable toolbar that floats above the keyboard, replacing 
 > 
 > *—Robert M. Pirsig, *Zen and the Art of Motorcycle Maintenance***
 
+*(note, the defaults have been updated to a more neutral palette with a limited set of commands, to make it easier to customize)*
 ![Image 1](https://github.com/user-attachments/assets/316d0c18-3a8d-45ad-b377-4b8de6df3305)
 ![Screenshot_2024-12-06-23-01-19-55_51606159b24eff83e24a54116878fe3e](https://github.com/user-attachments/assets/732e2a44-5fe5-4553-a1ef-a4c8897a81f1)
 
