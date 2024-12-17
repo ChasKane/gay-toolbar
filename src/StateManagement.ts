@@ -1,12 +1,12 @@
 import { create } from 'zustand';
-import { emptySettings } from './Settings/DEFAULT_SETTINGS'
+import { getEmptySettings } from './Settings/DEFAULT_SETTINGS'
 import GayToolbarPlugin from '../main';
 import { GayToolbarSettings, SettingsActions, EditorActions, EditorState } from '../types';
 import { Platform } from 'obsidian';
 
 export const useSettings = create<GayToolbarSettings & SettingsActions>()(
     (set, get) => ({
-        ...emptySettings,
+        ...getEmptySettings(),
         setSettings: set,
         moveButton: (buttonId, location) => set((prev: GayToolbarSettings) => ({
             buttonLocations: { ...prev.buttonLocations, [buttonId as string]: location }
@@ -36,7 +36,10 @@ export const useSettings = create<GayToolbarSettings & SettingsActions>()(
     }),
 );
 
-// Not saved to data.json
+
+
+// ---------------- Not saved to data.json ----------------
+
 export const usePlugin = create<{ plugin: GayToolbarPlugin | null }>()(
     () => ({
         // TODO: I thnk this could just be null, instead of {plugin: null}
@@ -45,7 +48,7 @@ export const usePlugin = create<{ plugin: GayToolbarPlugin | null }>()(
 );
 export const useEditor = create<EditorState & EditorActions>()(
     set => ({
-        isEditing: false,
+        isEditing: true,
         selectedButtonId: '',
 
         setIsEditing: (isEditing) => {

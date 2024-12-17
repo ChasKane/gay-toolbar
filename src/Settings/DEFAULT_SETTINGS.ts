@@ -1,6 +1,6 @@
 import { GayToolbarSettings } from "types";
 
-export const emptySettings = {
+export const getEmptySettings = () => ({
     buttonIds: [],
     buttonLocations: {},
     buttons: {},
@@ -14,7 +14,7 @@ export const emptySettings = {
     mobileOnly: false,
     pressDelayMs: 200,
     presetColors: ['#ADD8E6', '#FFB6C1', '#FFFFFF', '#FF0000', '#FFA500', '#FFFF00', '#008000', '#0000FF', '#800080'],
-} as GayToolbarSettings;
+} as GayToolbarSettings);
 
 export default {
     "buttonIds": [

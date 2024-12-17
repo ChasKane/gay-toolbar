@@ -45,5 +45,5 @@ export const getLuminanceGuidedIconColor = (bgColor: string, contrastThreshold =
         iconColor = bgLuminance > 0.5 ? iconColor.darken(1.5) : iconColor.brighten(1.5);
     }
 
-    return iconColor.hex();
+    return iconColor.alpha(1).hex();
 }

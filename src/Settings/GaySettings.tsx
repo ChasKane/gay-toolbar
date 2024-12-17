@@ -8,7 +8,7 @@ import ColorPicker from './ColorPicker';
 const GaySettings: React.FC = () => {
     const plugin = usePlugin(state => state.plugin)
     const { setIsEditing, selectedButtonId, setSelectedButtonId } = useEditor(state => state);
-    const { updateButton, deleteButton, backgroundColor, customBackground, mobileOnly, setSettings, buttons } = useSettings();
+    const { updateButton, deleteButton, backgroundColor, customBackground, mobileOnly, setSettings, buttons, buttonIds } = useSettings();
 
     const [useCustomCSS, setUseCustomCSS] = useState(!!customBackground)
     const [subMenu, setSubMenu] = useState<boolean>(false)
@@ -67,7 +67,7 @@ const GaySettings: React.FC = () => {
         <div className='gay-settings-container'>
             {selectedButtonId ?
                 <>
-                    <div className='button-settings scrollable'>
+                    <div className='button-settings'>
                         <div style={{ backgroundColor: buttons[selectedButtonId].backgroundColor }}>
                             <button ref={pressCommandButtonRef} onClick={async () => {
                                 if (!plugin)
@@ -104,15 +104,14 @@ const GaySettings: React.FC = () => {
                             }}></button>
                         </div>
                     </div>
-                    <button className='delete-button' onClick={() => { deleteButton(selectedButtonId); setSelectedButtonId(''); }}>Delete</button>
                 </>
                 :
-                <div className='settings-main scrollable'>
+                <div className='settings-main'>
                     {wrapToolbarSettings([
                         (
                             <a href="https://www.buymeacoffee.com/ChasKane" className="buy-me-a-coffee-button">
-                                <span className="buy-me-a-coffee-emoji">🎟️</span>
-                                Buy me a plane ticket
+                                <span className="buy-me-a-coffee-emoji">☕️</span>
+                                Support me
                             </a>
                         ),
                         (
@@ -127,52 +126,65 @@ const GaySettings: React.FC = () => {
                         <NumericInputGroup label="Gap" name='gridGap' bounds={[0, 20]} />,
                         <NumericInputGroup label="Padding" name='gridPadding' bounds={[0, 20]} />,
                         <NumericInputGroup label="Long-press delay" name='pressDelayMs' bounds={[1, 400]} />,
-                    ])}
-                    <div className='background-options'>
-                        <div className='background-options-header'>
-                            <label>{
-                                useCustomCSS
-                                    ? <>Custom CSS <a href='https://developer.mozilla.org/en-US/docs/Web/CSS/background'>background</a> value</>
-                                    : "Background"
-                            }</label>
+                        (
                             <div>
-                                <label style={{ paddingRight: '8px' }} htmlFor='custom-css'>Custom CSS</label>
-                                <input id='custom-css' type='checkbox' defaultChecked={useCustomCSS} onChange={e => {
-                                    if (!e.target.checked)
-                                        setSettings({ customBackground: '' })
-                                    setUseCustomCSS(e.target.checked)
-                                }}></input>
-                            </div>
-                        </div>
-                        <div>
-                            {useCustomCSS ?
-                                <label htmlFor='customBackground'>
-                                    <input
-                                        style={{
-                                            width: '100%',
-                                            display: 'inline-grid',
-                                        }}
-                                        type='text'
-                                        placeholder='No "background: " and no ";"'
-                                        defaultValue={customBackground}
-                                        onChange={e => setSettings({ customBackground: e.target.value })}
-                                        name='customBackground'
-                                    ></input>
-                                </label>
-                                :
-                                <div style={{ padding: '8px', display: 'flex', flexGrow: 1, alignItems: 'center' }}>
+                                <p style={{ paddingRight: '8px' }}>Set all button colors</p>
+                                {buttonIds.length &&
                                     <ColorPicker
-                                        color={backgroundColor}
-                                        onChange={color => setSettings({ backgroundColor: color })}
+                                        color={buttons[buttonIds[0]].backgroundColor}
+                                        onChange={color => buttonIds.forEach(id => updateButton(id, { backgroundColor: color }))}
                                     ></ColorPicker>
+                                }
+                            </div>
+                        ),
+                        (
+                            <>
+                                <div>
+                                    <label>Toolbar background</label>
+                                    <div className='toolbar-setting-wrapper'>
+                                        <label style={{ paddingRight: '8px' }} htmlFor='custom-css'>Use custom CSS</label>
+                                        <input id='custom-css' type='checkbox' defaultChecked={useCustomCSS} onChange={e => {
+                                            if (!e.target.checked)
+                                                setSettings({ customBackground: '' })
+                                            setUseCustomCSS(e.target.checked)
+                                        }}></input>
+                                    </div>
+                                    {!useCustomCSS &&
+                                        <div style={{ padding: '8px', display: 'flex', flexGrow: 1, alignItems: 'center' }}>
+                                            <ColorPicker
+                                                color={backgroundColor}
+                                                onChange={color => setSettings({ backgroundColor: color })}
+                                            ></ColorPicker>
+                                        </div>
+                                    }
                                 </div>
-                            }
-                        </div>
-                    </div>
+                            </>
+                        )
+                    ])}
                 </div>
-
             }
-            <button className='close-button' onClick={() => { setIsEditing(false); setSelectedButtonId('') }}>X</button>
+            <div className='gay-settings-footer'>
+                {useCustomCSS && !selectedButtonId &&
+                    <label htmlFor='customBackground'>
+                        <>Custom CSS <a href='https://developer.mozilla.org/en-US/docs/Web/CSS/background'>background</a> value</>
+                        <input
+                            style={{
+                                width: '100%',
+                                display: 'inline-grid',
+                            }}
+                            type='text'
+                            placeholder='No "background: " and no ";"'
+                            defaultValue={customBackground}
+                            onChange={e => setSettings({ customBackground: e.target.value })}
+                            name='customBackground'
+                        ></input>
+                    </label>
+                }
+                <div className='float-right'>
+                    {selectedButtonId && <button className='delete' onClick={() => { deleteButton(selectedButtonId); setSelectedButtonId(''); }}>Delete</button>}
+                    <button onClick={() => { setIsEditing(false); setSelectedButtonId('') }}>X</button>
+                </div>
+            </div>
         </div>
     );
 };

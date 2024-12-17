@@ -214,7 +214,7 @@
       "id": "Toggle bullet list",
       "tapIcon": "lucide-list",
       "onTapCommandId": "editor:toggle-bullet-list",
-      "backgroundColor": "#000000",
+      "backgroundColor": "#2e5e33",
       "onPressCommandId": "editor:toggle-blockquote",
       "pressIcon": "lucide-quote"
     },
@@ -292,7 +292,7 @@
     },
     "m35ng39d": {
       "id": "m35ng39d",
-      "tapIcon": "lucide-wrench",
+      "tapIcon": "wrench",
       "onTapCommandId": "gay-toolbar:edit-toolbar",
       "backgroundColor": "#ff7700"
     },
@@ -310,7 +310,7 @@
   "rowHeight": 29,
   "gridGap": 2,
   "gridPadding": 2,
-  "backgroundColor": "#08bcff",
+  "backgroundColor": "#554343",
   "opacity": 1,
   "mobileOnly": false,
   "pressDelayMs": 130,
@@ -323,7 +323,22 @@
     "#FFFF00",
     "#008000",
     "#0000FF",
-    "#800080"
+    "#800080",
+    "#e04f00",
+    "#6c391e",
+    "#8a634e",
+    "#9b522c",
+    "#725241",
+    "#6e5244",
+    "#af978a",
+    "#c17c56",
+    "#542810",
+    "#693c25",
+    "#640c0c",
+    "#4f1b1b",
+    "#7e2727",
+    "#8c4343",
+    "#5a3232"
   ],
   "customBackground": ""
 }

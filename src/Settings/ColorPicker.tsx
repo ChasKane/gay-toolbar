@@ -1,30 +1,54 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import { ColorPicker, useColor } from "react-color-palette";
 import { useSettings } from "src/StateManagement";
-import { hexToIColor } from "src/utils";
+import { getLuminanceGuidedIconColor, hexToIColor } from "src/utils";
+import { setIcon } from "obsidian";
 
 const GayColorPicker: React.FC<{ color: string, onChange: (color: string) => void }> = ({ color, onChange }) => {
-    console.log('cp')
     const { presetColors, deletePresetColor, setSettings } = useSettings()
     const [isOpen, setIsOpen] = useState(false);
     const modalOverlayRef = useRef(null);
+    const buttonRef = useRef<HTMLButtonElement>(null);
 
     const [selectedColor, setSelectedColor] = useColor(color);
 
+    useEffect(() => {
+        if (buttonRef.current) {
+            setIcon(buttonRef.current, "palette");
+            const svg = buttonRef.current.firstChild as HTMLElement;
+            if (svg) {
+                svg.classList.add('gay-icon--lmao');
+                if (buttonRef.current) {
+                    svg.style.color = getLuminanceGuidedIconColor(color);
+                }
+            }
+        }
+    }, [color]);
+
     return (
         <>
-            <button onClick={() => setIsOpen(true)}>Open Color Picker</button>
+            <button
+                ref={buttonRef}
+                style={{ backgroundColor: color, border: "4px groove white" }}
+                onClick={() => setIsOpen(true)}
+            ></button>
             {isOpen && ReactDOM.createPortal((
                 <dialog
-                    className="modal-overlay"
-                    open
+                    className="gay-modal-overlay"
+                    open={isOpen}
                     ref={modalOverlayRef}
                     onClick={e => {
                         modalOverlayRef.current === e.target && setIsOpen(false)
                     }}
                 >
-                    <div className="modal">
+                    <div className="gay-modal scrollable" style={{
+                        left: "50%",
+                        top: "50%",
+                        width: "90%",
+                        backgroundColor: "var(--background-primary)",
+                        padding: "12px",
+                    }}>
                         <div style={{ marginBottom: "20px" }}>
                             <ColorPicker
                                 color={selectedColor}
@@ -58,7 +82,7 @@ const GayColorPicker: React.FC<{ color: string, onChange: (color: string) => voi
                                     key={preset}
                                     style={{
                                         backgroundColor: preset,
-                                        border: color === preset ? "4px ridge gray" : ""
+                                        border: color === preset ? "4px inset gray" : `4px solid ${preset}`
                                     }}
                                     onClick={() => {
                                         setSelectedColor(hexToIColor(preset));
@@ -76,59 +100,3 @@ const GayColorPicker: React.FC<{ color: string, onChange: (color: string) => voi
 }
 
 export default GayColorPicker;
-
-// import React, { useRef, useState } from 'react';
-// import { useSettings } from 'src/StateManagement';
-// import { HexColorPicker } from "react-input-color";
-// import ReactDOM from 'react-dom';
-// import { pointerInside } from 'src/Grid/GayButton';
-
-// const ColorPicker: React.FC<{ color: string, onChange: (color: string) => void }> = ({ color, onChange }) => {
-//     const { presetColors, deletePresetColor, pressDelayMs } = useSettings()
-//     const [isOpen, setIsOpen] = useState(false);
-//     const modalOverlayRef = useRef(null);
-//     const pointerDataRef = useRef<{
-//         timeout: ReturnType<typeof setTimeout> | null,
-//         pointerDown: boolean,
-//         startTime: number,
-//         element: HTMLElement | null,
-//     }>({ timeout: null, pointerDown: false, startTime: Date.now(), element: null })
-
-//     return (
-//         <>
-//             <button onClick={() => setIsOpen(true)}>Open Color Picker</button>
-//             {isOpen && ReactDOM.createPortal((
-//                 <dialog
-//                     className="modal-overlay"
-//                     open
-//                     ref={modalOverlayRef}
-//                     onClick={e => {
-//                         console.log(modalOverlayRef.current, e.target)
-//                         modalOverlayRef.current === e.target && setIsOpen(false)
-//                     }}
-//                     style={{
-//                     }}
-//                 >
-//                     <div className="modal">
-//                         <HexColorPicker color={color} onChange={onChange} />
-//                         <div style={{ marginTop: "10px" }}>
-//                             <button onClick={() => deletePresetColor(color)}>Delete selected preset</button>
-//                             {presetColors.map((preset: string) => (
-//                                 <button
-//                                     key={preset}
-//                                     style={{
-//                                         backgroundColor: preset,
-//                                         border: color === preset ? "4px ridge gray" : ""
-//                                     }}
-//                                     onClick={() => onChange(preset)}
-//                                 />
-//                             ))}
-//                         </div>
-//                     </div>
-//                 </dialog>
-//             ), document.body)}
-//         </>
-//     );
-// }
-
-// export default ColorPicker;
