@@ -4,11 +4,6 @@ import GayToolbarPlugin from '../main';
 import { GayToolbarSettings, SettingsActions, EditorActions, EditorState } from '../types';
 import { Platform } from 'obsidian';
 
-// TODO: move this to settings state so it can be user-modified and idx saved
-// TODO: for fun and aesthetics, convert this to itterator
-const prideColors: string[] = ['lightblue', 'lightpink', 'white', 'red', 'orange', 'yellow', 'green', 'blue', 'purple'];
-let prideIdx = 0;
-
 export const useSettings = create<GayToolbarSettings & SettingsActions>()(
     (set, get) => ({
         ...emptySettings,
@@ -24,7 +19,7 @@ export const useSettings = create<GayToolbarSettings & SettingsActions>()(
                     id: id,
                     tapIcon: icon,
                     onTapCommandId: onTapCommandId,
-                    backgroundColor: prideColors[++prideIdx === prideColors.length ? prideIdx = 0 : prideIdx],
+                    backgroundColor: prev.presetColors[Math.floor(Math.random() * prev.presetColors.length)],
                 }
             },
         })),
@@ -36,6 +31,8 @@ export const useSettings = create<GayToolbarSettings & SettingsActions>()(
             buttonLocations: { ...(delete prev.buttonLocations[id], prev.buttonLocations) },
             buttons: { ...(delete prev.buttons[id], prev.buttons) }
         })),
+        addPresetColor: color => set((prev: GayToolbarSettings) => ({ presetColors: [...prev.presetColors, color] })),
+        deletePresetColor: color => set((prev: GayToolbarSettings) => ({ presetColors: prev.presetColors.filter(c => c !== color) }))
     }),
 );
 

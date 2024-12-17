@@ -1,46 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { setIcon } from 'obsidian';
 import { usePlugin, useSettings, useEditor } from '../StateManagement';
-import chroma from 'chroma-js';
-
-
-const pointerInside = (event: React.PointerEvent<HTMLButtonElement>, el: HTMLElement | null) => {
-    if (!el)
-        return false;
-
-    const { x, y, width, height } = el.getBoundingClientRect()
-    if (event.clientX >= x
-        && event.clientX <= x + width
-        && event.clientY >= y
-        && event.clientY <= y + height
-    )
-        return true;
-
-    return false;
-}
-
-function getLuminanceGuidedIconColor(bgColor: string, contrastThreshold = 4.5) {
-    const bgLuminance = chroma(bgColor).luminance();
-    let iconColor;
-
-    if (bgLuminance > 0.7) {
-        iconColor = chroma(bgColor).set('lab.l', 40);
-    } else if (bgLuminance < 0.3) {
-        iconColor = chroma(bgColor).set('lab.l', 90);
-    } else { // mid-range
-        iconColor = bgLuminance >= 0.5
-            ? chroma(bgColor).set('lab.l', 10)
-            : chroma(bgColor).set('lab.l', 90);
-    }
-
-    // Additional contrast adjustments for edge cases
-    if (chroma.contrast(bgColor, iconColor) < contrastThreshold) {
-        iconColor = bgLuminance > 0.5 ? iconColor.darken(1.5) : iconColor.brighten(1.5);
-    }
-
-    return iconColor.hex();
-}
-
+import { getLuminanceGuidedIconColor, pointerInside } from 'src/utils';
 
 const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
     const pointerDataRef = useRef<{
@@ -92,8 +53,6 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
                 isEditing && buttonId === selectedButtonId ? 'button-halo' : '',
             ].join(' ')}
             style={{ backgroundColor: backgroundColor }}
-            onClick={() => {
-            }}
             onPointerDown={() => {
                 if (isEditing)
                     return;
@@ -122,7 +81,7 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
                 const endTime = Date.now()
                 pointerDataRef.current.pointerDown = false;
                 onPressCommandId && el?.removeClass('gay-button-press')
-                if (pointerInside(e, buttonRef.current)) {
+                if (pointerInside(e, el)) {
                     const delta = endTime - pointerDataRef.current.startTime;
                     if (delta < pressDelayMs) { // tap
                         if (onTapCommandId)

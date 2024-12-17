@@ -1,13 +1,7 @@
 import GayToolbarPlugin from "main";
 import { Command, setIcon, FuzzySuggestModal, FuzzyMatch, getIconIds } from "obsidian";
 
-/**
- * It creates a modal, waits for the user to select a command, and then creates another modal to wait
- * for the user to select an icon
- * @param {CommanderPlugin} plugin - The plugin that is calling the modal.
- * @returns {CommandIconPair}
- */
-export async function chooseNewCommand(plugin: GayToolbarPlugin): Promise<{
+export default async function chooseNewCommand(plugin: GayToolbarPlugin): Promise<{
     id: string;
     icon: string;
 }> {

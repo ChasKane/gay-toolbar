@@ -6,6 +6,8 @@ export type SettingsActions = {
     addButton: (id: string, icon: string, onTapCommandId: string, location: Coord) => void;
     updateButton: (id: string, newSettings: Partial<GayButtonSettings>) => void;
     deleteButton: (id: string) => void;
+    addPresetColor: (color: string) => void;
+    deletePresetColor: (color: string) => void;
 }
 
 export type EditorState = {
@@ -30,6 +32,7 @@ export type GayToolbarSettings = {
     backgroundColor: string;
     customBackground?: string;
     pressDelayMs: number;
+    presetColors: string[];
 }
 
 export type GayButtonSettings = {

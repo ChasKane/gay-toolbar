@@ -1,8 +1,9 @@
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import NumericInputGroup from './NumericInputGroup';
 import { useEditor, usePlugin, useSettings } from 'src/StateManagement';
-import { AddCommandModal, chooseNewCommand } from './chooseNewCommand';
+import chooseNewCommand from './chooseNewCommand';
 import { setIcon } from 'obsidian';
+import ColorPicker from './ColorPicker';
 
 const GaySettings: React.FC = () => {
     const plugin = usePlugin(state => state.plugin)
@@ -82,12 +83,10 @@ const GaySettings: React.FC = () => {
                                     updateButton(selectedButtonId, { onPressCommandId: command.id, pressIcon: command.icon })
                                 setSubMenu(false)
                             }}></button>
-                            <input
-                                className='gay-input-color'
-                                type='color'
-                                value={buttons[selectedButtonId]?.backgroundColor}
-                                onChange={e => updateButton(selectedButtonId, { backgroundColor: e.target.value })}
-                            ></input>
+                            <ColorPicker
+                                color={backgroundColor}
+                                onChange={color => updateButton(selectedButtonId, { backgroundColor: color })}
+                            ></ColorPicker>
                             <div></div>
                             <button ref={tapCommandButtonRef} onClick={async () => {
                                 if (!plugin)
@@ -162,13 +161,10 @@ const GaySettings: React.FC = () => {
                                 </label>
                                 :
                                 <div style={{ padding: '8px', display: 'flex', flexGrow: 1, alignItems: 'center' }}>
-                                    <input
-                                        className='gay-input-color'
-                                        type='color'
-                                        defaultValue={backgroundColor}
-                                        onChange={e => setSettings({ backgroundColor: e.target.value })}
-                                        name='backgroundColor'
-                                    ></input>
+                                    <ColorPicker
+                                        color={backgroundColor}
+                                        onChange={color => setSettings({ backgroundColor: color })}
+                                    ></ColorPicker>
                                 </div>
                             }
                         </div>

@@ -13,6 +13,7 @@ export const emptySettings = {
     opacity: .5,
     mobileOnly: false,
     pressDelayMs: 200,
+    presetColors: ['#ADD8E6', '#FFB6C1', '#FFFFFF', '#FF0000', '#FFA500', '#FFFF00', '#008000', '#0000FF', '#800080'],
 } as GayToolbarSettings;
 
 export default {
@@ -206,5 +207,6 @@ export default {
     "opacity": 1,
     "mobileOnly": false,
     "pressDelayMs": 130,
-    "customBackground": ""
+    "customBackground": "",
+    "presetColors": ['#ADD8E6', '#FFB6C1', '#FFFFFF', '#FF0000', '#FFA500', '#FFFF00', '#008000', '#0000FF', '#800080'],
 } as GayToolbarSettings;
