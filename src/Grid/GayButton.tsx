@@ -30,16 +30,16 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
                 }
             }
         }
-        // if (pressIconRef.current && pressIcon) {
-        //     setIcon(pressIconRef.current, pressIcon);
-        //     const svg = pressIconRef.current.firstChild as HTMLElement;
-        //     if (svg) {
-        //         svg.classList.add('gay-icon--lmao');
-        //         if (buttonRef.current) {
-        //             svg.style.color = getLuminanceGuidedIconColor(backgroundColor);
-        //         }
-        //     }
-        // }
+        if (pressIconRef.current && pressIcon) {
+            setIcon(pressIconRef.current, pressIcon);
+            const svg = pressIconRef.current.firstChild as HTMLElement;
+            if (svg) {
+                svg.classList.add('gay-icon--lmao');
+                if (buttonRef.current) {
+                    svg.style.color = getLuminanceGuidedIconColor(backgroundColor);
+                }
+            }
+        }
     }, [isEditing, tapIcon, pressIcon, backgroundColor]);
 
     return (

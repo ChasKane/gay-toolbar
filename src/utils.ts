@@ -1,4 +1,8 @@
 import chroma from "chroma-js";
+import html2canvas from "html2canvas";
+import { toPng } from "html-to-image";
+import { flushSync } from "react-dom";
+
 
 export const hexToIColor = (color: string) => {
     const C = chroma(color)
@@ -47,3 +51,24 @@ export const getLuminanceGuidedIconColor = (bgColor: string, contrastThreshold =
 
     return iconColor.alpha(1).hex();
 }
+
+
+export const takeSnapshot = async () => {
+    const element = document.getElementById("gay-button-grid");
+    if (!element) {
+        throw new Error("Element not found");
+    }
+
+    element.classList.add('disable-animations');
+
+    try {
+        return await toPng(element);
+    } catch (error) {
+        console.error("Error capturing snapshot:", error);
+        throw error;
+    } finally {
+        element.classList.remove('disable-animations');
+    }
+    // })
+    // })
+};

@@ -42,13 +42,7 @@ const GayColorPicker: React.FC<{ color: string, onChange: (color: string) => voi
                         modalOverlayRef.current === e.target && setIsOpen(false)
                     }}
                 >
-                    <div className="gay-modal scrollable" style={{
-                        left: "50%",
-                        top: "50%",
-                        width: "90%",
-                        backgroundColor: "var(--background-primary)",
-                        padding: "12px",
-                    }}>
+                    <div className="gay-modal" style={{ backgroundColor: "var(--background-primary)" }}>
                         <div style={{ marginBottom: "20px" }}>
                             <ColorPicker
                                 color={selectedColor}
@@ -61,16 +55,8 @@ const GayColorPicker: React.FC<{ color: string, onChange: (color: string) => voi
                                 }}
                             />
                             <button
+                                className="mod-cta"
                                 onClick={() => !presetColors.includes(color) && setSettings({ presetColors: [...presetColors, color] })}
-                                style={{
-                                    marginTop: "10px",
-                                    padding: "10px",
-                                    background: "#007BFF",
-                                    color: "white",
-                                    border: "none",
-                                    borderRadius: "5px",
-                                    cursor: "pointer",
-                                }}
                             >
                                 Save Preset
                             </button>

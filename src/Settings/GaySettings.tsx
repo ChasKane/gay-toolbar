@@ -4,6 +4,7 @@ import { useEditor, usePlugin, useSettings } from 'src/StateManagement';
 import chooseNewCommand from './chooseNewCommand';
 import { setIcon } from 'obsidian';
 import ColorPicker from './ColorPicker';
+import ConfigsModal from './ConfigsModal';
 
 const GaySettings: React.FC = () => {
     const plugin = usePlugin(state => state.plugin)
@@ -108,13 +109,13 @@ const GaySettings: React.FC = () => {
                 :
                 <div className='settings-main'>
                     {wrapToolbarSettings([
-                        (
+                        ( // BUY ME A COFFEE
                             <a href="https://www.buymeacoffee.com/ChasKane" className="buy-me-a-coffee-button">
                                 <span className="buy-me-a-coffee-emoji">☕️</span>
                                 Support me
                             </a>
                         ),
-                        (
+                        ( // MOBILE ONLY
                             <div>
                                 <label style={{ paddingRight: '8px' }} htmlFor='mobile-only'>Mobile only</label>
                                 <input id='mobile-only' type='checkbox' defaultChecked={mobileOnly} onChange={e => setSettings({ mobileOnly: e.target.checked })}></input>
@@ -126,7 +127,29 @@ const GaySettings: React.FC = () => {
                         <NumericInputGroup label="Gap" name='gridGap' bounds={[0, 20]} />,
                         <NumericInputGroup label="Padding" name='gridPadding' bounds={[0, 20]} />,
                         <NumericInputGroup label="Long-press delay" name='pressDelayMs' bounds={[1, 400]} />,
-                        (
+                        <ConfigsModal />,
+                        ( // TOOLBAR BACKGROUND
+                            <div>
+                                <label>Toolbar background</label>
+                                <div className='toolbar-setting-wrapper'>
+                                    <label style={{ paddingRight: '8px' }} htmlFor='custom-css'>Use custom CSS</label>
+                                    <input id='custom-css' type='checkbox' defaultChecked={useCustomCSS} onChange={e => {
+                                        if (!e.target.checked)
+                                            setSettings({ customBackground: '' })
+                                        setUseCustomCSS(e.target.checked)
+                                    }}></input>
+                                </div>
+                                {!useCustomCSS &&
+                                    <div style={{ padding: '8px', display: 'flex', flexGrow: 1, alignItems: 'center' }}>
+                                        <ColorPicker
+                                            color={backgroundColor}
+                                            onChange={color => setSettings({ backgroundColor: color })}
+                                        ></ColorPicker>
+                                    </div>
+                                }
+                            </div>
+                        ),
+                        ( // SET ALL BUTTON COLORS
                             <div>
                                 <p style={{ paddingRight: '8px' }}>Set all button colors</p>
                                 {buttonIds.length &&
@@ -137,29 +160,17 @@ const GaySettings: React.FC = () => {
                                 }
                             </div>
                         ),
-                        (
-                            <>
-                                <div>
-                                    <label>Toolbar background</label>
-                                    <div className='toolbar-setting-wrapper'>
-                                        <label style={{ paddingRight: '8px' }} htmlFor='custom-css'>Use custom CSS</label>
-                                        <input id='custom-css' type='checkbox' defaultChecked={useCustomCSS} onChange={e => {
-                                            if (!e.target.checked)
-                                                setSettings({ customBackground: '' })
-                                            setUseCustomCSS(e.target.checked)
-                                        }}></input>
-                                    </div>
-                                    {!useCustomCSS &&
-                                        <div style={{ padding: '8px', display: 'flex', flexGrow: 1, alignItems: 'center' }}>
-                                            <ColorPicker
-                                                color={backgroundColor}
-                                                onChange={color => setSettings({ backgroundColor: color })}
-                                            ></ColorPicker>
-                                        </div>
-                                    }
-                                </div>
-                            </>
-                        )
+                        ( // RESTORE DEFAULTS
+                            <div>
+                                <p style={{ paddingRight: '8px' }}>Lost?</p>
+                                <button
+                                    onClick={() => {
+                                        // @ts-ignore | app.commands exists; not sure why it's not in the API...
+                                        plugin?.app.commands.executeCommandById("gay-toolbar:load-default-settings")
+                                    }}
+                                >Load default settings</button>
+                            </div>
+                        ),
                     ])}
                 </div>
             }

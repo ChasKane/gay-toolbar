@@ -10,10 +10,11 @@ export const getEmptySettings = () => ({
     gridGap: 2,
     gridPadding: 2,
     backgroundColor: 'pink',
-    opacity: .5,
+    customBackground: '',
     mobileOnly: false,
     pressDelayMs: 200,
     presetColors: ['#ADD8E6', '#FFB6C1', '#FFFFFF', '#FF0000', '#FFA500', '#FFFF00', '#008000', '#0000FF', '#800080'],
+    configs: [],
 } as GayToolbarSettings);
 
 export default {
@@ -204,9 +205,9 @@ export default {
     "gridGap": 2,
     "gridPadding": 2,
     "backgroundColor": "#817465",
-    "opacity": 1,
+    "customBackground": "",
     "mobileOnly": false,
     "pressDelayMs": 130,
-    "customBackground": "",
     "presetColors": ['#ADD8E6', '#FFB6C1', '#FFFFFF', '#FF0000', '#FFA500', '#FFFF00', '#008000', '#0000FF', '#800080'],
+    "configs": [],
 } as GayToolbarSettings;

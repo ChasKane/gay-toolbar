@@ -20,7 +20,7 @@ const GayToolbar: React.FC = () => {
     })
 
     return (
-        <div ref={ref} style={{ background: customBackground || backgroundColor }} className='gay-toolbar'>
+        <div ref={ref} className='gay-toolbar'>
             {isEditing && <GaySettings />}
             <ButtonGrid />
         </div>

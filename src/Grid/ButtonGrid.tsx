@@ -11,7 +11,7 @@ const ButtonGrid: React.FC = () => {
     const moveButton = useSettings(state => state.moveButton)
     const setSelectedButtonId = useEditor(state => state.setSelectedButtonId)
     const isEditing = useEditor(state => state.isEditing);
-    const { buttonLocations, numRows, numCols, rowHeight, gridGap, gridPadding } = useSettings(state => state)
+    const { buttonLocations, numRows, numCols, rowHeight, gridGap, gridPadding, backgroundColor, customBackground } = useSettings()
     const plugin = usePlugin(state => state.plugin)
     const ref = useRef<HTMLDivElement>(null)
 
@@ -110,12 +110,14 @@ const ButtonGrid: React.FC = () => {
     return (
         <div
             ref={ref}
+            id='gay-button-grid'
             style={{
                 display: 'grid',
                 gridTemplateRows: `repeat(${numRows}, ${rowHeight}px)`,
                 gridTemplateColumns: `repeat(${numCols}, minmax(0, 1fr))`,
                 gap: `${gridGap}px ${gridGap}px`,
                 padding: `${gridPadding}px`,
+                background: customBackground || backgroundColor,
             }}
         >
             {Grid()}

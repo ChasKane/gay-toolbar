@@ -1,13 +1,15 @@
 import { create } from 'zustand';
 import { getEmptySettings } from './Settings/DEFAULT_SETTINGS'
 import GayToolbarPlugin from '../main';
-import { GayToolbarSettings, SettingsActions, EditorActions, EditorState } from '../types';
+import { GayToolbarSettings, SettingsActions, EditorActions, EditorState, savedConfigKeys, SavedConfigValues, SavedConfig } from '../types';
 import { Platform } from 'obsidian';
+import { takeSnapshot } from './utils';
 
 export const useSettings = create<GayToolbarSettings & SettingsActions>()(
     (set, get) => ({
         ...getEmptySettings(),
         setSettings: set,
+
         moveButton: (buttonId, location) => set((prev: GayToolbarSettings) => ({
             buttonLocations: { ...prev.buttonLocations, [buttonId as string]: location }
         })),
@@ -31,24 +33,42 @@ export const useSettings = create<GayToolbarSettings & SettingsActions>()(
             buttonLocations: { ...(delete prev.buttonLocations[id], prev.buttonLocations) },
             buttons: { ...(delete prev.buttons[id], prev.buttons) }
         })),
+
         addPresetColor: color => set((prev: GayToolbarSettings) => ({ presetColors: [...prev.presetColors, color] })),
-        deletePresetColor: color => set((prev: GayToolbarSettings) => ({ presetColors: prev.presetColors.filter(c => c !== color) }))
-    }),
+        deletePresetColor: color => set((prev: GayToolbarSettings) => ({ presetColors: prev.presetColors.filter(c => c !== color) })),
+
+        addConfig: async () => {
+            const snapshot = await takeSnapshot();
+
+            set((prev: GayToolbarSettings) => {
+                const savedConfig = JSON.stringify(
+                    Object.fromEntries(
+                        savedConfigKeys
+                            .map((key) => [key, prev[key]])
+                    )
+                );
+
+                return ({
+                    configs: [{
+                        id: Date.now().toString(36),
+                        date: Date.now(),
+                        screenshot: snapshot,
+                        data: savedConfig,
+                    }, ...prev.configs]
+                })
+            });
+        },
+        deleteConfig: (id: string) => set((prev: GayToolbarSettings) => ({ configs: prev.configs.filter(c => c.id !== id) })),
+    })
 );
 
 
 
 // ---------------- Not saved to data.json ----------------
 
-export const usePlugin = create<{ plugin: GayToolbarPlugin | null }>()(
-    () => ({
-        // TODO: I thnk this could just be null, instead of {plugin: null}
-        plugin: null,
-    })
-);
 export const useEditor = create<EditorState & EditorActions>()(
     set => ({
-        isEditing: true,
+        isEditing: false,
         selectedButtonId: '',
 
         setIsEditing: (isEditing) => {
@@ -60,5 +80,11 @@ export const useEditor = create<EditorState & EditorActions>()(
             set({ isEditing: isEditing });
         },
         setSelectedButtonId: (id) => set({ selectedButtonId: id }),
+    })
+);
+export const usePlugin = create<{ plugin: GayToolbarPlugin | null }>()(
+    () => ({
+        // TODO: I thnk this could just be null, instead of {plugin: null}
+        plugin: null,
     })
 );

@@ -36,7 +36,7 @@ export default class GayToolbarPlugin extends Plugin {
             id: "load-default-settings",
             name: "Load default settings",
             callback: () => {
-                useSettings.setState(DEFAULT_SETTINGS);
+                useSettings.setState(prev => ({ ...DEFAULT_SETTINGS, configs: [...prev.configs] }));
             },
         });
 
