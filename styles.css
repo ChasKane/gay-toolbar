@@ -116,7 +116,7 @@
 }
 
 .wiggle {
-    animation: wiggle 1s infinite ease-in-out;
+    animation: wiggle .8s infinite ease;
     transform-origin: center; /* Adjust if needed based on your design */
 }
 
@@ -128,10 +128,10 @@
         transform: rotate(1.5deg) scale(1.01);
     }
     50% {
-        transform: rotate(-1.5deg) scale(1);
+        transform: rotate(-1.5deg) scale(0.99);
     }
     75% {
-        transform: rotate(1.5deg) scale(0.99);
+        transform: rotate(1.5deg) scale(1.01);
     }
     100% {
         transform: rotate(-1.5deg) scale(1);
