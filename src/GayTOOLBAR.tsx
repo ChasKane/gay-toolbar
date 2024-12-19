@@ -5,7 +5,7 @@ import { useEditor, useSettings } from './StateManagement';
 import { Platform } from 'obsidian';
 
 const GayToolbar: React.FC = () => {
-    const isEditing = useEditor(state => state.isEditing);
+    const { isEditing, selectedButtonId } = useEditor();
     const { backgroundColor, customBackground } = useSettings();
 
     const ref: RefObject<HTMLDivElement> = useRef(null)
@@ -17,7 +17,7 @@ const GayToolbar: React.FC = () => {
         if (statusBar)
             statusBar.style.bottom = (ref.current?.getBoundingClientRect().height || 0) + 'px'
         return () => { if (statusBar) statusBar.style.bottom = '0px' }
-    })
+    }, [isEditing, selectedButtonId])
 
     return (
         <div ref={ref} className='gay-toolbar'>

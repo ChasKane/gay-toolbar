@@ -7,7 +7,6 @@ const ConfigsModal = () => {
     const modalOverlayRef = useRef(null);
     const [isOpen, setIsOpen] = useState(false);
     const [addingConfig, setAddingConfig] = useState(false);
-    console.log('RENDER', addingConfig)
 
     const { configs, addConfig, deleteConfig, setSettings } = useSettings()
 
@@ -56,7 +55,7 @@ const ConfigsModal = () => {
         </dialog >
     ), document.body) : (
         <>
-            <label style={{ paddingRight: '8px' }} htmlFor='mobile-only'>Saved Configurations</label>
+            <label style={{ paddingRight: '8px' }}>Saved Configs</label>
             <button onClick={() => setIsOpen(true)}>View</button>
         </>
     )

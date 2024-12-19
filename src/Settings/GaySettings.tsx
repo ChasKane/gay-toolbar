@@ -11,7 +11,6 @@ const GaySettings: React.FC = () => {
     const { setIsEditing, selectedButtonId, setSelectedButtonId } = useEditor(state => state);
     const { updateButton, deleteButton, backgroundColor, customBackground, mobileOnly, setSettings, buttons, buttonIds } = useSettings();
 
-    const [useCustomCSS, setUseCustomCSS] = useState(!!customBackground)
     const [subMenu, setSubMenu] = useState<boolean>(false)
 
     const listener = useRef<{ remove: () => {} } | null>(null)
@@ -133,14 +132,15 @@ const GaySettings: React.FC = () => {
                                 <label>Toolbar background</label>
                                 <div className='toolbar-setting-wrapper'>
                                     <label style={{ paddingRight: '8px' }} htmlFor='custom-css'>Use custom CSS</label>
-                                    <input id='custom-css' type='checkbox' defaultChecked={useCustomCSS} onChange={e => {
+                                    <input id='custom-css' type='checkbox' checked={!!customBackground} onChange={e => {
                                         if (!e.target.checked)
                                             setSettings({ customBackground: '' })
-                                        setUseCustomCSS(e.target.checked)
+                                        else
+                                            setSettings({ customBackground: ' ' })
                                     }}></input>
                                 </div>
-                                {!useCustomCSS &&
-                                    <div style={{ padding: '8px', display: 'flex', flexGrow: 1, alignItems: 'center' }}>
+                                {!customBackground &&
+                                    <div className='toolbar-setting-wrapper'>
                                         <ColorPicker
                                             color={backgroundColor}
                                             onChange={color => setSettings({ backgroundColor: color })}
@@ -153,10 +153,12 @@ const GaySettings: React.FC = () => {
                             <div>
                                 <p style={{ paddingRight: '8px' }}>Set all button colors</p>
                                 {buttonIds.length &&
-                                    <ColorPicker
-                                        color={buttons[buttonIds[0]].backgroundColor}
-                                        onChange={color => buttonIds.forEach(id => updateButton(id, { backgroundColor: color }))}
-                                    ></ColorPicker>
+                                    <div className='toolbar-setting-wrapper'>
+                                        <ColorPicker
+                                            color={buttons[buttonIds[0]].backgroundColor}
+                                            onChange={color => buttonIds.forEach(id => updateButton(id, { backgroundColor: color }))}
+                                        ></ColorPicker>
+                                    </div>
                                 }
                             </div>
                         ),
@@ -175,7 +177,7 @@ const GaySettings: React.FC = () => {
                 </div>
             }
             <div className='gay-settings-footer'>
-                {useCustomCSS && !selectedButtonId &&
+                {customBackground && !selectedButtonId &&
                     <label htmlFor='customBackground'>
                         <>Custom CSS <a href='https://developer.mozilla.org/en-US/docs/Web/CSS/background'>background</a> value</>
                         <input
@@ -185,8 +187,8 @@ const GaySettings: React.FC = () => {
                             }}
                             type='text'
                             placeholder='No "background: " and no ";"'
-                            defaultValue={customBackground}
-                            onChange={e => setSettings({ customBackground: e.target.value })}
+                            value={customBackground}
+                            onChange={e => setSettings({ customBackground: e.target.value || ' ' })}
                             name='customBackground'
                         ></input>
                     </label>
