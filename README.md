@@ -1,62 +1,52 @@
 # **The Most Colorful Obsidian Toolbar**
-A vibrant, fully customizable toolbar that floats above the keyboard, replacing the default toolbar. It’s called "gay" because it’s expressive and colorful—just like its users.
+A vibrant, fully customizable toolbar that floats above the keyboard, replacing the default toolbar. It’s called "gay" because because I’m a queer freak who laughs in the face of the "no politics" chillng effect of corporate tech contexts. I *am* my work. This isn’t just a tool -- it’s an expression of my creativity, my passion, my identity, and my joy. And in a time when so many queer people in the U.S. are enduring new waves of hostility and fear, this is my small act of defiance:
 
-> "Technology presumes there's just 1 right way to do things, and there never is."
+![Screenshot_2024-12-19-10-37-45-29_51606159b24eff83e24a54116878fe3e](https://github.com/user-attachments/assets/505b6c61-bf6a-415f-9d49-23706aebdfdd)
+
+> "Technology presumes there's just one right way to do things, and there never is."
 > 
 > *—Robert M. Pirsig, *Zen and the Art of Motorcycle Maintenance***
 
-*(note, the defaults have been updated to a more neutral palette with a limited set of commands, to make it easier to customize)*
-![Image 1](https://github.com/user-attachments/assets/316d0c18-3a8d-45ad-b377-4b8de6df3305)
-![Screenshot_2024-12-06-23-01-19-55_51606159b24eff83e24a54116878fe3e](https://github.com/user-attachments/assets/732e2a44-5fe5-4553-a1ef-a4c8897a81f1)
-
 ---
-### **Features at a Glance**
+### **Highlighted Features**
 - **Customizable Toolbar:**
-  - Move, add, remove, and personalize buttons (color, icon, and command).
+  - Move (via dragging), add, remove, and personalize buttons (color, icons, and commands).
   - Button slots can remain empty, creating gaps in the toolbar if desired.
-- **Primary and Secondary Actions:**
-  - Assign up to two commands per button:
-    - **Primary Action:** Triggered by a tap.
-    - **Secondary Action:** Triggered by a long press (tap and hold for a *customizable duration*, default: 200).
-    - Both actions can have distinct, customizable icons.
+  - Save and load configs -- freely experiment and return to layouts you know work for you if you get lost.
+- **(Up To) Two Commands Per Button:**
+  - **Primary Action:** Triggered by a tap.
+  - **Secondary Action:** Triggered by a long press (tap and hold for a *customizable duration*, default: 200).
+  - Both actions can have distinct, customizable icons.
 - **Smart Icon Colors:**
   - Icon colors are automatically chosen to maximize contrast against button background colors, using perceived luminance.
-- **Quick Setup:**
-  - Default settings include a handy orange wrench icon in the top right—tap it to enter **Edit Mode**, or run `Gay Toolbar: Toggle Edit Mode` via the Command Palette.
 
 ---
 # **Toolbar Edit Mode**
-### **Grid Settings** (if no button is selected)
-- Adjust toolbar layout with properties like:
-  - `numRows`, `numCols`, `rowHeight`, `gridGap`, `gridPadding`, `backgroundColor`, and `opacity`.
-  - Use a custom background (set a user-defined css string that overrides default colors).
-### **Button Customization**
-- **Add Buttons:** Tap an empty slot (`+`) to insert a button (default colors are chosen from pride flag palettes).
-- **Edit Buttons:** Tap an existing button to change its **primary** and **secondary actions**, **colors**, or **icon**, or to remove it.
-- **Drag & Drop:** Long-press to move buttons. Swapping positions with another button is seamless.
-- **Secondary Actions:** Assign a **long press** command for each button, with its own customizable icon. The press duration is user-configurable in the main settings
+### **Main Settings** (if no button is selected)
+  - The default config includes a 🔧 wrench icon in the top right -— tap it to enter **Edit Mode**, or run `Gay Toolbar: Toggle Edit Mode` via the Command Palette.
+  - Save the current config and load previous saved configs anytime via the "Saved Configs" modal.
+  - Use a custom background (your own css value, eg `radial-gradient(circle at bottom, pink, grey, white)`).
+![Screenshot 2024-12-19 at 11 59 59 AM](https://github.com/user-attachments/assets/f9b11d05-6849-4ea8-89e3-3468e5ea0c28)
+
+### **Button Settings**
+- **Add Buttons:** Tap an empty slot (`+`) to insert a button (new button color is chosen randomly from color presets -- edit these in the color picker modal).
+- **Edit Buttons:** Tap an existing button to change its **primary action/icon** (bottom right button), **secondary action/icon** (top left button), or **color**, or to remove it.
+- **Drag & Drop:** Long-press to initiate a drag operation to move buttons. If you drop a button on a non-empty slot, the button in that slot swaps positions with the one being dragged.
+- **Secondary Actions:** Assign a **long press** command with its own icon for each button as desired. The press duration is user-configurable in the main settings via the `Long-press delay` option. Personally, I like to group related commands like `undo/redo` and `indent/outdent`.
+![Screenshot 2024-12-19 at 12 02 05 PM](https://github.com/user-attachments/assets/0229699f-bbd1-4436-8a39-772fd013b563)
 
 ---
-# **Highlighted Features**
-- **Reboot Settings:** Recover from missteps by running `Gay Toolbar: Load default settings` from the Command Palette.
-- **Default to Gay Colors:** New buttons randomly select from pride/trans flag palette.
-- **Grid Customization:** Tailor the toolbar layout with row and column adjustments, padding, gaps, and more.
-- **Drag-and-Drop:** Seamlessly rearrange buttons for an optimized workflow.
 
----
-# **Planned Features and Fixes**
+# **Roadmap**
 *If you’re excited about seeing any of these or other ideas implemented, I’d love to collaborate! I’m happy to hop on a call and pair-code with you, even if you’re new to coding. What matters most to me is **our shared investment in shaping our tools to meet our needs** — I cherish connection built on loving the technology that supports us.*
 
-### **New Commands and Customization Options**
-- **Show/Hide Toolbar:** Add a toggle command to hide the toolbar, leaving one floating button that slides the toolbar in on tap.
-- **Save Settings Profiles:** Save settings configurations for easy recovery and experimentation (this way if you go astray, you needn't restart with my personal defaults).
+- **Show/Hide Toolbar:** Add a toggle command to hide the toolbar, leaving one floating, movable button that slides the toolbar in on tap.
 - **Time-dependent Colors:** Automatically change toolbar colors based on time (daily or even every second).
-- **Custom Palettes:** Replace the default pride/trans flag colors with a user-defined palette.
-### **Expanded Functionality**
 - **Better Icon Support:** Add emoji support to icon selector.
-- **Advanced Button Actions:** Add *additional swipe gestures* for more commands (e.g., swipe up, down, left, right). Visual cues will display custom colors for each gesture on the border of each button and dynamically as the user swipes. Example button for block editing:
+- **Separate Icon and Command Selection Flow:** Also, display the selected command names/ids. This will require overhauling the existing button settings screen.
+- **Swipe Button Actions:** Add *additional swipe gestures* for more commands (e.g., swipe up, down, left, right). Visual cues will display custom colors for each gesture on the border of each button and dynamically as the user swipes. Example button for block editing:
 	- **Tap:** Select the current block.
-	- **Long-Press:** Copy the current block (with its own unique icon).
+	- **Long-Press:** Copy the current block.
 	- **Swipe Left:** Outdent.
 	- **Swipe Right:** Indent.
 	- **Swipe Down:** Move the block down.
