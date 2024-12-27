@@ -1,5 +1,5 @@
 # **The Most Colorful Obsidian Toolbar**
-A vibrant, fully customizable toolbar that floats above the keyboard, replacing the default toolbar. It’s called "gay" because because I’m a queer freak who laughs in the face of the "no politics" chillng effect of corporate tech contexts. I *am* my work. This isn’t just a tool -- it’s an expression of my creativity, my passion, my identity, and my joy. And in a time when so many queer people in the U.S. are enduring new waves of hostility and fear, this is my small act of defiance:
+A vibrant, fully customizable toolbar that floats above the keyboard, replacing the default toolbar. It’s called "gay" because I’m a queer freak who laughs in the face of the "no politics" chillng effect of corporate tech contexts. I *am* my work. This isn’t just a tool -- it’s an expression of my creativity, my passion, my identity, and my joy. And in a time when so many queer people in the U.S. are enduring new waves of hostility and fear, this is my small act of defiance:
 
 ![Screenshot_2024-12-19-10-37-45-29_51606159b24eff83e24a54116878fe3e](https://github.com/user-attachments/assets/505b6c61-bf6a-415f-9d49-23706aebdfdd)
 
