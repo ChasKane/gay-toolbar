@@ -1,344 +1,464 @@
 .gay-toolbar-container {
-    transition: bottom 0.05s linear;
-    max-height: 80%;
+  transition: bottom 0.05s linear;
+  max-height: 80%;
 }
 .gay-toolbar {
-    /* From https://css.glass */
-    border-radius: 8px;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    /* make settings scrollable */
-    display: flex;
-    flex-direction: column; /* Stack X and Y vertically */
-    max-height: 100%; /* Prevent B from exceeding its container */
-
+  /* From https://css.glass */
+  border-radius: 8px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  /* make settings scrollable */
+  display: flex;
+  flex-direction: column; /* Stack X and Y vertically */
+  max-height: 100%; /* Prevent B from exceeding its container */
 }
-
 
 /* ------------------GRID------------------ */
 
 .slot {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .gay-button-container {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 .gay-button {
-    position: relative;
-    display: flex; /* fixes misalignment-on-iphone bug */
-    border-radius: 8px;
-    border: 4px solid transparent;
-    width: 100%;
-    height: 100%;
-    padding: 0px;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15) !important; 
+  position: relative;
+  display: flex; /* fixes misalignment-on-iphone bug */
+  border-radius: 8px;
+  border: 4px solid transparent;
+  width: 100%;
+  height: 100%;
+  padding: 0px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15) !important;
 }
 .gay-button-tap {
-    z-index: 2;
+  z-index: 2;
 }
 .gay-button-tap::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 10px;             /* Starting diameter of the ring */
-    height: 10px;
-    background-color: inherit; /* Use the background color of the element */
-    border-radius: 50%;      /* Make it circular */
-    transform: translate(-50%, -50%);
-    opacity: 0.8;           /* Starting opacity */
-    z-index: 1;
-    animation: tapRing .15s ease-out forwards;
-  }
-  
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px; /* Starting diameter of the ring */
+  height: 10px;
+  background-color: inherit; /* Use the background color of the element */
+  border-radius: 50%; /* Make it circular */
+  transform: translate(-50%, -50%);
+  opacity: 0.8; /* Starting opacity */
+  z-index: 1;
+  animation: tapRing 0.15s ease-out forwards;
+}
+
 @keyframes tapRing {
-    0% {
-      width: 10px;
-      height: 10px;
-      opacity: 0.8;
-    }
-    100% {
-      width: 100px;          /* Adjust final size */
-      height: 100px;
-      opacity: .3;            /* Fades as it expands */
-    }
+  0% {
+    width: 10px;
+    height: 10px;
+    opacity: 0.8;
+  }
+  100% {
+    width: 100px; /* Adjust final size */
+    height: 100px;
+    opacity: 0.3; /* Fades as it expands */
+  }
 }
 
 .gay-button-press {
-    z-index: 2;
+  z-index: 2;
 }
 .gay-button-press::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 100px;             /* Starting diameter of the ring */
-    height: 100px;
-    background-color: inherit; /* Use the background color of the element */
-    border-radius: 50%;      /* Make it circular */
-    transform: translate(-50%, -50%);
-    opacity: 0.8;   
-    z-index: 1;         /* Starting opacity */
-    animation: pressRing .05s ease forwards;
-
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100px; /* Starting diameter of the ring */
+  height: 100px;
+  background-color: inherit; /* Use the background color of the element */
+  border-radius: 50%; /* Make it circular */
+  transform: translate(-50%, -50%);
+  opacity: 0.8;
+  z-index: 1; /* Starting opacity */
+  animation: pressRing 0.05s ease forwards;
 }
 @keyframes pressRing {
-    0% {
-      width: 100px;
-      height: 100px;
-      opacity: 0.3;
-    }
-    50% {
-      width: 180px;          
-      height: 180px;
-      opacity: 0.5;            
-    }
-    100% {
-      width: 150px;          
-      height: 150px;
-      opacity: 0.3;            
-    }
+  0% {
+    width: 100px;
+    height: 100px;
+    opacity: 0.3;
+  }
+  50% {
+    width: 180px;
+    height: 180px;
+    opacity: 0.5;
+  }
+  100% {
+    width: 150px;
+    height: 150px;
+    opacity: 0.3;
+  }
 }
 
 .gay-icon--lmao {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 .button-halo {
-    scale: 1.5;
+  scale: 1.5;
 }
 
 .wiggle {
-    animation: wiggle .8s infinite ease;
-    transform-origin: center; /* Adjust if needed based on your design */
+  animation: wiggle 0.8s infinite ease;
+  transform-origin: center; /* Adjust if needed based on your design */
 }
 
 @keyframes wiggle {
-    0% {
-        transform: rotate(-1.5deg) scale(1);
-    }
-    25% {
-        transform: rotate(1.5deg) scale(1.01);
-    }
-    50% {
-        transform: rotate(-1.5deg) scale(0.99);
-    }
-    75% {
-        transform: rotate(1.5deg) scale(1.01);
-    }
-    100% {
-        transform: rotate(-1.5deg) scale(1);
-    }
+  0% {
+    transform: rotate(-1.5deg) scale(1);
+  }
+  25% {
+    transform: rotate(1.5deg) scale(1.01);
+  }
+  50% {
+    transform: rotate(-1.5deg) scale(0.99);
+  }
+  75% {
+    transform: rotate(1.5deg) scale(1.01);
+  }
+  100% {
+    transform: rotate(-1.5deg) scale(1);
+  }
 }
 
 .disable-animations * {
-    animation: none !important;
-    transition: none !important;
+  animation: none !important;
+  transition: none !important;
 }
-
-
-
 
 /* ------------------SETTINGS------------------ */
 
 .gay-settings-container {
-    position: relative;
-    border: solid 1px #ccc;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    padding: 8px;
-    overflow-y: auto;
-    overflow-x: hidden;
+  position: relative;
+  border: solid 1px #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .gay-settings-footer {
-    display: flex;
-    flex-direction: row;
-    align-items: end;
-    position: sticky;
-    bottom: 0px;
-    pointer-events: none;
+  display: flex;
+  flex-direction: row;
+  align-items: end;
+  position: sticky;
+  bottom: 0px;
+  pointer-events: none;
 }
-.gay-settings-footer>* {
-    pointer-events: auto;
+.gay-settings-footer > * {
+  pointer-events: auto;
 }
 
 .gay-settings-footer .float-right {
-    margin-left: auto;
+  margin-left: auto;
 }
 .gay-settings-footer .float-right .delete {
-    margin-right: 16px;
+  margin-right: 16px;
 }
 
 .settings-main {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }
 
 .toolbar-setting-wrapper {
-    margin-top: 4px;
-    margin-bottom: 4px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 8px;
-    padding: 8px;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  margin-top: 4px;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
 .button-settings {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .button-settings > div {
-    display: grid;
-    grid-template-rows: 1fr 1fr;
-    grid-template-columns: 1fr 1fr;
-    grid-gap: 4px;
-    
-    padding: 8px 8px;
-    border-radius: 8px;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 4px;
+
+  padding: 8px 8px;
+  border-radius: 8px;
 }
 
 .buy-me-a-coffee-button {
-    display: flex;
-    align-items: center;
-    background-color: #FFDD00;
-    border-radius: 30px;
-    padding: 8px 20px;
-    color: #000000;
-    text-decoration: none;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);  
-    white-space: nowrap;
+  display: flex;
+  align-items: center;
+  background-color: #ffdd00;
+  border-radius: 30px;
+  padding: 8px 20px;
+  color: #000000;
+  text-decoration: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
 }
 .buy-me-a-coffee-button:hover {
-    text-decoration: none;
-    opacity: 0.9;
-  }
-  
+  text-decoration: none;
+  opacity: 0.9;
+}
+
 .buy-me-a-coffee-emoji {
-    margin-right: 10px;
+  margin-right: 10px;
 }
 
 .settings-footer {
-    display: flex;
-    justify-content: space-between;
-    flex-direction: row-reverse;
-    margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row-reverse;
+  margin-top: 8px;
 }
 
 .gay-input-label {
-     display: block;
-     margin-bottom: 4px;
+  display: block;
+  margin-bottom: 4px;
 }
 
 .gay-input {
-    display: flex;
-    justify-content: start;
+  display: flex;
+  justify-content: start;
 }
 .gay-input input {
-    margin-inline: 6px;
+  margin-inline: 6px;
 }
 
 .gay-input-numeric {
-    margin-right: 8px;
-    text-align: space-between;
+  margin-right: 8px;
+  text-align: space-between;
 }
 
 .gay-input-color {
-    height: auto;
-    margin-right: 8px;
-    border-radius: 4px;
-    box-shadow: 0 0 4px grey
+  height: auto;
+  margin-right: 8px;
+  border-radius: 4px;
+  box-shadow: 0 0 4px grey;
 }
 
-.tap-icon>svg {
-    position: absolute;
-    bottom: 0px;
-    right: 0px;
-    width: 80%;
-    height: 80%;
+.tap-icon > svg {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  width: 80%;
+  height: 80%;
 }
-.press-icon>svg {
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    width: 50%;
-    height: 50%;
+.press-icon > svg {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 50%;
+  height: 50%;
 }
 
 .gay-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: var(--layer-modal);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: var(--layer-modal);
 }
 .gay-modal {
-    position: absolute;
-    width: 80%;
-    height: 65%;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 16px;
-    border-radius: 8px;
-    overflow-y: auto;
-    background-color: var(--background-primary);
+  position: absolute;
+  width: 85%;
+  height: 85%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 16px;
+  border-radius: 8px;
+  overflow-y: auto;
+  background-color: var(--background-primary);
 }
-.gay-modal>* {
-    max-width: 100%;
+.gay-modal > * {
+  max-width: 100%;
 }
 
 .gay-config-header {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
 }
 .gay-config-panel {
-    padding: 16px;
-    border-top: 1px solid var(--background-modifier-border);
+  padding: 16px;
+  border-top: 1px solid var(--background-modifier-border);
 }
-.gay-config-panel>span {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
+.gay-config-panel > span {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
 }
-.gay-config-panel>span>div {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
+.gay-config-panel > span > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
 }
-.gay-config-panel>img {
-    width: 100%;
+.gay-config-panel > img {
+  width: 100%;
 }
 
 .color-picker-preset-button {
-    width: 30;
-    height: 30;
-    margin: 0 5px;
-    border: none;
-    cursor: pointer;
+  width: 30;
+  height: 30;
+  margin: 0 5px;
+  border: none;
+  cursor: pointer;
 }
 
 /* REACT COLOR PALETTE */
-.rcp-root{--rcp-background-color: #121212;--rcp-field-input-color: #ffffff;--rcp-field-input-border-color: #242424;--rcp-field-label-color: #808080}.rcp{display:flex;flex-direction:column;background-color:var(--rcp-background-color);border-radius:10px}.rcp-body{display:flex;flex-direction:column;gap:20px;padding:20px 10px}.rcp-section{display:flex;flex-direction:column;gap:10px}.rcp-interactive{width:100%;height:100%;user-select:none;touch-action:none}.rcp-interactive[aria-disabled=true]{cursor:unset;pointer-events:none}.rcp-saturation{cursor:all-scroll;width:100%;position:relative;background-image:linear-gradient(to bottom,transparent,black),linear-gradient(to right,white,transparent);border-radius:10px 10px 0 0}.rcp-saturation-cursor{position:absolute;width:20px;height:20px;border:2px solid white;border-radius:100%;box-shadow:0 0 15px #00000026;transform:translate(-10px,-10px)}.rcp-hue{cursor:ew-resize;position:relative;width:100%;height:12px;background-image:linear-gradient(to right,red,#ff0,#0f0,#0ff,#00f,#f0f,red);border-radius:10px}.rcp-hue-cursor{position:absolute;width:20px;height:20px;border:2px solid white;border-radius:100%;box-shadow:0 0 15px #00000026;transform:translate(-10px,-4px)}.rcp-alpha{cursor:ew-resize;position:relative;width:100%;height:12px;border-radius:10px}.rcp-alpha-cursor{position:absolute;width:20px;height:20px;border:2px solid white;border-radius:100%;box-shadow:0 0 15px #00000026;transform:translate(-10px,-4px)}.rcp-fields{display:flex;flex-direction:column;gap:10px}.rcp-fields-floor{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}.rcp-field{display:flex;flex-direction:column;width:100%}.rcp-field-input{width:100%;font-family:inherit;font-size:14px;text-align:center;color:var(--rcp-field-input-color);background-color:transparent;border:2px solid var(--rcp-field-input-border-color);border-radius:5px;outline:none;padding:5px 0}.rcp-field-input:read-only{opacity:.8}.rcp-field-label{font-size:14px;text-align:center;color:var(--rcp-field-label-color)}
+.rcp-root {
+  --rcp-background-color: #121212;
+  --rcp-field-input-color: #ffffff;
+  --rcp-field-input-border-color: #242424;
+  --rcp-field-label-color: #808080;
+}
+.rcp {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--rcp-background-color);
+  border-radius: 10px;
+}
+.rcp-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px 10px;
+}
+.rcp-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.rcp-interactive {
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  touch-action: none;
+}
+.rcp-interactive[aria-disabled="true"] {
+  cursor: unset;
+  pointer-events: none;
+}
+.rcp-saturation {
+  cursor: all-scroll;
+  width: 100%;
+  position: relative;
+  background-image: linear-gradient(to bottom, transparent, black),
+    linear-gradient(to right, white, transparent);
+  border-radius: 10px 10px 0 0;
+}
+.rcp-saturation-cursor {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid white;
+  border-radius: 100%;
+  box-shadow: 0 0 15px #00000026;
+  transform: translate(-10px, -10px);
+}
+.rcp-hue {
+  cursor: ew-resize;
+  position: relative;
+  width: 100%;
+  height: 12px;
+  background-image: linear-gradient(
+    to right,
+    red,
+    #ff0,
+    #0f0,
+    #0ff,
+    #00f,
+    #f0f,
+    red
+  );
+  border-radius: 10px;
+}
+.rcp-hue-cursor {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid white;
+  border-radius: 100%;
+  box-shadow: 0 0 15px #00000026;
+  transform: translate(-10px, -4px);
+}
+.rcp-alpha {
+  cursor: ew-resize;
+  position: relative;
+  width: 100%;
+  height: 12px;
+  border-radius: 10px;
+}
+.rcp-alpha-cursor {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid white;
+  border-radius: 100%;
+  box-shadow: 0 0 15px #00000026;
+  transform: translate(-10px, -4px);
+}
+.rcp-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.rcp-fields-floor {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+.rcp-field {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.rcp-field-input {
+  width: 100%;
+  font-family: inherit;
+  font-size: 14px;
+  text-align: center;
+  color: var(--rcp-field-input-color);
+  background-color: transparent;
+  border: 2px solid var(--rcp-field-input-border-color);
+  border-radius: 5px;
+  outline: none;
+  padding: 5px 0;
+}
+.rcp-field-input:read-only {
+  opacity: 0.8;
+}
+.rcp-field-label {
+  font-size: 14px;
+  text-align: center;
+  color: var(--rcp-field-label-color);
+}
