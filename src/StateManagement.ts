@@ -72,7 +72,7 @@ export const useSettings = create<GayToolbarSettings & SettingsActions>()(
 
       set((prev: GayToolbarSettings) => {
         const savedConfig = JSON.stringify(
-          Object.fromEntries(savedConfigKeys.map((key) => [key, prev[key]]))
+          Object.fromEntries(savedConfigKeys.map((key) => [key, prev[key]])),
         );
 
         return {
@@ -92,7 +92,7 @@ export const useSettings = create<GayToolbarSettings & SettingsActions>()(
       set((prev: GayToolbarSettings) => ({
         configs: prev.configs.filter((c) => c.id !== id),
       })),
-  })
+  }),
 );
 
 // ---------------- Not saved to data.json ----------------

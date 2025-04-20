@@ -14,7 +14,7 @@ export const hexToIColor = (color: string) => {
 
 export const pointerInside = (
   event: React.PointerEvent<HTMLButtonElement>,
-  el: HTMLElement | null
+  el: HTMLElement | null,
 ) => {
   if (!el) return false;
 
@@ -32,7 +32,7 @@ export const pointerInside = (
 
 export const getLuminanceGuidedIconColor = (
   bgColorString: string,
-  contrastThreshold = 4.5
+  contrastThreshold = 4.5,
 ) => {
   const matches = bgColorString.match(/#(?:[0-9a-fA-F]{3,4}){1,2}\b/g);
 

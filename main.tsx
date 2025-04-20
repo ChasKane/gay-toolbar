@@ -82,7 +82,7 @@ export default class GayToolbarPlugin extends Plugin {
         this.toolbarRoot.render(<GayToolbar />);
         parentNode.insertBefore(
           this.toolbarNode,
-          parentNode.querySelector(".status-bar")
+          parentNode.querySelector(".status-bar"),
         );
       }
     });
@@ -145,7 +145,7 @@ class GayToolbarSettingsTab extends PluginSettingTab {
           .onChange(async (value) => {
             this.plugin.settings.mobileOnly = value;
             await this.plugin.saveSettings();
-          })
+          }),
       );
   }
 }

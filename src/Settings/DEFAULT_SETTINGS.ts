@@ -26,7 +26,7 @@ export const getEmptySettings = () =>
       "#800080",
     ],
     configs: [],
-  } as GayToolbarSettings);
+  }) as GayToolbarSettings;
 
 export default {
   buttonIds: [

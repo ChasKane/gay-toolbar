@@ -159,7 +159,7 @@ const GayColorPicker: React.FC<{
               </div>
             </div>
           </dialog>,
-          document.body
+          document.body,
         )}
     </>
   );

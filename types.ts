@@ -73,7 +73,7 @@ export type SettingsActions = {
     id: string,
     icon: string,
     onTapCommandId: string,
-    location: Coord
+    location: Coord,
   ) => void;
   updateButton: (id: string, newSettings: Partial<GayButtonSettings>) => void;
   deleteButton: (id: string) => void;
