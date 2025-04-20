@@ -6,8 +6,9 @@ import { Platform } from "obsidian";
 import { getLuminanceGuidedIconColor } from "src/utils";
 
 const GayToolbar: React.FC = () => {
-  const { isEditing, selectedButtonId, isMinimized } = useEditor();
-  const { backgroundColor, customBackground } = useSettings();
+  const { isEditing, selectedButtonId } = useEditor();
+  const { isMinimized, backgroundColor, customBackground } = useSettings();
+  console.log("isMinimized", isMinimized);
   const plugin = usePlugin((state) => state.plugin);
 
   const ref: RefObject<HTMLDivElement> = useRef(null);
@@ -55,7 +56,7 @@ const GayToolbar: React.FC = () => {
             viewBox="0 0 24 24"
             strokeWidth="1.5"
             stroke={getLuminanceGuidedIconColor(
-              customBackground || backgroundColor,
+              customBackground || backgroundColor
             )}
             className="size-6"
           >

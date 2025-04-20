@@ -53,7 +53,7 @@ export default class GayToolbarPlugin extends Plugin {
       id: "maximize",
       name: "Maximize toolbar",
       callback: () => {
-        useEditor.setState((prev) => ({
+        useSettings.setState((prev) => ({
           ...prev,
           isMinimized: false,
         }));
@@ -63,7 +63,8 @@ export default class GayToolbarPlugin extends Plugin {
       id: "minimize",
       name: "Minimize toolbar",
       callback: () => {
-        useEditor.setState((prev) => ({
+        console.log("min");
+        useSettings.setState((prev) => ({
           ...prev,
           isMinimized: true,
         }));
@@ -82,7 +83,7 @@ export default class GayToolbarPlugin extends Plugin {
         this.toolbarRoot.render(<GayToolbar />);
         parentNode.insertBefore(
           this.toolbarNode,
-          parentNode.querySelector(".status-bar"),
+          parentNode.querySelector(".status-bar")
         );
       }
     });
@@ -145,7 +146,7 @@ class GayToolbarSettingsTab extends PluginSettingTab {
           .onChange(async (value) => {
             this.plugin.settings.mobileOnly = value;
             await this.plugin.saveSettings();
-          }),
+          })
       );
   }
 }

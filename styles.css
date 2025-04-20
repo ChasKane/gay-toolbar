@@ -326,12 +326,15 @@
   width: 100%;
 }
 
-.color-picker-preset-button {
-  width: 30;
-  height: 30;
-  margin: 0 5px;
-  border: none;
-  cursor: pointer;
+#color-picker-presets button {
+  all: unset;
+  display: flex;
+  width: 26px;
+  height: 26px;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 5px;
 }
 
 /* REACT COLOR PALETTE */

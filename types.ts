@@ -12,7 +12,6 @@ export type GayButtonSettings = {
 export type EditorState = {
   isEditing: boolean;
   selectedButtonId: string;
-  isMinimized: boolean;
 };
 export type EditorActions = {
   setIsEditing: (isEditing: boolean) => void;
@@ -39,6 +38,7 @@ export const savedConfigKeys = [
   "backgroundColor",
   "customBackground",
   "pressDelayMs",
+  "isMinimized",
 ] as const;
 export type SavedConfigKeys = (typeof savedConfigKeys)[number];
 
@@ -55,6 +55,7 @@ export type SavedConfigValues = {
   backgroundColor: string;
   customBackground?: string;
   pressDelayMs: number;
+  isMinimized: boolean;
 };
 
 export type SavedConfig = {
@@ -73,7 +74,7 @@ export type SettingsActions = {
     id: string,
     icon: string,
     onTapCommandId: string,
-    location: Coord,
+    location: Coord
   ) => void;
   updateButton: (id: string, newSettings: Partial<GayButtonSettings>) => void;
   deleteButton: (id: string) => void;

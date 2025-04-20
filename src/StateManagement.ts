@@ -72,7 +72,7 @@ export const useSettings = create<GayToolbarSettings & SettingsActions>()(
 
       set((prev: GayToolbarSettings) => {
         const savedConfig = JSON.stringify(
-          Object.fromEntries(savedConfigKeys.map((key) => [key, prev[key]])),
+          Object.fromEntries(savedConfigKeys.map((key) => [key, prev[key]]))
         );
 
         return {
@@ -92,7 +92,7 @@ export const useSettings = create<GayToolbarSettings & SettingsActions>()(
       set((prev: GayToolbarSettings) => ({
         configs: prev.configs.filter((c) => c.id !== id),
       })),
-  }),
+  })
 );
 
 // ---------------- Not saved to data.json ----------------
@@ -100,7 +100,6 @@ export const useSettings = create<GayToolbarSettings & SettingsActions>()(
 export const useEditor = create<EditorState & EditorActions>()((set) => ({
   isEditing: false,
   selectedButtonId: "",
-  isMinimized: false,
 
   setIsEditing: (isEditing) => {
     // drag ops (on android at least) hide keyboard and there's no way around it,

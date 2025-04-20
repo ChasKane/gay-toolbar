@@ -37,7 +37,7 @@ const ConfigsModal = () => {
                     } finally {
                       setAddingConfig(false);
                     }
-                  }, 0),
+                  }, 0)
                 );
               }}
             >
@@ -67,7 +67,7 @@ const ConfigsModal = () => {
           ))}
         </div>
       </dialog>,
-      document.body,
+      document.body
     )
   ) : (
     <>

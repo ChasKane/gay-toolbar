@@ -14,6 +14,7 @@ export const getEmptySettings = () =>
     customBackground: "",
     mobileOnly: false,
     pressDelayMs: 200,
+    isMinimized: false,
     presetColors: [
       "#add8e6",
       "#ffb6c1",
@@ -26,7 +27,7 @@ export const getEmptySettings = () =>
       "#800080",
     ],
     configs: [],
-  }) as GayToolbarSettings;
+  } as GayToolbarSettings);
 
 export default {
   buttonIds: [
@@ -200,6 +201,7 @@ export default {
   customBackground: "radial-gradient(circle, #55d1fc, #f0a0b8, #e6e6e6)",
   mobileOnly: false,
   pressDelayMs: 170,
+  isMinimized: false,
   presetColors: [
     "#add8e6",
     "#ffb6c1",
