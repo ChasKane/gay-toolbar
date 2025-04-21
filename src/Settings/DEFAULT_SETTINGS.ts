@@ -30,6 +30,16 @@ export const getEmptySettings = () =>
   } as GayToolbarSettings);
 
 export default {
+  numRows: 3,
+  numCols: 6,
+  rowHeight: 29,
+  gridGap: 2,
+  gridPadding: 2,
+  backgroundColor: "#817465",
+  customBackground: "radial-gradient(circle, #55d1fc, #f0a0b8, #e6e6e6)",
+  mobileOnly: false,
+  pressDelayMs: 170,
+  isMinimized: false,
   buttonIds: [
     "Bullet list commands",
     "Undo",
@@ -192,16 +202,6 @@ export default {
       backgroundColor: "#3333ff",
     },
   },
-  numRows: 3,
-  numCols: 6,
-  rowHeight: 29,
-  gridGap: 2,
-  gridPadding: 2,
-  backgroundColor: "#817465",
-  customBackground: "radial-gradient(circle, #55d1fc, #f0a0b8, #e6e6e6)",
-  mobileOnly: false,
-  pressDelayMs: 170,
-  isMinimized: false,
   presetColors: [
     "#add8e6",
     "#ffb6c1",

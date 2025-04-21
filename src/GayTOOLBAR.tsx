@@ -4,10 +4,12 @@ import GaySettings from "./Settings/GaySettings";
 import { useEditor, usePlugin, useSettings } from "./StateManagement";
 import { Platform } from "obsidian";
 import { getLuminanceGuidedIconColor } from "./utils";
+import { createPortal } from "react-dom";
 
 const GayToolbar: React.FC = () => {
   const { isEditing, selectedButtonId } = useEditor();
-  const { isMinimized, backgroundColor, customBackground } = useSettings();
+  const { isMinimized, backgroundColor, customBackground, rowHeight } =
+    useSettings();
   const plugin = usePlugin();
 
   const ref: RefObject<HTMLDivElement> = useRef(null);
@@ -23,24 +25,32 @@ const GayToolbar: React.FC = () => {
     return () => {
       if (statusBar) statusBar.style.bottom = "0px";
     };
+    // isEditing and selectedButtonId required because they change the overall toolbar height
   }, [isEditing, selectedButtonId, isMinimized]);
 
   if (isMinimized)
-    return (
+    return createPortal(
       <div
         ref={ref}
         style={{
-          position: "fixed",
-          bottom:
-            (document.querySelector(".status-bar")?.getBoundingClientRect()
-              .height || 0) + "px",
-          right: 0,
+          position: "absolute",
+          right: "4px",
+          bottom: Platform.isMobile
+            ? "4px"
+            : (document.querySelector(".status-bar")?.getBoundingClientRect()
+                .height || 0) +
+              4 +
+              "px",
+          zIndex: 1000,
         }}
+        onPointerDown={(e) => e.preventDefault()} // keep keyboard up if up
       >
         <button
           className="gay-button"
           style={{
             background: customBackground || backgroundColor,
+            aspectRatio: 1,
+            height: rowHeight,
           }}
           onClick={() =>
             // @ts-ignore | app.commands exists; not sure why it's not in the API...
@@ -66,7 +76,8 @@ const GayToolbar: React.FC = () => {
             />
           </svg>
         </button>
-      </div>
+      </div>,
+      document.querySelector(".horizontal-main-container")!
     );
   return (
     <div ref={ref} className="gay-toolbar">
