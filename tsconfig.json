@@ -3,7 +3,7 @@
     "enable": true
   },
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": "src",
     "inlineSourceMap": true,
     "inlineSources": true,
     "module": "ESNext",
@@ -15,18 +15,10 @@
     "isolatedModules": true,
     "strictNullChecks": true,
     "jsx": "react-jsx",
-    "esModuleInterop": true, /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */
+    "esModuleInterop": true /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */,
     "allowSyntheticDefaultImports": true,
-    "lib": [
-      "DOM",
-      "ES5",
-      "ES6",
-      "ES7"
-    ]
+    "lib": ["DOM", "ES5", "ES6", "ES7"],
+    "outDir": "ts-out"
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "main.tsx"
-  ]
+  "include": ["src"]
 }

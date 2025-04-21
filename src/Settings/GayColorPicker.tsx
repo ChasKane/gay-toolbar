@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import { ColorPicker, useColor } from "react-color-palette";
-import { useSettings } from "src/StateManagement";
-import { getLuminanceGuidedIconColor, hexToIColor } from "src/utils";
+import { useSettings } from "../StateManagement";
+import { getLuminanceGuidedIconColor, hexToIColor } from "../utils";
 import { setIcon } from "obsidian";
 
 const GayColorPicker: React.FC<{

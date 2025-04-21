@@ -3,7 +3,7 @@ import GayButton from "./GayButton";
 import GridSlot from "./GridSlot";
 import DraggableButtonContainer from "./DraggableButtonContainer";
 import { useSettings, usePlugin, useEditor } from "../StateManagement";
-import chooseNewCommand from "src/Settings/chooseNewCommand";
+import chooseNewCommand from "../Settings/chooseNewCommand";
 import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 
 const ButtonGrid: React.FC = () => {
@@ -21,7 +21,7 @@ const ButtonGrid: React.FC = () => {
     backgroundColor,
     customBackground,
   } = useSettings();
-  const plugin = usePlugin((state) => state.plugin);
+  const plugin = usePlugin();
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -92,8 +92,9 @@ const ButtonGrid: React.FC = () => {
                 className="gay-button-container"
                 onClick={async () => {
                   if (plugin?.app) {
-                    const { icon, id: onTapCommandId } =
-                      await chooseNewCommand(plugin);
+                    const { icon, id: onTapCommandId } = await chooseNewCommand(
+                      plugin
+                    );
                     const id = Date.now().toString(36);
                     addButton(id, icon, onTapCommandId, [i, j]);
                     setTimeout(() => setSelectedButtonId(id), 0);

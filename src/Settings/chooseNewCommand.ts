@@ -1,4 +1,4 @@
-import GayToolbarPlugin from "main";
+import GayToolbarPlugin from "plugin";
 import {
   Command,
   setIcon,
@@ -8,7 +8,7 @@ import {
 } from "obsidian";
 
 export default async function chooseNewCommand(
-  plugin: GayToolbarPlugin,
+  plugin: GayToolbarPlugin
 ): Promise<{
   id: string;
   icon: string;
@@ -131,7 +131,7 @@ class ChooseIconModal extends FuzzySuggestModal<string> {
       .setText(
         item.item
           .replace(/-/g, " ")
-          .replace(/(^\w{1})|(\s+\w{1})/g, (letter) => letter.toUpperCase()),
+          .replace(/(^\w{1})|(\s+\w{1})/g, (letter) => letter.toUpperCase())
       );
 
     const aux = el.createDiv({ cls: "suggestion-aux" });

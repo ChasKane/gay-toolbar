@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { setIcon } from "obsidian";
 import { usePlugin, useSettings, useEditor } from "../StateManagement";
-import { getLuminanceGuidedIconColor, pointerInside } from "src/utils";
+import { getLuminanceGuidedIconColor, pointerInside } from "../utils";
 
 const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
   const pointerDataRef = useRef<{
@@ -14,7 +14,7 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
   const tapIconRef = useRef<HTMLDivElement>(null);
   const pressIconRef = useRef<HTMLDivElement>(null);
 
-  const plugin = usePlugin((state) => state.plugin);
+  const plugin = usePlugin();
   const { isEditing, selectedButtonId, setSelectedButtonId } = useEditor();
   const {
     backgroundColor,

@@ -1,15 +1,13 @@
 import { create } from "zustand";
 import { getEmptySettings } from "./Settings/DEFAULT_SETTINGS";
-import GayToolbarPlugin from "../main";
+import GayToolbarPlugin from "./plugin";
 import {
   GayToolbarSettings,
   SettingsActions,
   EditorActions,
   EditorState,
   savedConfigKeys,
-  SavedConfigValues,
-  SavedConfig,
-} from "../types";
+} from "./types";
 import { Platform } from "obsidian";
 import { takeSnapshot } from "./utils";
 
@@ -111,7 +109,4 @@ export const useEditor = create<EditorState & EditorActions>()((set) => ({
   },
   setSelectedButtonId: (id) => set({ selectedButtonId: id }),
 }));
-export const usePlugin = create<{ plugin: GayToolbarPlugin | null }>()(() => ({
-  // TODO: I thnk this could just be null, instead of {plugin: null}
-  plugin: null,
-}));
+export const usePlugin = create<GayToolbarPlugin | null>()(() => null);

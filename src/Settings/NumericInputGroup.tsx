@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { useSettings } from "src/StateManagement";
+import { useSettings } from "../StateManagement";
 
 const SliderInputGroup: React.FC<{
   label: string;
@@ -17,7 +17,7 @@ const SliderInputGroup: React.FC<{
     Math.clamp(
       step === 1 ? val : Math.round(val * 100) / 100,
       bounds[0],
-      bounds[1],
+      bounds[1]
     );
 
   return (

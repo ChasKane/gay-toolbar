@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useRef, useState } from "react";
 import ReactDOM, { flushSync } from "react-dom";
-import { useEditor, useSettings } from "src/StateManagement";
+import { useEditor, useSettings } from "../StateManagement";
 import { isObjectBindingPattern } from "typescript";
 
 const ConfigsModal = () => {

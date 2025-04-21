@@ -1,15 +1,15 @@
 import React, { ReactNode, useEffect, useRef, useState } from "react";
 import NumericInputGroup from "./NumericInputGroup";
-import { useEditor, usePlugin, useSettings } from "src/StateManagement";
+import { useEditor, usePlugin, useSettings } from "../StateManagement";
 import chooseNewCommand from "./chooseNewCommand";
 import { setIcon } from "obsidian";
 import GayColorPicker from "./GayColorPicker";
 import ConfigsModal from "./ConfigsModal";
 
 const GaySettings: React.FC = () => {
-  const plugin = usePlugin((state) => state.plugin);
+  const plugin = usePlugin();
   const { setIsEditing, selectedButtonId, setSelectedButtonId } = useEditor(
-    (state) => state,
+    (state) => state
   );
   const {
     updateButton,
@@ -42,7 +42,7 @@ const GaySettings: React.FC = () => {
     if (pressCommandButtonRef.current) {
       setIcon(
         pressCommandButtonRef.current,
-        pressIcon || "question-mark-glyph",
+        pressIcon || "question-mark-glyph"
       );
       const svg = pressCommandButtonRef.current.firstChild as HTMLElement;
       if (svg) {
@@ -67,7 +67,7 @@ const GaySettings: React.FC = () => {
       // @ts-ignore Capacitor exists on mobile because Obsidian mobile is built on it
       listener.current = await window.Capacitor?.Plugins?.App?.addListener(
         "backButton",
-        () => setIsEditing(false),
+        () => setIsEditing(false)
       );
     })();
     return () => listener.current?.remove?.();
@@ -219,7 +219,7 @@ const GaySettings: React.FC = () => {
                     color={buttons[buttonIds[0]].backgroundColor}
                     onChange={(color) =>
                       buttonIds.forEach((id) =>
-                        updateButton(id, { backgroundColor: color }),
+                        updateButton(id, { backgroundColor: color })
                       )
                     }
                   ></GayColorPicker>
@@ -232,7 +232,7 @@ const GaySettings: React.FC = () => {
                 onClick={() => {
                   // @ts-ignore | app.commands exists; not sure why it's not in the API...
                   plugin?.app.commands.executeCommandById(
-                    "gay-toolbar:load-default-settings",
+                    "gay-toolbar:load-default-settings"
                   );
                 }}
               >

@@ -1,16 +1,9 @@
-import {
-  App,
-  Platform,
-  Plugin,
-  PluginSettingTab,
-  Setting,
-  WorkspaceLeaf,
-} from "obsidian";
+import { App, Platform, Plugin, PluginSettingTab, Setting } from "obsidian";
 import { createRoot, Root } from "react-dom/client";
-import GayToolbar from "./src/GayTOOLBAR";
-import DEFAULT_SETTINGS from "./src/Settings/DEFAULT_SETTINGS";
-import { usePlugin, useSettings, useEditor } from "./src/StateManagement";
-import { GayToolbarSettings } from "types";
+import GayToolbar from "./GayTOOLBAR";
+import DEFAULT_SETTINGS from "./Settings/DEFAULT_SETTINGS";
+import { usePlugin, useSettings, useEditor } from "./StateManagement";
+import { GayToolbarSettings } from "./types";
 
 export default class GayToolbarPlugin extends Plugin {
   settings: GayToolbarSettings;
@@ -63,7 +56,6 @@ export default class GayToolbarPlugin extends Plugin {
       id: "minimize",
       name: "Minimize toolbar",
       callback: () => {
-        console.log("min");
         useSettings.setState((prev) => ({
           ...prev,
           isMinimized: true,
@@ -94,21 +86,16 @@ export default class GayToolbarPlugin extends Plugin {
   }
 
   async loadSettings() {
-    // TODO: clean this up
     this.settings = await this.loadData();
     if (!this.settings) {
-      this.settings = DEFAULT_SETTINGS;
-      this.saveSettings(this.settings);
+      this.settings = { ...DEFAULT_SETTINGS };
+      await this.saveSettings(this.settings);
     }
-    usePlugin.setState({ plugin: this });
+    usePlugin.setState(this);
     useSettings.setState(this.settings);
     this.unsubscribePositionStore = useSettings.subscribe((state) => {
-      // couldn't I juse use `this`? but then I'd need to bind...?
-      const plugin = usePlugin.getState().plugin;
-      if (plugin) {
-        plugin.settings = state;
-        plugin.saveSettings(plugin.settings);
-      } else throw new Error("plugin undefined in useStore subscription");
+      this.settings = state;
+      this.saveSettings(this.settings);
     });
   }
 
@@ -131,12 +118,10 @@ class GayToolbarSettingsTab extends PluginSettingTab {
   display(): void {
     const { containerEl } = this;
 
-    // Clear previous settings
     containerEl.empty();
 
     containerEl.createEl("h2", { text: "Gay Toolbar Settings" });
 
-    // Setting: settingTwo (toggle)
     new Setting(containerEl)
       .setName("Mobile only")
       .setDesc("Restart to apply changes")
