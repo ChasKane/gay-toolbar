@@ -9,7 +9,7 @@ export default class GayToolbarPlugin extends Plugin {
   settings: GayToolbarSettings;
   toolbarRoot: Root;
   toolbarNode: HTMLElement;
-  unsubscribePositionStore: () => void;
+  unsubscribeSettingsSync: () => void;
 
   async onload() {
     await this.loadSettings();
@@ -93,7 +93,7 @@ export default class GayToolbarPlugin extends Plugin {
     }
     usePlugin.setState(this);
     useSettings.setState(this.settings);
-    this.unsubscribePositionStore = useSettings.subscribe((state) => {
+    this.unsubscribeSettingsSync = useSettings.subscribe((state) => {
       this.settings = state;
       this.saveSettings(this.settings);
     });
@@ -103,7 +103,7 @@ export default class GayToolbarPlugin extends Plugin {
     this.toolbarRoot?.unmount?.();
     this.toolbarNode?.remove();
     document.querySelector(".gay-toolbar-container")?.remove(); // not sure why this is sometimes necessary
-    this.unsubscribePositionStore?.();
+    this.unsubscribeSettingsSync?.();
   }
 }
 
