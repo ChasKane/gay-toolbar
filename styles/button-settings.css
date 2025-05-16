@@ -1,0 +1,44 @@
+.button-settings {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ring {
+  width: 100%;
+  aspect-ratio: 1;
+  margin: 36px;
+  border: 2px solid white;
+  border-radius: 50%;
+}
+.ring .inner {
+  width: unset;
+}
+
+.space-around {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 48px;
+}
+
+.centered-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+small {
+  max-width: 10ch;
+  word-wrap: break-word;
+  text-align: center;
+}

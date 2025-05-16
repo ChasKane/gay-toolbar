@@ -1,12 +1,15 @@
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import { useEditor } from "StateManagement";
 
 const Slot: React.FC<{
   location: [number, number];
+  buttonId: string;
   children: ReactNode;
-}> = ({ location, children }) => {
+}> = ({ location, buttonId, children }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [entered, setEntered] = useState(false);
+  const { isEditing, selectedButtonId, setSelectedButtonId } = useEditor();
 
   useEffect(() => {
     const el = ref.current;
@@ -26,7 +29,10 @@ const Slot: React.FC<{
       ref={ref}
       key={JSON.stringify(location)}
       className="slot"
-      style={{ opacity: entered ? "15%" : "100%" }}
+      style={{
+        opacity: entered ? "15%" : "100%",
+        zIndex: isEditing && buttonId === selectedButtonId ? 1 : 0,
+      }}
     >
       {children}
     </div>

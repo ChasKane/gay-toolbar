@@ -1,4 +1,4 @@
-import GayToolbarPlugin from "plugin";
+import GayToolbarPlugin from "main";
 import {
   Command,
   setIcon,
@@ -8,12 +8,16 @@ import {
 } from "obsidian";
 
 export default async function chooseNewCommand(
-  plugin: GayToolbarPlugin
+  plugin: GayToolbarPlugin,
+  currentCommandId?: string
 ): Promise<{
   id: string;
   icon: string;
 }> {
-  const command = await new AddCommandModal(plugin).awaitSelection();
+  const command = await new AddCommandModal(
+    plugin,
+    currentCommandId
+  ).awaitSelection();
   let icon = await new ChooseIconModal(plugin, command.icon).awaitSelection();
 
   return {
@@ -26,13 +30,17 @@ export class AddCommandModal extends FuzzySuggestModal<Command> {
   private plugin: GayToolbarPlugin;
   private commands: Command[];
 
-  public constructor(plugin: GayToolbarPlugin | null) {
+  public constructor(
+    plugin: GayToolbarPlugin | null,
+    currentCommandId?: string
+  ) {
     if (!plugin) return;
     super(plugin.app);
     this.plugin = plugin;
+    this.shouldRestoreSelection = true;
     // @ts-ignore | app.commands exists; not sure why it's not in the API...
     this.commands = Object.values(plugin.app.commands.commands);
-    this.setPlaceholder("Choose a command to add");
+    this.setPlaceholder(currentCommandId ?? "Choose a command to add");
 
     this.setInstructions([
       {

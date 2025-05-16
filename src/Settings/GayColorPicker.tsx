@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import { ColorPicker, useColor } from "react-color-palette";
 import { useSettings } from "../StateManagement";
@@ -6,9 +6,10 @@ import { getLuminanceGuidedIconColor, hexToIColor } from "../utils";
 import { setIcon } from "obsidian";
 
 const GayColorPicker: React.FC<{
+  isSwipeCommand?: boolean;
   color: string;
   onChange: (color: string) => void;
-}> = ({ color, onChange }) => {
+}> = ({ isSwipeCommand, color, onChange }) => {
   const { presetColors, deletePresetColor, setSettings } = useSettings();
   const [isOpen, setIsOpen] = useState(false);
   const modalOverlayRef = useRef(null);
@@ -16,15 +17,12 @@ const GayColorPicker: React.FC<{
 
   const [selectedColor, setSelectedColor] = useColor(color);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (buttonRef.current) {
       setIcon(buttonRef.current, "palette");
       const svg = buttonRef.current.firstChild as HTMLElement;
       if (svg) {
         svg.classList.add("gay-icon--lmao");
-        if (buttonRef.current) {
-          svg.style.color = getLuminanceGuidedIconColor(color);
-        }
       }
     }
   }, [color]);
@@ -35,7 +33,16 @@ const GayColorPicker: React.FC<{
     <>
       <button
         ref={buttonRef}
-        style={{ backgroundColor: color, border: "4px groove white" }}
+        style={
+          isSwipeCommand
+            ? {
+                borderRadius: "50%",
+                width: "28px",
+                height: "28px",
+                padding: "5px",
+              }
+            : {}
+        }
         onClick={() => setIsOpen(true)}
       ></button>
       {isOpen &&

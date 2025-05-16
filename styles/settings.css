@@ -1,0 +1,197 @@
+.gay-settings-container {
+  position: relative;
+  border: solid 1px #ccc;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  padding: 20px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.gay-settings-container > :first-child {
+  width: min(450px, 100%);
+}
+
+.central-item {
+  background-color: color-mix(
+    in srgb,
+    var(--background-primary) 50%,
+    transparent
+  );
+  padding: 5%;
+  border-radius: 8px;
+  pointer-events: none;
+  gap: 0px;
+}
+.central-item * {
+  pointer-events: all;
+}
+
+.gay-settings-footer {
+  display: flex;
+  flex-direction: row;
+  align-items: end;
+  width: 100%;
+  position: sticky;
+  bottom: 0px;
+  pointer-events: none;
+}
+.gay-settings-footer > * {
+  pointer-events: auto;
+}
+
+.gay-settings-footer .float-right {
+  margin-left: auto;
+  display: flex;
+  gap: 16px;
+}
+
+.settings-main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.toolbar-setting-wrapper {
+  margin-top: 4px;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.buy-me-a-coffee-button {
+  display: flex;
+  align-items: center;
+  background-color: #ffdd00;
+  border-radius: 30px;
+  padding: 8px 20px;
+  color: #000000;
+  text-decoration: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+}
+.buy-me-a-coffee-button:hover {
+  text-decoration: none;
+  opacity: 0.9;
+}
+
+.buy-me-a-coffee-emoji {
+  margin-right: 10px;
+}
+
+.settings-footer {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row-reverse;
+  margin-top: 8px;
+}
+
+.gay-input-label {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.gay-input {
+  display: flex;
+  justify-content: start;
+}
+.gay-input input {
+  margin-inline: 6px;
+}
+
+.gay-input-numeric {
+  margin-right: 8px;
+  text-align: space-between;
+}
+
+.gay-input-color {
+  height: auto;
+  margin-right: 8px;
+  border-radius: 4px;
+  box-shadow: 0 0 4px grey;
+}
+
+.tap-icon > svg {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  width: 80%;
+  height: 80%;
+}
+.press-icon > svg {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 50%;
+  height: 50%;
+}
+
+.gay-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: var(--layer-modal);
+}
+.gay-modal {
+  position: absolute;
+  width: 85%;
+  height: 65%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 16px;
+  border-radius: 8px;
+  overflow-y: auto;
+  background-color: var(--background-primary);
+}
+.gay-modal > * {
+  max-width: 100%;
+}
+
+.gay-config-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.gay-config-panel {
+  padding: 16px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+.gay-config-panel > span {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.gay-config-panel > span > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+.gay-config-panel > img {
+  width: 100%;
+}
+
+#color-picker-presets button {
+  all: unset;
+  display: flex;
+  width: 26px;
+  height: 26px;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 5px;
+}

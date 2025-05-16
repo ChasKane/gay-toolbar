@@ -1,0 +1,123 @@
+.slot {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.gay-button-container {
+  width: 100%;
+  height: 100%;
+}
+
+.gay-button {
+  position: relative;
+  display: flex; /* fixes misalignment-on-iphone bug */
+  border-radius: 8px;
+  border: var(--button-border-width) solid transparent;
+  width: 100%;
+  height: 100%;
+  padding: 0px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15) !important;
+}
+.gay-button-tap {
+  z-index: 2;
+}
+.gay-button-tap::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 3rem;
+  height: 3rem;
+  opacity: 0.8;
+  background: var(--swipe-ring-background);
+  border-radius: 50%; /* Make it circular */
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  animation: tapRing var(--press-delay) ease forwards;
+}
+
+@keyframes tapRing {
+  0% {
+    width: 3rem;
+    height: 3rem;
+    opacity: 0.3;
+  }
+  100% {
+    width: 50rem;
+    height: 50rem;
+    opacity: 0.1;
+  }
+}
+
+.gay-button-press {
+  z-index: 2;
+}
+.gay-button-press::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5rem; /* Starting diameter of the ring */
+  height: 5rem;
+  background: var(--button-press-background);
+  border-radius: 50%; /* Make it circular */
+  transform: translate(-50%, -50%);
+  opacity: 0.8;
+  z-index: 3;
+  animation: pressRing 0.05s ease forwards;
+}
+@keyframes pressRing {
+  0% {
+    width: 5rem;
+    height: 5rem;
+    opacity: 0.3;
+  }
+  50% {
+    width: 9rem;
+    height: 9rem;
+    opacity: 0.5;
+  }
+  100% {
+    width: 6rem;
+    height: 6rem;
+    opacity: 0.3;
+  }
+}
+
+.gay-icon--lmao {
+  width: 100%;
+  height: 100%;
+}
+
+.button-halo {
+  scale: 1.5;
+}
+
+.wiggle {
+  animation: wiggle 0.8s infinite ease;
+  transform-origin: center; /* Adjust if needed based on your design */
+}
+
+@keyframes wiggle {
+  0% {
+    transform: rotate(-1.5deg) scale(1);
+  }
+  25% {
+    transform: rotate(1.5deg) scale(1.01);
+  }
+  50% {
+    transform: rotate(-1.5deg) scale(0.99);
+  }
+  75% {
+    transform: rotate(1.5deg) scale(1.01);
+  }
+  100% {
+    transform: rotate(-1.5deg) scale(1);
+  }
+}
+
+.disable-animations * {
+  animation: none !important;
+  transition: none !important;
+}

@@ -65,7 +65,7 @@ const GayToolbar: React.FC = () => {
             viewBox="0 0 24 24"
             strokeWidth="1.5"
             stroke={getLuminanceGuidedIconColor(
-              customBackground || backgroundColor
+              backgroundColor || customBackground
             )}
             className="size-6"
           >

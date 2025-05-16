@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import { useSettings } from "../StateManagement";
+import { groomValue } from "utils";
 
 const SliderInputGroup: React.FC<{
   label: string;
@@ -9,16 +10,17 @@ const SliderInputGroup: React.FC<{
 }> = ({ label, name, bounds, step = 1 }) => {
   //@ts-ignore -- we know name will be in GayToolbarSettings
   const value = useSettings((state) => state[name]);
-  const setSettings = useSettings((state) => state.setSettings);
+  const SetSettings = useSettings((state) => state.setSettings);
+  const setSettings = (newSettings: any) => {
+    if (name === "pressDelayMs")
+      document.body.style.setProperty(
+        "--press-delay",
+        `${newSettings.pressDelayMs}ms`
+      );
+    SetSettings(newSettings);
+  };
 
   const [isEmpty, setIsEmpty] = useState(false);
-
-  const groomValue = (val: number) =>
-    Math.clamp(
-      step === 1 ? val : Math.round(val * 100) / 100,
-      bounds[0],
-      bounds[1]
-    );
 
   return (
     <div>
@@ -28,7 +30,7 @@ const SliderInputGroup: React.FC<{
         <button
           onClick={() =>
             value > bounds[0] &&
-            setSettings({ [name]: groomValue(value - step) })
+            setSettings({ [name]: groomValue(value - step, step, bounds) })
           }
         >
           -
@@ -46,21 +48,25 @@ const SliderInputGroup: React.FC<{
               setSettings({ [name]: bounds[0] });
             } else {
               setIsEmpty(false);
-              setSettings({ [name]: groomValue(Number(e.target.value)) });
+              setSettings({
+                [name]: groomValue(Number(e.target.value), step, bounds),
+              });
             }
           }}
           onBlur={(e) => {
             if (e.target.value === "") {
               setSettings({ [name]: 0 });
             } else {
-              setSettings({ [name]: groomValue(Number(e.target.value)) });
+              setSettings({
+                [name]: groomValue(Number(e.target.value), step, bounds),
+              });
             }
           }}
         />
         <button
           onClick={() =>
             value < bounds[1] &&
-            setSettings({ [name]: groomValue(value + step) })
+            setSettings({ [name]: groomValue(value + step, step, bounds) })
           }
         >
           +

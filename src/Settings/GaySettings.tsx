@@ -1,4 +1,10 @@
-import React, { ReactNode, useEffect, useRef, useState } from "react";
+import React, {
+  ReactNode,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import NumericInputGroup from "./NumericInputGroup";
 import { useEditor, usePlugin, useSettings } from "../StateManagement";
 import chooseNewCommand from "./chooseNewCommand";
@@ -24,6 +30,14 @@ const GaySettings: React.FC = () => {
   } = useSettings();
 
   const listener = useRef<{ remove: () => {} } | null>(null);
+
+  const deleteButtonRef = useRef<HTMLButtonElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  useLayoutEffect(() => {
+    if (deleteButtonRef.current) setIcon(deleteButtonRef.current, "trash-2");
+    if (closeButtonRef.current) setIcon(closeButtonRef.current, "x");
+  }, [selectedButtonId]);
 
   // listen for back button on android to exit edit mode
   useEffect(() => {
@@ -63,7 +77,7 @@ const GaySettings: React.FC = () => {
               Scald me
             </a>,
 
-            // MOBILE ONLY
+            // "MOBILE ONLY" setting
             <div>
               <label style={{ paddingRight: "8px" }} htmlFor="mobile-only">
                 Mobile only
@@ -111,15 +125,15 @@ const GaySettings: React.FC = () => {
                 <input
                   id="custom-css"
                   type="checkbox"
-                  checked={!!customBackground}
+                  checked={!backgroundColor}
                   onChange={(e) => {
                     if (!e.target.checked)
-                      setSettings({ customBackground: "" });
-                    else setSettings({ customBackground: " " });
+                      setSettings({ backgroundColor: " " });
+                    else setSettings({ backgroundColor: "" });
                   }}
                 ></input>
               </div>
-              {!customBackground && (
+              {backgroundColor && (
                 <div className="toolbar-setting-wrapper">
                   <GayColorPicker
                     color={backgroundColor}
@@ -166,7 +180,7 @@ const GaySettings: React.FC = () => {
         </div>
       )}
       <div className="gay-settings-footer">
-        {customBackground && !selectedButtonId && (
+        {!backgroundColor && !selectedButtonId && (
           <label htmlFor="customBackground">
             <>
               Custom CSS{" "}
@@ -193,23 +207,20 @@ const GaySettings: React.FC = () => {
         <div className="float-right">
           {selectedButtonId && (
             <button
-              className="delete"
+              ref={deleteButtonRef}
               onClick={() => {
                 deleteButton(selectedButtonId);
                 setSelectedButtonId("");
               }}
-            >
-              Delete
-            </button>
+            />
           )}
           <button
+            ref={closeButtonRef}
             onClick={() => {
               setIsEditing(false);
               setSelectedButtonId("");
             }}
-          >
-            X
-          </button>
+          />
         </div>
       </div>
     </div>

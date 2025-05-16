@@ -7,6 +7,8 @@ export type GayButtonSettings = {
   backgroundColor: string;
   onTapCommandId: string;
   onPressCommandId?: string;
+  swipeCommands?: ({ commandId: string; icon: string; color: string } | null)[];
+  swipeRingOffsetAngle?: number;
 };
 
 export type EditorState = {
@@ -52,8 +54,8 @@ export type SavedConfigValues = {
   rowHeight: number;
   gridGap: number;
   gridPadding: number;
-  backgroundColor: string;
-  customBackground?: string;
+  backgroundColor?: string;
+  customBackground: string;
   pressDelayMs: number;
   isMinimized: boolean;
 };

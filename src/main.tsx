@@ -68,8 +68,14 @@ export default class GayToolbarPlugin extends Plugin {
       this.toolbarNode?.remove();
       document.querySelector(".gay-toolbar-container")?.remove(); // not sure why this is sometimes necessary
 
-      const parentNode = document.querySelector(".app-container");
+      const parentNode: HTMLElement | null =
+        document.querySelector(".app-container");
       if (parentNode) {
+        parentNode.style.setProperty(
+          "--press-delay",
+          `${this.settings.pressDelayMs}ms`
+        );
+        parentNode.style.setProperty("--button-border-width", "0.3rem");
         this.toolbarNode = createDiv("gay-toolbar-container");
         this.toolbarRoot = createRoot(this.toolbarNode);
         this.toolbarRoot.render(<GayToolbar />);

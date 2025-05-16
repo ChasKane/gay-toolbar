@@ -1,5 +1,8 @@
 import chroma from "chroma-js";
 import { toPng } from "html-to-image";
+import { off } from "process";
+
+export type Position = { x: number; y: number };
 
 export const hexToIColor = (color: string) => {
   const C = chroma(color);
@@ -12,27 +15,60 @@ export const hexToIColor = (color: string) => {
   };
 };
 
-export const pointerInside = (
-  event: React.PointerEvent<HTMLButtonElement>,
-  el: HTMLElement | null,
-) => {
-  if (!el) return false;
+export const getDistance = (initYX?: Position, finalXY?: Position) => {
+  if (!initYX || !finalXY) {
+    console.error(initYX, finalXY);
+    return 0;
+  }
+  return Math.hypot(finalXY.x - initYX.x, finalXY.y - initYX.y);
+};
 
-  const { x, y, width, height } = el.getBoundingClientRect();
-  if (
-    event.clientX >= x &&
-    event.clientX <= x + width &&
-    event.clientY >= y &&
-    event.clientY <= y + height
-  )
-    return true;
+/**
+ * Given an angle (degrees) and a radius (px),
+ * returns top/left CSS coords to position an absolutely‐positioned
+ * element around the center of its parent.
+ */
+export const positionAt = (
+  angle: number,
+  radiusPercentage: number
+): { top: string; left: string; transform: string } => {
+  const rad = (angle * Math.PI) / 180;
+  const x = Math.cos(rad) * radiusPercentage;
+  const y = Math.sin(rad) * radiusPercentage;
 
-  return false;
+  return {
+    left: `calc(50% + (50%*${x}))`,
+    top: `calc(50% + (50%*${y}))`,
+    transform: "translate(-50%, -50%)",
+  };
+};
+
+export const getAngle = (initYX: Position, finalXY: Position) => {
+  const normalizedX = finalXY.x - initYX.x;
+  const normalizedY = finalXY.y - initYX.y;
+  let rad = Math.atan2(normalizedY, normalizedX);
+  if (rad < 0) rad += Math.PI * 2;
+  const angle = (360 * rad) / (Math.PI * 2);
+  return angle % 360;
+};
+
+export const getSwipeIdx = (angle: number, offset: number, length: number) => {
+  if (angle < 0 || angle > 360) {
+    console.error(angle);
+    return 0;
+  }
+  let startAngle = (offset - 360 / (length * 2)) % 360;
+  if (startAngle < 0) startAngle += 360;
+  const slotLen = 360 / length;
+  const delta = 360 - ((startAngle - angle) % 360);
+  const swipeIdx = Math.floor(delta / slotLen);
+  console.log([angle, offset, length], [startAngle, slotLen, delta], swipeIdx);
+  return swipeIdx;
 };
 
 export const getLuminanceGuidedIconColor = (
   bgColorString: string,
-  contrastThreshold = 4.5,
+  contrastThreshold = 4.5
 ) => {
   const matches = bgColorString.match(/#(?:[0-9a-fA-F]{3,4}){1,2}\b/g);
 
@@ -59,6 +95,17 @@ export const getLuminanceGuidedIconColor = (
   return iconColor.alpha(1).hex();
 };
 
+export const groomValue = (
+  val: number,
+  step: number,
+  bounds: [number, number]
+) =>
+  Math.clamp(
+    step === 1 ? val : Math.round(val * 100) / 100,
+    bounds[0],
+    bounds[1]
+  );
+
 export const takeSnapshot = async () => {
   const element = document.getElementById("gay-button-grid");
   if (!element) {
@@ -75,6 +122,4 @@ export const takeSnapshot = async () => {
   } finally {
     element.classList.remove("disable-animations");
   }
-  // })
-  // })
 };

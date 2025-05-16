@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { getEmptySettings } from "./Settings/DEFAULT_SETTINGS";
-import GayToolbarPlugin from "./plugin";
+import GayToolbarPlugin from "./main";
 import {
   GayToolbarSettings,
   SettingsActions,
@@ -37,6 +37,8 @@ export const useSettings = create<GayToolbarSettings & SettingsActions>()(
               prev.presetColors[
                 Math.floor(Math.random() * prev.presetColors.length)
               ],
+            swipeCommands: [],
+            swipeRingOffsetAngle: 0,
           },
         },
       })),
@@ -44,7 +46,7 @@ export const useSettings = create<GayToolbarSettings & SettingsActions>()(
       set((prev: GayToolbarSettings) => ({
         buttons: {
           ...prev.buttons,
-          [id]: { ...prev.buttons[id], id: id, ...newSettings },
+          [id]: { ...prev.buttons[id], id, ...newSettings },
         },
       })),
     deleteButton: (id) =>

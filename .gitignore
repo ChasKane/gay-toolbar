@@ -2,3 +2,4 @@ node_modules
 main.js
 release.sh
 data.json
+.DS_Store

@@ -72,7 +72,11 @@ const ButtonGrid: React.FC = () => {
     for (let i = 0; i < numRows; i++) {
       for (let j = 0; j < numCols; j++) {
         const wrapper = (child: ReactNode) => (
-          <GridSlot key={JSON.stringify([i, j])} location={[i, j]}>
+          <GridSlot
+            key={JSON.stringify([i, j])}
+            location={[i, j]}
+            buttonId={buttonId}
+          >
             {child}
           </GridSlot>
         );
