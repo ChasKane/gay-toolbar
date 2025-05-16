@@ -5,22 +5,24 @@ import DraggableButtonContainer from "./DraggableButtonContainer";
 import { useSettings, usePlugin, useEditor } from "../StateManagement";
 import chooseNewCommand from "../Settings/chooseNewCommand";
 import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import React from "react";
+import { debug } from "console";
 
 const ButtonGrid: React.FC = () => {
   const addButton = useSettings((state) => state.addButton);
   const moveButton = useSettings((state) => state.moveButton);
   const setSelectedButtonId = useEditor((state) => state.setSelectedButtonId);
+
   const isEditing = useEditor((state) => state.isEditing);
-  const {
-    buttonLocations,
-    numRows,
-    numCols,
-    rowHeight,
-    gridGap,
-    gridPadding,
-    backgroundColor,
-    customBackground,
-  } = useSettings();
+  const buttonLocations = useSettings((state) => state.buttonLocations);
+  const numRows = useSettings((state) => state.numRows);
+  const numCols = useSettings((state) => state.numCols);
+  const rowHeight = useSettings((state) => state.rowHeight);
+  const gridGap = useSettings((state) => state.gridGap);
+  const gridPadding = useSettings((state) => state.gridPadding);
+  const backgroundColor = useSettings((state) => state.backgroundColor);
+  const customBackground = useSettings((state) => state.customBackground);
+
   const plugin = usePlugin();
   const ref = useRef<HTMLDivElement>(null);
 
@@ -54,7 +56,7 @@ const ButtonGrid: React.FC = () => {
           moveButton(buttonIdGrid[dx][dy], [sx, sy]);
       },
     });
-  }, [buttonLocations]);
+  }, [buttonLocations, moveButton]);
 
   const buttonIdGrid: Array<Array<string>> = useMemo(() => {
     const arr = Array(numRows);
@@ -67,64 +69,59 @@ const ButtonGrid: React.FC = () => {
     return arr;
   }, [buttonLocations, numRows, numCols]);
 
-  const Grid = () => {
-    const grid = [];
-    for (let i = 0; i < numRows; i++) {
-      for (let j = 0; j < numCols; j++) {
-        const wrapper = (child: ReactNode) => (
-          <GridSlot
-            key={JSON.stringify([i, j])}
-            location={[i, j]}
-            buttonId={buttonId}
-          >
-            {child}
-          </GridSlot>
-        );
-        const buttonId = buttonIdGrid[i][j];
-        let child;
-        switch (true) {
-          case buttonId && isEditing:
-            child = (
-              <DraggableButtonContainer location={[i, j]} buttonId={buttonId}>
-                <GayButton buttonId={buttonId} />
-              </DraggableButtonContainer>
-            );
-            break;
-          case !buttonId && isEditing:
-            child = (
-              <button
-                className="gay-button-container"
-                onClick={async () => {
-                  if (plugin?.app) {
-                    const { icon, id: onTapCommandId } = await chooseNewCommand(
-                      plugin
-                    );
-                    const id = Date.now().toString(36);
-                    addButton(id, icon, onTapCommandId, [i, j]);
-                    setTimeout(() => setSelectedButtonId(id), 0);
-                  }
-                }}
-              >
-                +
-              </button>
-            );
-            break;
-          case buttonId && !isEditing:
-            child = buttonId && (
-              <div className="gay-button-container">
-                <GayButton buttonId={buttonId} />
-              </div>
-            );
-            break;
-          case !buttonId && !isEditing:
-            child = buttonId && <div className="gay-button-container"></div>;
-            break;
-        }
-        grid.push(wrapper(child));
+  const slots: ReactNode[] = [];
+  for (let i = 0; i < numRows; i++) {
+    for (let j = 0; j < numCols; j++) {
+      const buttonId = buttonIdGrid[i][j];
+      let child;
+      switch (true) {
+        case buttonId && isEditing:
+          child = (
+            <DraggableButtonContainer location={[i, j]} buttonId={buttonId}>
+              <GayButton buttonId={buttonId} />
+            </DraggableButtonContainer>
+          );
+          break;
+        case !buttonId && isEditing:
+          child = (
+            <button
+              onClick={async () => {
+                if (plugin?.app) {
+                  const { icon, id: onTapCommandId } = await chooseNewCommand(
+                    plugin
+                  );
+                  const id = Date.now().toString(36);
+                  addButton(id, icon, onTapCommandId, [i, j]);
+                  setTimeout(() => setSelectedButtonId(id), 0);
+                }
+              }}
+            >
+              +
+            </button>
+          );
+          break;
+        case buttonId && !isEditing:
+          child = buttonId && (
+            <div>
+              <GayButton buttonId={buttonId} />
+            </div>
+          );
+          break;
+        case !buttonId && !isEditing:
+          child = buttonId && <div />;
+          break;
       }
+      slots.push(
+        <GridSlot
+          key={JSON.stringify([i, j])}
+          location={[i, j]}
+          buttonId={buttonId}
+        >
+          {child}
+        </GridSlot>
+      );
     }
-    return grid;
-  };
+  }
 
   return (
     <div
@@ -139,7 +136,7 @@ const ButtonGrid: React.FC = () => {
         background: customBackground || backgroundColor,
       }}
     >
-      {Grid()}
+      {slots}
     </div>
   );
 };

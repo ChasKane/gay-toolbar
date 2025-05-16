@@ -18,18 +18,17 @@ const GaySettings: React.FC = () => {
   const { setIsEditing, selectedButtonId, setSelectedButtonId } = useEditor(
     (state) => state
   );
-  const {
-    updateButton,
-    deleteButton,
-    backgroundColor,
-    customBackground,
-    mobileOnly,
-    setSettings,
-    buttons,
-    buttonIds,
-  } = useSettings();
 
-  const listener = useRef<{ remove: () => {} } | null>(null);
+  const setSettings = useSettings((state) => state.setSettings);
+  const updateButton = useSettings((state) => state.updateButton);
+  const deleteButton = useSettings((state) => state.deleteButton);
+  const backgroundColor = useSettings((state) => state.backgroundColor);
+  const customBackground = useSettings((state) => state.customBackground);
+  const mobileOnly = useSettings((state) => state.mobileOnly);
+  const buttons = useSettings((state) => state.buttons);
+  const buttonIds = useSettings((state) => state.buttonIds);
+
+  const backBtnListener = useRef<{ remove: () => {} } | null>(null);
 
   const deleteButtonRef = useRef<HTMLButtonElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -42,15 +41,15 @@ const GaySettings: React.FC = () => {
   // listen for back button on android to exit edit mode
   useEffect(() => {
     (async () => {
-      listener.current?.remove?.();
-      // @ts-ignore Capacitor exists on mobile because Obsidian mobile is built on it
-      listener.current = await window.Capacitor?.Plugins?.App?.addListener(
-        "backButton",
-        () => setIsEditing(false)
-      );
+      backBtnListener.current?.remove?.();
+      backBtnListener.current =
+        // @ts-ignore Capacitor exists on mobile because Obsidian mobile is built on it
+        await window.Capacitor?.Plugins?.App?.addListener("backButton", () =>
+          setIsEditing(false)
+        );
     })();
     return () => {
-      listener.current?.remove?.();
+      backBtnListener.current?.remove?.();
     };
   }, [setIsEditing]);
 

@@ -36,12 +36,11 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const tapIconRef = useRef<HTMLDivElement>(null);
   const pressIconRef = useRef<HTMLDivElement>(null);
+
   const swipeRefs = useRef<React.RefObject<HTMLDivElement>[]>([]);
-  if (swipeCommands && swipeRefs.current.length !== swipeCommands.length) {
-    swipeRefs.current = swipeCommands.map(
-      (_, i) => swipeRefs.current[i] || React.createRef<HTMLDivElement>()
-    );
-  }
+  swipeRefs.current = (swipeCommands ?? []).map(
+    (_, i) => swipeRefs.current[i] || React.createRef<HTMLDivElement>()
+  );
 
   const isSelected = buttonId === selectedButtonId;
 
@@ -83,7 +82,6 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
       setIcon(tapIconRef.current, tapIcon || "question-mark-glyph");
       const svg = tapIconRef.current.firstChild as HTMLElement;
       if (svg) {
-        svg.classList.add("gay-icon--lmao");
         if (buttonRef.current) {
           svg.style.color = getLuminanceGuidedIconColor(backgroundColor);
         }
@@ -104,12 +102,11 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
     // * SWIPE COMMANDS
     swipeCommands?.forEach((c, i) => {
       const el = swipeRefs.current[i].current;
-      if (el) {
+      if (el && c) {
         setIcon(el, c?.icon ?? "plus");
         const svg = el.firstChild as HTMLElement;
         if (svg) {
           if (c) {
-            el.style.backgroundColor = c.color;
             svg.style.color = getLuminanceGuidedIconColor(c.color);
           }
         }
@@ -117,45 +114,86 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
     });
   }, [isEditing, tapIcon, pressIcon, backgroundColor, swipeCommands]);
 
+  console.log(bgScale);
+  const getSwipeIconPosition = (
+    angle: number
+  ): { top: string; left: string; transform: string } => {
+    const rad = (angle * Math.PI) / 180;
+    let x = Math.cos(rad);
+    let y = Math.sin(rad);
+    // TODO do this better using interpolation, minding bgScale
+    if (angle >= 0 && angle < 45) x = 1;
+    else if (angle >= 1 * 45 && angle < 3 * 45) y = 1;
+    else if (angle >= 3 * 45 && angle < 5 * 45) x = -1;
+    else if (angle >= 5 * 45 && angle < 7 * 45) y = -1;
+    else if (angle >= 7 * 45 && angle < 360) x = 1;
+
+    return {
+      left: `calc(50% + (50%*${x}))`,
+      top: `calc(50% + (50%*${y}))`,
+      transform: `translate(-50%,-50%) translate(calc(50%*${-x}), calc(50%*${-y}))`,
+      // transform: `translate(-50%,-50%)`,
+      // transform: `translate(-calc(50%*${y}), -calc(50%*${y}))`,
+    };
+  };
+
   return (
     <div
-      className={[
-        isEditing ? "wiggle" : "",
-        isEditing && isSelected ? "button-halo" : "",
-      ].join(" ")}
       style={{
         position: "relative",
         width: "100%",
         height: "100%",
         borderRadius: "8px",
+        animation: isEditing ? "wiggle 0.8s infinite ease" : undefined,
+        transformOrigin: "center",
+        scale: isEditing && isSelected ? 1.5 : undefined,
       }}
     >
-      <div
-        style={{
-          position: "absolute",
-          background: ring,
-          width: "100%",
-          aspectRatio: 1,
-          // height: "100%",
-          borderRadius: "8px",
-          top: "50%",
-          left: "50%",
-          transform: `translate(-50%,-50%) scaleY(${bgScale})`,
-        }}
-      />
+      {swipeCommands && !!swipeCommands.length && (
+        <div
+          style={{
+            position: "absolute",
+            background: ring,
+            width: "100%",
+            aspectRatio: 1,
+            borderRadius: "8px",
+            top: "50%",
+            left: "50%",
+            transform: `translate(-50%,-50%) scaleY(${bgScale})`,
+          }}
+        />
+      )}
       <button
         ref={buttonRef}
-        id={buttonId}
         key={buttonId + "__button-key"}
         className="gay-button"
         style={{
           position: "absolute",
-          background: backgroundColor + " padding-box",
+          background:
+            backgroundColor +
+            (swipeCommands && !!swipeCommands.length ? " padding-box" : ""),
           top: "50%",
           left: "50%",
           transform: "translate(-50%,-50%)",
         }}
         onPointerDown={(e) => {
+          for (let i = 0; i < 361; i += 45) {
+            console.log(
+              [
+                i - 1,
+                getSwipeIconPosition(
+                  (i - 1) / 360 + (swipeRingOffsetAngle ?? 0)
+                ),
+              ],
+              [i, getSwipeIconPosition(i / 360 + (swipeRingOffsetAngle ?? 0))],
+              [
+                i + 1,
+                getSwipeIconPosition(
+                  (i + 1) / 360 + (swipeRingOffsetAngle ?? 0)
+                ),
+              ]
+            );
+          }
           if (isEditing) return;
           pointerDataRef.current.initXY = { x: e.clientX, y: e.clientY };
 
@@ -234,7 +272,7 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
           onPressCommandId && el?.removeClass("gay-button-press");
         }}
         onPointerCancel={(e) => {
-          console.log("cancel");
+          console.log("pointer cancel");
           const el = buttonRef.current;
           el?.removeClass("gay-button-tap");
           el?.removeClass("gay-button-press");
@@ -245,28 +283,26 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
       >
         <div className={pressIcon && "tap-icon"} ref={tapIconRef}></div>
         {pressIcon && <div className="press-icon" ref={pressIconRef}></div>}
-        {swipeCommands &&
-          swipeCommands.length &&
-          swipeCommands.map((c, i) => {
-            return (
-              <div
-                ref={swipeRefs.current[i]}
-                key={i}
-                style={{
-                  position: "absolute",
-                  borderRadius: "50%",
-                  width: "--var(--button-border-width)",
-                  height: "--var(--button-border-width)",
-                  ...positionAt(
-                    (360 * i) / swipeCommands!.length +
-                      (swipeRingOffsetAngle ?? 0),
-                    1
-                  ),
-                }}
-              />
-            );
-          })}
       </button>
+      {swipeCommands?.map((c, i) => {
+        return (
+          <div
+            className="swipe-icon"
+            ref={swipeRefs.current[i]}
+            key={i}
+            style={{
+              position: "absolute",
+              borderRadius: "50%",
+
+              width: "var(--button-border-width)",
+              height: "var(--button-border-width)",
+              ...getSwipeIconPosition(
+                (360 * i) / swipeCommands!.length + (swipeRingOffsetAngle ?? 0)
+              ),
+            }}
+          />
+        );
+      })}
     </div>
   );
 };

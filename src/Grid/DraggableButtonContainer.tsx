@@ -24,11 +24,7 @@ const DraggableButtonContainer: React.FC<ButtonContainerProps> = ({
   }, [location, buttonId]);
 
   return (
-    <div
-      ref={ref}
-      className={"gay-button-container"}
-      key={JSON.stringify(location)}
-    >
+    <div ref={ref} key={JSON.stringify(location)}>
       {children}
     </div>
   );

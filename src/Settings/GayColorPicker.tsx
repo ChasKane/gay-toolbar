@@ -20,10 +20,6 @@ const GayColorPicker: React.FC<{
   useLayoutEffect(() => {
     if (buttonRef.current) {
       setIcon(buttonRef.current, "palette");
-      const svg = buttonRef.current.firstChild as HTMLElement;
-      if (svg) {
-        svg.classList.add("gay-icon--lmao");
-      }
     }
   }, [color]);
 

@@ -75,7 +75,7 @@ export default class GayToolbarPlugin extends Plugin {
           "--press-delay",
           `${this.settings.pressDelayMs}ms`
         );
-        parentNode.style.setProperty("--button-border-width", "0.3rem");
+        parentNode.style.setProperty("--button-border-width", "0.5rem");
         this.toolbarNode = createDiv("gay-toolbar-container");
         this.toolbarRoot = createRoot(this.toolbarNode);
         this.toolbarRoot.render(<GayToolbar />);

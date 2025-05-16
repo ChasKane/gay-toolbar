@@ -7,10 +7,13 @@ import { getLuminanceGuidedIconColor } from "./utils";
 import { createPortal } from "react-dom";
 
 const GayToolbar: React.FC = () => {
-  const { isEditing, selectedButtonId } = useEditor();
-  const { isMinimized, backgroundColor, customBackground, rowHeight } =
-    useSettings();
   const plugin = usePlugin();
+  const { isEditing, selectedButtonId } = useEditor();
+
+  const isMinimized = useSettings((state) => state.isMinimized);
+  const backgroundColor = useSettings((state) => state.backgroundColor);
+  const customBackground = useSettings((state) => state.customBackground);
+  const rowHeight = useSettings((state) => state.rowHeight);
 
   const ref: RefObject<HTMLDivElement> = useRef(null);
 

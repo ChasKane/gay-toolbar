@@ -110,9 +110,9 @@ const GayButtonSettings: React.FC = () => {
     padding: "2px",
   };
   const centerButtonsRadius = 0.5;
-  const positionCentralItem: (
+  const positionCentralItem: (multiple: number) => any = (
     multiple: number
-  ) => Partial<React.CSSProperties> = (multiple: number) => ({
+  ) => ({
     ...positionAt(multiple * 45, centerButtonsRadius),
     position: "absolute",
   });

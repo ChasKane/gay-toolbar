@@ -4,7 +4,26 @@
   align-items: center;
 }
 
-.gay-button-container {
+.slot > * {
+  width: 100%;
+  height: 100%;
+}
+
+.tap-icon > svg {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  width: 80%;
+  height: 80%;
+}
+.press-icon > svg {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 50%;
+  height: 50%;
+}
+.swipe-icon > svg {
   width: 100%;
   height: 100%;
 }
@@ -37,19 +56,6 @@
   animation: tapRing var(--press-delay) ease forwards;
 }
 
-@keyframes tapRing {
-  0% {
-    width: 3rem;
-    height: 3rem;
-    opacity: 0.3;
-  }
-  100% {
-    width: 50rem;
-    height: 50rem;
-    opacity: 0.1;
-  }
-}
-
 .gay-button-press {
   z-index: 2;
 }
@@ -67,6 +73,22 @@
   z-index: 3;
   animation: pressRing 0.05s ease forwards;
 }
+
+/*=====================================================================*/
+
+@keyframes tapRing {
+  0% {
+    width: 3rem;
+    height: 3rem;
+    opacity: 0.3;
+  }
+  100% {
+    width: 50rem;
+    height: 50rem;
+    opacity: 0.1;
+  }
+}
+
 @keyframes pressRing {
   0% {
     width: 5rem;
@@ -85,20 +107,6 @@
   }
 }
 
-.gay-icon--lmao {
-  width: 100%;
-  height: 100%;
-}
-
-.button-halo {
-  scale: 1.5;
-}
-
-.wiggle {
-  animation: wiggle 0.8s infinite ease;
-  transform-origin: center; /* Adjust if needed based on your design */
-}
-
 @keyframes wiggle {
   0% {
     transform: rotate(-1.5deg) scale(1);
@@ -115,9 +123,4 @@
   100% {
     transform: rotate(-1.5deg) scale(1);
   }
-}
-
-.disable-animations * {
-  animation: none !important;
-  transition: none !important;
 }

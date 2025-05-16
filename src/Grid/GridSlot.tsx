@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { useEditor } from "StateManagement";
+import React from "react";
 
 const Slot: React.FC<{
   location: [number, number];
@@ -9,7 +10,8 @@ const Slot: React.FC<{
 }> = ({ location, buttonId, children }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [entered, setEntered] = useState(false);
-  const { isEditing, selectedButtonId, setSelectedButtonId } = useEditor();
+  const isEditing = useEditor((state) => state.isEditing);
+  const selectedButtonId = useEditor((state) => state.selectedButtonId);
 
   useEffect(() => {
     const el = ref.current;
@@ -39,4 +41,4 @@ const Slot: React.FC<{
   );
 };
 
-export default Slot;
+export default React.memo(Slot);
