@@ -39,7 +39,7 @@
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15) !important;
 }
 .gay-button-tap {
-  z-index: 2;
+  z-index: var(--layer-popover);
 }
 .gay-button-tap::after {
   content: "";
@@ -52,7 +52,6 @@
   background: var(--swipe-ring-background);
   border-radius: 50%; /* Make it circular */
   transform: translate(-50%, -50%);
-  z-index: 3;
   animation: tapRing var(--press-delay) ease forwards;
 }
 
@@ -70,7 +69,7 @@
   border-radius: 50%; /* Make it circular */
   transform: translate(-50%, -50%);
   opacity: 0.8;
-  z-index: 3;
+  z-index: 999999;
   animation: pressRing 0.05s ease forwards;
 }
 
@@ -83,23 +82,13 @@
     opacity: 0.3;
   }
   100% {
-    width: 50rem;
-    height: 50rem;
+    width: 10rem;
+    height: 10rem;
     opacity: 0.1;
   }
 }
 
 @keyframes pressRing {
-  0% {
-    width: 5rem;
-    height: 5rem;
-    opacity: 0.3;
-  }
-  50% {
-    width: 9rem;
-    height: 9rem;
-    opacity: 0.5;
-  }
   100% {
     width: 6rem;
     height: 6rem;

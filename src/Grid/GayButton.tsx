@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { setIcon } from "obsidian";
+import { Platform, setIcon } from "obsidian";
 import { usePlugin, useSettings, useEditor } from "../StateManagement";
 import {
   getAngle,
@@ -7,7 +7,6 @@ import {
   getLuminanceGuidedIconColor,
   getSwipeIdx,
   Position,
-  positionAt,
 } from "../utils";
 
 const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
@@ -64,7 +63,6 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
         })
         .join(", ") ?? "transparent,transparent"
     })`;
-    ring;
   }
 
   useLayoutEffect(() => {
@@ -114,24 +112,34 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
     });
   }, [isEditing, tapIcon, pressIcon, backgroundColor, swipeCommands]);
 
-  console.log(bgScale);
   const getSwipeIconPosition = (
     angle: number
   ): { top: string; left: string; transform: string } => {
     const rad = (angle * Math.PI) / 180;
-    let x = Math.cos(rad);
-    let y = Math.sin(rad);
+    let x: number = 0;
+    let y: number = 0;
     // TODO do this better using interpolation, minding bgScale
-    if (angle >= 0 && angle < 45) x = 1;
-    else if (angle >= 1 * 45 && angle < 3 * 45) y = 1;
-    else if (angle >= 3 * 45 && angle < 5 * 45) x = -1;
-    else if (angle >= 5 * 45 && angle < 7 * 45) y = -1;
-    else if (angle >= 7 * 45 && angle < 360) x = 1;
+    if (angle >= 0 && angle < 45) {
+      x = 1;
+      y = angle / 45;
+    } else if (angle >= 1 * 45 && angle < 3 * 45) {
+      x = -(angle / 45 - 2);
+      y = 1;
+    } else if (angle >= 3 * 45 && angle < 5 * 45) {
+      x = -1;
+      y = -(angle / 45 - 4);
+    } else if (angle >= 5 * 45 && angle < 7 * 45) {
+      x = angle / 45 - 6;
+      y = -1;
+    } else if (angle >= 7 * 45 && angle < 360) {
+      x = 1;
+      y = angle / 45 - 8;
+    }
 
     return {
       left: `calc(50% + (50%*${x}))`,
       top: `calc(50% + (50%*${y}))`,
-      transform: `translate(-50%,-50%) translate(calc(50%*${-x}), calc(50%*${-y}))`,
+      transform: `translate(-50%,-50%) translate(calc(50%*${-x!}), calc(50%*${-y!}))`,
       // transform: `translate(-50%,-50%)`,
       // transform: `translate(-calc(50%*${y}), -calc(50%*${y}))`,
     };
@@ -176,25 +184,27 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
           left: "50%",
           transform: "translate(-50%,-50%)",
         }}
-        onPointerDown={(e) => {
-          for (let i = 0; i < 361; i += 45) {
-            console.log(
-              [
-                i - 1,
-                getSwipeIconPosition(
-                  (i - 1) / 360 + (swipeRingOffsetAngle ?? 0)
-                ),
-              ],
-              [i, getSwipeIconPosition(i / 360 + (swipeRingOffsetAngle ?? 0))],
-              [
-                i + 1,
-                getSwipeIconPosition(
-                  (i + 1) / 360 + (swipeRingOffsetAngle ?? 0)
-                ),
-              ]
-            );
-          }
+        onPointerDown={(e: any) => {
+          // for (let i = 0; i < 361; i += 45) {
+          //   console.log(
+          //     [
+          //       i - 1,
+          //       getSwipeIconPosition(
+          //         (i - 1) / 360 + (swipeRingOffsetAngle ?? 0)
+          //       ),
+          //     ],
+          //     [i, getSwipeIconPosition(i / 360 + (swipeRingOffsetAngle ?? 0))],
+          //     [
+          //       i + 1,
+          //       getSwipeIconPosition(
+          //         (i + 1) / 360 + (swipeRingOffsetAngle ?? 0)
+          //       ),
+          //     ]
+          //   );
+          // }
           if (isEditing) return;
+          // debugger;
+          e.currentTarget.setPointerCapture(e.pointerId);
           pointerDataRef.current.initXY = { x: e.clientX, y: e.clientY };
 
           const el = buttonRef.current;
@@ -210,15 +220,15 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
               getDistance(
                 pointerDataRef.current.initXY,
                 pointerDataRef.current.currXY
-              ) < 20
+              ) < 10
             )
               el?.addClass("gay-button-press");
           }, pressDelayMs);
         }}
-        onPointerMove={(e) => {
+        onPointerMove={(e: any) => {
           pointerDataRef.current.currXY = { x: e.clientX, y: e.clientY };
         }}
-        onPointerUp={(e) => {
+        onPointerUp={(e: any) => {
           if (isEditing) {
             if (isSelected) setSelectedButtonId("");
             else setSelectedButtonId(buttonId);
@@ -233,7 +243,7 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
             getDistance(pointerDataRef.current.initXY, {
               x: e.clientX,
               y: e.clientY,
-            }) < 20
+            }) < 10
           ) {
             const delta = endTime - pointerDataRef.current.startTime;
             if (delta < pressDelayMs) {
@@ -243,6 +253,7 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
                 plugin?.app.commands.executeCommandById(onTapCommandId);
             } else {
               // long-press
+              console.log("press");
               if (!isEditing && onPressCommandId)
                 // @ts-ignore | app.commands exists; not sure why it's not in the API...
                 plugin?.app.commands.executeCommandById(onPressCommandId);
@@ -258,12 +269,13 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
               swipeRingOffsetAngle ?? 0,
               swipeCommands.length
             );
+            const swipeCommandId =
+              swipeCommands[swipeIdx]?.commandId ?? "error";
+            console.log(swipeCommandId, swipeIdx, angle);
             // TODO draw highlighted swipe's icon, then float it briefly on selection
 
             // @ts-ignore | app.commands exists; not sure why it's not in the API...
-            plugin?.app.commands.executeCommandById(
-              swipeCommands[swipeIdx]?.commandId
-            );
+            plugin?.app.commands.executeCommandById(swipeCommandId);
           }
 
           pointerDataRef.current.initXY = undefined;
@@ -271,7 +283,7 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
           el?.removeClass("gay-button-tap");
           onPressCommandId && el?.removeClass("gay-button-press");
         }}
-        onPointerCancel={(e) => {
+        onPointerCancel={(e: any) => {
           console.log("pointer cancel");
           const el = buttonRef.current;
           el?.removeClass("gay-button-tap");
@@ -280,6 +292,9 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
           pointerDataRef.current.initXY = undefined;
           pointerDataRef.current.currXY = undefined;
         }}
+        // onPointerLeave={(e) => console.log("leave", e.target)}
+        // onPointerOut={(e) => console.log("out", e.target)}
+        // onPointerOver={(e) => console.log("over", e.target)}
       >
         <div className={pressIcon && "tap-icon"} ref={tapIconRef}></div>
         {pressIcon && <div className="press-icon" ref={pressIconRef}></div>}

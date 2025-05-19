@@ -16,21 +16,6 @@
   width: min(450px, 100%);
 }
 
-.central-item {
-  background-color: color-mix(
-    in srgb,
-    var(--background-primary) 50%,
-    transparent
-  );
-  padding: 5%;
-  border-radius: 8px;
-  pointer-events: none;
-  gap: 0px;
-}
-.central-item * {
-  pointer-events: all;
-}
-
 .gay-settings-footer {
   display: flex;
   flex-direction: row;

@@ -3,7 +3,12 @@ import { useEditor, usePlugin, useSettings } from "../StateManagement";
 import chooseNewCommand from "./chooseNewCommand";
 import { setIcon } from "obsidian";
 import GayColorPicker from "./GayColorPicker";
-import { getLuminanceGuidedIconColor, groomValue, positionAt } from "utils";
+import {
+  getLuminanceGuidedIconColor,
+  groomValue,
+  positionAt,
+  positionCentralItem,
+} from "utils";
 
 const replaceAt = (arr: any[], index: number, value: any) =>
   arr.map((item, i) => (i === index ? value : item));
@@ -103,20 +108,6 @@ const GayButtonSettings: React.FC = () => {
     return () => listener.current?.remove?.();
   }, [setIsEditing, subMenu]);
 
-  const uiButtonStyles = {
-    borderRadius: "50%",
-    width: "2rem",
-    height: "2rem",
-    padding: "2px",
-  };
-  const centerButtonsRadius = 0.5;
-  const positionCentralItem: (multiple: number) => any = (
-    multiple: number
-  ) => ({
-    ...positionAt(multiple * 45, centerButtonsRadius),
-    position: "absolute",
-  });
-
   let background = `radial-gradient(circle closest-side, ${backgroundColor} 85%, transparent)`;
   if (swipeCommands && swipeCommands.length) {
     const numCommands = swipeCommands?.length ?? 0;
@@ -172,26 +163,32 @@ const GayButtonSettings: React.FC = () => {
           }}
         />
 
-        <div className="centered-column" style={positionCentralItem(7)}>
+        <div className="central-item" style={positionCentralItem(7)}>
+          <span style={{ fontSize: 10 }}>Swipe commands</span>
           <div
             style={{
               display: "flex",
-              justifyContent: "space-around",
-              alignSelf: "stretch",
+              justifyContent: "stretch",
+              alignItems: "center",
+              gap: "4px",
+              alignSelf: "center",
             }}
           >
             <button
               ref={minusButtonRef}
-              style={uiButtonStyles}
+              className="ui-button"
               onClick={() =>
                 updateButton(selectedButtonId, {
                   swipeCommands: (swipeCommands ?? []).slice(0, -1),
                 })
               }
             />
+            <span style={{ fontSize: "var(--font-ui-small)" }}>
+              {swipeCommands?.length ?? 0}
+            </span>
             <button
               ref={plusButtonRef}
-              style={uiButtonStyles}
+              className="ui-button"
               onClick={() =>
                 updateButton(selectedButtonId, {
                   swipeCommands: [...(swipeCommands ?? []), null],
@@ -199,21 +196,19 @@ const GayButtonSettings: React.FC = () => {
               }
             />
           </div>
-          <div className="centered-column central-item">
-            <span>{swipeCommands?.length ?? 0}</span>
-            <small>Swipe commands</small>
-          </div>
         </div>
 
-        <div className="centered-column" style={positionCentralItem(5)}>
+        <div className="central-item" style={positionCentralItem(5)}>
+          <span>Press</span>
           {onPressCommandId && (
             <button
               ref={clearPressCommandRef}
+              className="ui-button"
               style={{
                 position: "absolute",
-                ...uiButtonStyles,
-                top: "-25%",
-                right: "-14%",
+                top: "0%",
+                right: "0%",
+                transform: "translate(50%,-50%)",
               }}
               onClick={() =>
                 updateButton(selectedButtonId, {
@@ -242,25 +237,29 @@ const GayButtonSettings: React.FC = () => {
               setSubMenu(false);
             }}
           />
-          <div className="centered-column central-item">
-            <span>Press</span>
-            <small>{buttons[selectedButtonId].onPressCommandId}</small>
-          </div>
+          <small>
+            {
+              // @ts-ignore
+              plugin?.app.commands.findCommand(
+                buttons[selectedButtonId].onPressCommandId
+              )?.name
+            }
+          </small>
         </div>
-        <div className="centered-column" style={positionCentralItem(3)}>
+
+        <div className="central-item" style={positionCentralItem(3)}>
+          <span>Background</span>
           <GayColorPicker
             color={buttons[selectedButtonId]?.backgroundColor}
             onChange={(color) =>
               updateButton(selectedButtonId, { backgroundColor: color })
             }
           ></GayColorPicker>
-          <div className="centered-column central-item">
-            <span>Background</span>
-            <small>{buttons[selectedButtonId].backgroundColor}</small>
-          </div>
+          <small>{buttons[selectedButtonId].backgroundColor}</small>
         </div>
 
-        <div className="centered-column" style={positionCentralItem(1)}>
+        <div className="central-item" style={positionCentralItem(1)}>
+          <span>Tap</span>
           <button
             ref={tapCommandButtonRef}
             onClick={async () => {
@@ -280,24 +279,31 @@ const GayButtonSettings: React.FC = () => {
               setSubMenu(false);
             }}
           />
-          <div className="centered-column central-item">
-            <span>Tap</span>
-            <small>{buttons[selectedButtonId].onTapCommandId}</small>
-          </div>
+          <small>
+            {
+              // @ts-ignore
+              plugin?.app.commands.findCommand(
+                buttons[selectedButtonId].onTapCommandId
+              )?.name
+            }
+          </small>
         </div>
 
         <div
-          className="centered-column"
           style={{
             position: "absolute",
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: ".3rem",
           }}
         >
           <button
             ref={increaseAngleButtonRef}
-            style={uiButtonStyles}
+            className="ui-button"
             onClick={() => {
               updateButton(selectedButtonId, {
                 swipeRingOffsetAngle: Math.clamp(
@@ -364,7 +370,7 @@ const GayButtonSettings: React.FC = () => {
           </div>
           <button
             ref={decreaseAngleButtonRef}
-            style={uiButtonStyles}
+            className="ui-button"
             onClick={() => {
               updateButton(selectedButtonId, {
                 swipeRingOffsetAngle: Math.clamp(
@@ -377,11 +383,12 @@ const GayButtonSettings: React.FC = () => {
           />
         </div>
 
-        {swipeCommands && // this here for backward compatibility -- all new buttons will have at least an empty array
+        {swipeCommands && // this check is here for backward compatibility -- all new buttons will have at least an empty array
           swipeCommands.map((c, i) => {
             return (
               <div
                 key={i}
+                className={c ? "" : "ui-button"}
                 style={{
                   position: "absolute",
                   ...positionAt(
@@ -393,6 +400,7 @@ const GayButtonSettings: React.FC = () => {
               >
                 <button
                   ref={swipeRefs.current[i]}
+                  className={c ? "" : "ui-button"}
                   style={{
                     borderRadius: !c ? "50%" : undefined,
                     width: !c ? "30px" : undefined,

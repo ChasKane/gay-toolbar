@@ -98,8 +98,8 @@ export const useSettings = create<GayToolbarSettings & SettingsActions>()(
 // ---------------- Not saved to data.json ----------------
 
 export const useEditor = create<EditorState & EditorActions>()((set) => ({
-  isEditing: false,
-  selectedButtonId: "",
+  isEditing: true,
+  selectedButtonId: "maqw9s0e",
 
   setIsEditing: (isEditing) => {
     // drag ops (on android at least) hide keyboard and there's no way around it,

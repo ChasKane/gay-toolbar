@@ -44,7 +44,7 @@ const GayToolbar: React.FC = () => {
                 .height || 0) +
               4 +
               "px",
-          zIndex: 1000,
+          zIndex: "var(--layer-status-bar)",
         }}
         onPointerDown={(e) => e.preventDefault()} // keep keyboard up if up
       >

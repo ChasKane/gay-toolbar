@@ -60,9 +60,18 @@ export const getSwipeIdx = (angle: number, offset: number, length: number) => {
   let startAngle = (offset - 360 / (length * 2)) % 360;
   if (startAngle < 0) startAngle += 360;
   const slotLen = 360 / length;
-  const delta = 360 - ((startAngle - angle) % 360);
+  // TODO is there any better way to do this than modding by 360 twice? re: js % not modding negative numbers correctly
+  const delta = (360 - ((startAngle - angle) % 360)) % 360;
   const swipeIdx = Math.floor(delta / slotLen);
-  console.log([angle, offset, length], [startAngle, slotLen, delta], swipeIdx);
+  // console.table({
+  //   angle,
+  //   offset,
+  //   length,
+  //   startAngle,
+  //   slotLen,
+  //   delta,
+  //   swipeIdx,
+  // });
   return swipeIdx;
 };
 
@@ -105,6 +114,16 @@ export const groomValue = (
     bounds[0],
     bounds[1]
   );
+
+export const centerButtonsRadius = 0.5;
+export const positionCentralItem: (multiple: number) => any = (
+  multiple: number
+) => ({
+  ...positionAt(multiple * 45, centerButtonsRadius),
+  position: "absolute",
+});
+
+// ============================================================================= //
 
 export const takeSnapshot = async () => {
   const element = document.getElementById("gay-button-grid");
