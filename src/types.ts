@@ -66,7 +66,8 @@ export type SavedConfig = {
 
 export type GayToolbarSettings = SavedConfig & {
   presetColors: string[];
-  configs: Config[];
+  configs?: Config[]; // Optional - removed after migration to markdown
+  savedConfigsFilePath: string;
 };
 
 export type SettingsActions = {

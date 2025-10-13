@@ -185,3 +185,87 @@ export const takeSnapshot = async () => {
     element.classList.remove("disable-animations");
   }
 };
+
+// ============================================================================= //
+// Markdown file utilities for screenshot storage
+
+export interface MarkdownConfig {
+  id: string;
+  date: number;
+  screenshot: string;
+  data: string;
+}
+
+export const parseMarkdownConfigs = (content: string): MarkdownConfig[] => {
+  const configs: MarkdownConfig[] = [];
+  const sections = content.split(/^## /m).filter((section) => section.trim());
+
+  for (const section of sections) {
+    const lines = section.split("\n");
+    const id = lines[0].trim();
+    const dateMatch = section.match(/\*\*Date:\*\* (.+?) at (.+?)$/m);
+    const screenshotMatch = section.match(
+      /!\[.*?\]\(data:image\/png;base64,([^)]+)\)/
+    );
+    const dataMatch = section.match(/```json\n([\s\S]*?)\n```/);
+
+    if (id && dateMatch && screenshotMatch && dataMatch) {
+      // Parse the formatted date back to timestamp
+      const dateStr = `${dateMatch[1]} ${dateMatch[2]}`;
+      const parsedDate = new Date(dateStr);
+      const timestamp = parsedDate.getTime();
+
+      configs.push({
+        id,
+        date: timestamp,
+        screenshot: `data:image/png;base64,${screenshotMatch[1]}`,
+        data: dataMatch[1],
+      });
+    }
+  }
+
+  return configs;
+};
+
+export const generateMarkdownContent = (configs: MarkdownConfig[]): string => {
+  if (configs.length === 0) {
+    return "# Gay Toolbar Saved Configs\n\nNo saved configs yet.";
+  }
+
+  let content = "# Gay Toolbar Saved Configs\n\n";
+
+  for (const config of configs) {
+    const date = new Date(config.date);
+    const formattedDate = date.toLocaleDateString();
+    const formattedTime = date.toLocaleTimeString();
+
+    content += `## ${config.id}\n\n`;
+    content += `**Date:** ${formattedDate} at ${formattedTime}\n\n`;
+    content += `![Toolbar Screenshot](${config.screenshot})\n\n`;
+    content += `**Settings:**\n\n`;
+    content += `\`\`\`json\n${config.data}\n\`\`\`\n\n`;
+    content += `---\n\n`;
+  }
+
+  return content;
+};
+
+export const addConfigToMarkdown = (
+  content: string,
+  newConfig: MarkdownConfig
+): string => {
+  const existingConfigs = parseMarkdownConfigs(content);
+  const updatedConfigs = [newConfig, ...existingConfigs];
+  return generateMarkdownContent(updatedConfigs);
+};
+
+export const removeConfigFromMarkdown = (
+  content: string,
+  configId: string
+): string => {
+  const existingConfigs = parseMarkdownConfigs(content);
+  const updatedConfigs = existingConfigs.filter(
+    (config: MarkdownConfig) => config.id !== configId
+  );
+  return generateMarkdownContent(updatedConfigs);
+};

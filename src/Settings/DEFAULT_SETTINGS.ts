@@ -27,6 +27,7 @@ export const getEmptySettings = () =>
       "#800080",
     ],
     configs: [],
+    savedConfigsFilePath: "GayToolbarSavedConfigs.md",
   } as GayToolbarSettings);
 
 export default {
@@ -250,4 +251,5 @@ export default {
     "#800080",
   ],
   configs: [],
+  savedConfigsFilePath: "GayToolbarSavedConfigs.md",
 } as GayToolbarSettings;
