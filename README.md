@@ -3,8 +3,6 @@
 A fully customizable, collapsible toolbar that floats above the keyboard, replacing the default toolbar.
 
 In edit mode (wrench 🔧 icon, or obsidian command `Gay Toolbar: Toggle edit mode`), each button can be assigned a primary (tap) and optional secondary (long-press) obsidian command. Buttons can be moved between slots by long-pressing and dragging. Their colors can be customized from a customizable color palette or assigned in bulk. The background color of the whole toolbar can be set to a solid color, or you can use your own CSS value for crazy radial gradients or whatever. Did I mention this toolbar is customizable? The number and size of rows and columns can also be set independently, and when you arrive at a config you like, you can snapshot it like a video game save slot.
-
-It’s called "gay" because I’m queer. Hope you don't mind 😉. Enjoy!
 ![Image of gay-toolbar](https://github.com/user-attachments/assets/7a988e76-a193-40e4-bc16-1463dfbff3b4)
 
 | ![Image of toolbar settings](https://github.com/user-attachments/assets/acc5123a-3460-49c8-99d2-6a31a06dbd6b) | ![Image of button settings](https://github.com/user-attachments/assets/a12e6246-7baa-4fc9-80ef-382c66e77e93) |
