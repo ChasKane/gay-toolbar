@@ -1,17 +1,36 @@
-import chroma from "chroma-js";
+import * as culori from "culori";
 import { toPng } from "html-to-image";
 import { off } from "process";
 
 export type Position = { x: number; y: number };
 
 export const hexToIColor = (color: string) => {
-  const C = chroma(color);
-  const [r, g, b] = C.rgb();
-  const [h, s, v] = C.hsv();
+  const parsed = culori.parseHex(color);
+  if (!parsed) {
+    return {
+      hex: color,
+      rgb: { r: 0, g: 0, b: 0, a: 1 },
+      hsv: { h: 0, s: 0, v: 0, a: 1 },
+    };
+  }
+
+  const rgb = culori.rgb(parsed);
+  const hsv = culori.hsv(parsed);
+
   return {
     hex: color,
-    rgb: { r, g, b, a: C.alpha() },
-    hsv: { h, s, v, a: C.alpha() },
+    rgb: {
+      r: rgb?.r || 0,
+      g: rgb?.g || 0,
+      b: rgb?.b || 0,
+      a: rgb?.alpha || 1,
+    },
+    hsv: {
+      h: hsv?.h || 0,
+      s: hsv?.s || 0,
+      v: hsv?.v || 0,
+      a: hsv?.alpha || 1,
+    },
   };
 };
 
@@ -78,30 +97,54 @@ export const getSwipeIdx = (angle: number, offset: number, length: number) => {
 export const getLuminanceGuidedIconColor = (
   bgColorString: string,
   contrastThreshold = 4.5
-) => {
-  const matches = bgColorString.match(/#(?:[0-9a-fA-F]{3,4}){1,2}\b/g);
+): string => {
+  try {
+    const matches = bgColorString.match(/#(?:[0-9a-fA-F]{3,4}){1,2}\b/g);
+    const parsedColors = matches
+      ? matches.map(culori.parseHex).filter(Boolean)
+      : [];
+    const bgColor =
+      parsedColors.length > 0
+        ? culori.average(parsedColors as any)
+        : culori.parseHex(bgColorString);
 
-  const bgColor = matches ? chroma.average(matches) : chroma(bgColorString);
-  const bgLuminance = bgColor.luminance();
-  let iconColor;
+    if (!bgColor) {
+      return "#000000"; // Fallback for invalid color
+    }
 
-  if (bgLuminance > 0.7) {
-    iconColor = bgColor.set("lab.l", 40);
-  } else if (bgLuminance < 0.3) {
-    iconColor = bgColor.set("lab.l", 90);
-  } else {
-    // mid-range
-    iconColor =
-      bgLuminance >= 0.5 ? bgColor.set("lab.l", 10) : bgColor.set("lab.l", 90);
+    const bgLuminance = culori.wcagLuminance(bgColor);
+    let iconColor;
+
+    if (bgLuminance > 0.7) {
+      const lch = culori.lch(bgColor);
+      iconColor = culori.rgb({ ...lch, l: 40 });
+    } else if (bgLuminance < 0.3) {
+      const lch = culori.lch(bgColor);
+      iconColor = culori.rgb({ ...lch, l: 90 });
+    } else {
+      // mid-range
+      const lch = culori.lch(bgColor);
+      iconColor = culori.rgb({
+        ...lch,
+        l: bgLuminance >= 0.5 ? 10 : 90,
+      });
+    }
+
+    // Additional contrast adjustments for edge cases
+    if (culori.wcagContrast(bgColor, iconColor) < contrastThreshold) {
+      const lch = culori.lch(iconColor);
+      iconColor = culori.rgb({
+        ...lch,
+        l: bgLuminance > 0.5 ? lch.l * 0.5 : Math.min(100, lch.l * 1.5),
+      });
+    }
+
+    const result = culori.formatHex({ ...iconColor, alpha: 1 });
+    return result || "#000000"; // Fallback if formatHex returns undefined
+  } catch (error) {
+    console.warn("Error in getLuminanceGuidedIconColor:", error);
+    return "#000000"; // Fallback for any errors
   }
-
-  // Additional contrast adjustments for edge cases
-  if (chroma.contrast(bgColor, iconColor) < contrastThreshold) {
-    iconColor =
-      bgLuminance > 0.5 ? iconColor.darken(1.5) : iconColor.brighten(1.5);
-  }
-
-  return iconColor.alpha(1).hex();
 };
 
 export const groomValue = (

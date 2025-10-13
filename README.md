@@ -55,6 +55,7 @@ _If you’re excited about seeing any of these or other ideas implemented, I’d
 - **Better Icon Support:** Add emoji support to icon selector.
 - **Separate Icon and Command Selection Flow**
 - **Swipe Button Actions:** Add _additional swipe gestures_ for more commands (e.g., swipe up, down, left, right). Visual cues will display custom colors for each gesture on the border of each button and dynamically as the user swipes. Example button for block editing:
+
   - **Tap:** Select the current block.
   - **Long-Press:** Copy the current block.
   - **Swipe Left:** Outdent.

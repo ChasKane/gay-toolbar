@@ -43,6 +43,8 @@ const ButtonGrid: React.FC = () => {
   }, [isEditing]);
 
   useEffect(() => {
+    if (!isEditing) return;
+
     return monitorForElements({
       onDrop({ source, location }) {
         const [sx, sy] = source.data.location as [number, number];
@@ -56,7 +58,7 @@ const ButtonGrid: React.FC = () => {
           moveButton(buttonIdGrid[dx][dy], [sx, sy]);
       },
     });
-  }, [buttonLocations, moveButton]);
+  }, [buttonLocations, moveButton, isEditing]);
 
   const buttonIdGrid: Array<Array<string>> = useMemo(() => {
     const arr = Array(numRows);
@@ -108,7 +110,7 @@ const ButtonGrid: React.FC = () => {
           );
           break;
         case !buttonId && !isEditing:
-          child = buttonId && <div />;
+          child = <div />;
           break;
       }
       slots.push(
@@ -127,6 +129,7 @@ const ButtonGrid: React.FC = () => {
     <div
       ref={ref}
       id="gay-button-grid"
+      data-testid="gay-button-grid"
       style={{
         display: "grid",
         gridTemplateRows: `repeat(${numRows}, ${rowHeight}px)`,

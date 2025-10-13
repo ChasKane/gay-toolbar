@@ -14,6 +14,7 @@ const Slot: React.FC<{
   const selectedButtonId = useEditor((state) => state.selectedButtonId);
 
   useEffect(() => {
+    if (!isEditing) return;
     const el = ref.current;
     if (!el) throw new Error("drag error");
 
