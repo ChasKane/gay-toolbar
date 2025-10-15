@@ -1,14 +1,3 @@
-/* Custom styles for Gay Toolbar plugin */
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
 .button-settings {
   position: relative;
   display: flex;
@@ -23,7 +12,6 @@
   border: 2px solid white;
   border-radius: 50%;
 }
-
 .ring .inner {
   width: unset;
 }
@@ -36,14 +24,11 @@
 }
 
 .central-item {
-  background-color: var(--background-primary);
-  @supports (color: color-mix(in lab, red, red)) {
-    background-color: color-mix(
-      in srgb,
-      var(--background-primary) 50%,
-      transparent
-    );
-  }
+  background-color: color-mix(
+    in srgb,
+    var(--background-primary) 50%,
+    transparent
+  );
   padding: 0.4rem;
   border-radius: 8px;
   pointer-events: none;
@@ -53,24 +38,30 @@
   justify-content: center;
   align-items: center;
 }
-
 .central-item * {
   pointer-events: all;
 }
-
 .central-item > :first-child {
   font-size: x-small;
   width: 10ch;
   align-self: start;
 }
-
 .central-item > small {
   font-size: xx-small;
   max-width: 10ch;
+  /* text-wrap-mode: nowrap; */
+  /* align-self: center; */
   text-align: center;
   word-wrap: break-word;
+  /* overflow-x: scroll; */
   flex-shrink: 1;
 }
+
+/* small {
+  max-width: 10ch;
+  word-wrap: break-word;
+  text-align: center;
+} */
 
 .slot {
   display: flex;
@@ -90,7 +81,6 @@
   width: 80%;
   height: 80%;
 }
-
 .press-icon > svg {
   position: absolute;
   top: 0px;
@@ -98,7 +88,6 @@
   width: 50%;
   height: 50%;
 }
-
 .swipe-icon > svg {
   width: 100%;
   height: 100%;
@@ -106,7 +95,7 @@
 
 .gay-button {
   position: relative;
-  display: flex;
+  display: flex; /* fixes misalignment-on-iphone bug */
   border-radius: 8px;
   border: var(--button-border-width) solid transparent;
   width: 100%;
@@ -117,17 +106,24 @@
 
 .gay-button-tap {
   z-index: var(--layer-popover);
+  opacity: 0.4;
 }
-
+.gay-button-tap::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background: var(--swipe-ring-background);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: swipeRing var(--press-delay) ease forwards;
+}
 .gay-button-tap::after {
   content: "";
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 3rem;
-  height: 3rem;
-  opacity: 0.8;
-  background: var(--swipe-ring-background);
+  background: var(--button-press-background);
   border-radius: 50%;
   transform: translate(-50%, -50%);
   animation: tapRing var(--press-delay) ease forwards;
@@ -136,40 +132,53 @@
 .gay-button-press {
   z-index: 2;
 }
-
 .gay-button-press::after {
   content: "";
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 5rem;
-  height: 5rem;
   background: var(--button-press-background);
   border-radius: 50%;
   transform: translate(-50%, -50%);
   opacity: 0.8;
-  z-index: 999999;
-  animation: pressRing 0.05s ease forwards;
+  animation: pressRing 0.2s ease forwards;
 }
 
+/*=====================================================================*/
+
+@keyframes swipeRing {
+  0% {
+    width: 5rem;
+    height: 5rem;
+  }
+  100% {
+    width: 30rem;
+    height: 30rem;
+  }
+}
 @keyframes tapRing {
   0% {
     width: 3rem;
     height: 3rem;
-    opacity: 0.3;
   }
   100% {
-    width: 10rem;
-    height: 10rem;
-    opacity: 0.1;
+    width: 6rem;
+    height: 6rem;
   }
 }
 
 @keyframes pressRing {
-  100% {
+  0% {
     width: 6rem;
     height: 6rem;
-    opacity: 0.3;
+  }
+  50% {
+    width: 8rem;
+    height: 8rem;
+  }
+  100% {
+    width: 0rem;
+    height: 0rem;
   }
 }
 
@@ -191,6 +200,160 @@
   }
 }
 
+@import "./button-settings.css";
+@import "./grid.css";
+@import "./settings.css";
+
+.full-size {
+  width: 100%;
+  height: 100%;
+}
+
+.gay-toolbar-container {
+  transition: bottom 0.05s linear;
+  max-height: 80%;
+}
+.gay-toolbar {
+  /* From https://css.glass */
+  border-radius: 8px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  /* make settings scrollable */
+  display: flex;
+  flex-direction: column; /* Stack X and Y vertically */
+  max-height: 100%; /* Prevent B from exceeding its container */
+}
+
+/* REACT COLOR PALETTE */
+.rcp-root {
+  --rcp-background-color: #121212;
+  --rcp-field-input-color: #ffffff;
+  --rcp-field-input-border-color: #242424;
+  --rcp-field-label-color: #808080;
+}
+.rcp {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--rcp-background-color);
+  border-radius: 10px;
+}
+.rcp-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px 10px;
+}
+.rcp-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.rcp-interactive {
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  touch-action: none;
+}
+.rcp-interactive[aria-disabled="true"] {
+  cursor: unset;
+  pointer-events: none;
+}
+.rcp-saturation {
+  cursor: all-scroll;
+  width: 100%;
+  position: relative;
+  background-image: linear-gradient(to bottom, transparent, black),
+    linear-gradient(to right, white, transparent);
+  border-radius: 10px 10px 0 0;
+}
+.rcp-saturation-cursor {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid white;
+  border-radius: 100%;
+  box-shadow: 0 0 15px #00000026;
+  transform: translate(-10px, -10px);
+}
+.rcp-hue {
+  cursor: ew-resize;
+  position: relative;
+  width: 100%;
+  height: 12px;
+  background-image: linear-gradient(
+    to right,
+    red,
+    #ff0,
+    #0f0,
+    #0ff,
+    #00f,
+    #f0f,
+    red
+  );
+  border-radius: 10px;
+}
+.rcp-hue-cursor {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid white;
+  border-radius: 100%;
+  box-shadow: 0 0 15px #00000026;
+  transform: translate(-10px, -4px);
+}
+.rcp-alpha {
+  cursor: ew-resize;
+  position: relative;
+  width: 100%;
+  height: 12px;
+  border-radius: 10px;
+}
+.rcp-alpha-cursor {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid white;
+  border-radius: 100%;
+  box-shadow: 0 0 15px #00000026;
+  transform: translate(-10px, -4px);
+}
+.rcp-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.rcp-fields-floor {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+.rcp-field {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.rcp-field-input {
+  width: 100%;
+  font-family: inherit;
+  font-size: 14px;
+  text-align: center;
+  color: var(--rcp-field-input-color);
+  background-color: transparent;
+  border: 2px solid var(--rcp-field-input-border-color);
+  border-radius: 5px;
+  outline: none;
+  padding: 5px 0;
+}
+.rcp-field-input:read-only {
+  opacity: 0.8;
+}
+.rcp-field-label {
+  font-size: 14px;
+  text-align: center;
+  color: var(--rcp-field-label-color);
+}
+
 .gay-settings-container {
   position: relative;
   border: solid 1px #ccc;
@@ -205,7 +368,6 @@
   overflow-y: auto;
   overflow-x: hidden;
 }
-
 .gay-settings-container > :first-child {
   width: min(450px, 100%);
 }
@@ -219,7 +381,6 @@
   bottom: 0px;
   pointer-events: none;
 }
-
 .gay-settings-footer > * {
   pointer-events: auto;
 }
@@ -257,7 +418,6 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
   white-space: nowrap;
 }
-
 .buy-me-a-coffee-button:hover {
   text-decoration: none;
   opacity: 0.9;
@@ -283,7 +443,6 @@
   display: flex;
   justify-content: start;
 }
-
 .gay-input input {
   margin-inline: 6px;
 }
@@ -309,7 +468,6 @@
   background-color: rgba(0, 0, 0, 0.5);
   z-index: var(--layer-modal);
 }
-
 .gay-modal {
   position: absolute;
   width: 85%;
@@ -322,7 +480,6 @@
   overflow-y: auto;
   background-color: var(--background-primary);
 }
-
 .gay-modal > * {
   max-width: 100%;
 }
@@ -334,26 +491,22 @@
   align-items: center;
   margin-bottom: 8px;
 }
-
 .gay-config-panel {
   padding: 16px;
   border-top: 1px solid var(--background-modifier-border);
 }
-
 .gay-config-panel > span {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
 }
-
 .gay-config-panel > span > div {
   display: flex;
   flex-direction: column;
   justify-content: center;
   text-align: center;
 }
-
 .gay-config-panel > img {
   width: 100%;
 }
@@ -369,167 +522,3 @@
   border-radius: 5px;
 }
 
-.full-size {
-  width: 100%;
-  height: 100%;
-}
-
-.gay-toolbar-container {
-  transition: bottom 0.05s linear;
-  max-height: 80%;
-}
-
-.gay-toolbar {
-  border-radius: 8px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  display: flex;
-  flex-direction: column;
-  max-height: 100%;
-}
-
-.rcp-root {
-  --rcp-background-color: #121212;
-  --rcp-field-input-color: #ffffff;
-  --rcp-field-input-border-color: #242424;
-  --rcp-field-label-color: #808080;
-}
-
-.rcp {
-  display: flex;
-  flex-direction: column;
-  background-color: var(--rcp-background-color);
-  border-radius: 10px;
-}
-
-.rcp-body {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 20px 10px;
-}
-
-.rcp-section {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.rcp-interactive {
-  width: 100%;
-  height: 100%;
-  user-select: none;
-  touch-action: none;
-}
-
-.rcp-interactive[aria-disabled="true"] {
-  cursor: unset;
-  pointer-events: none;
-}
-
-.rcp-saturation {
-  cursor: all-scroll;
-  width: 100%;
-  position: relative;
-  background-image: linear-gradient(to bottom, transparent, black),
-    linear-gradient(to right, white, transparent);
-  border-radius: 10px 10px 0 0;
-}
-
-.rcp-saturation-cursor {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  border: 2px solid white;
-  border-radius: 100%;
-  box-shadow: 0 0 15px #00000026;
-  transform: translate(-10px, -10px);
-}
-
-.rcp-hue {
-  cursor: ew-resize;
-  position: relative;
-  width: 100%;
-  height: 12px;
-  background-image: linear-gradient(
-    to right,
-    red,
-    #ff0,
-    #0f0,
-    #0ff,
-    #00f,
-    #f0f,
-    red
-  );
-  border-radius: 10px;
-}
-
-.rcp-hue-cursor {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  border: 2px solid white;
-  border-radius: 100%;
-  box-shadow: 0 0 15px #00000026;
-  transform: translate(-10px, -4px);
-}
-
-.rcp-alpha {
-  cursor: ew-resize;
-  position: relative;
-  width: 100%;
-  height: 12px;
-  border-radius: 10px;
-}
-
-.rcp-alpha-cursor {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  border: 2px solid white;
-  border-radius: 100%;
-  box-shadow: 0 0 15px #00000026;
-  transform: translate(-10px, -4px);
-}
-
-.rcp-fields {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.rcp-fields-floor {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 10px;
-}
-
-.rcp-field {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-.rcp-field-input {
-  width: 100%;
-  font-family: inherit;
-  font-size: 14px;
-  text-align: center;
-  color: var(--rcp-field-input-color);
-  background-color: transparent;
-  border: 2px solid var(--rcp-field-input-border-color);
-  border-radius: 5px;
-  outline: none;
-  padding: 5px 0;
-}
-
-.rcp-field-input:read-only {
-  opacity: 0.8;
-}
-
-.rcp-field-label {
-  font-size: 14px;
-  text-align: center;
-  color: var(--rcp-field-label-color);
-}

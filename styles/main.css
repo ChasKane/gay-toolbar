@@ -1,10 +1,6 @@
 @import "./button-settings.css";
 @import "./grid.css";
 @import "./settings.css";
-@import "tailwindcss";
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 .full-size {
   width: 100%;

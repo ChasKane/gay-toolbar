@@ -109,7 +109,7 @@ const GaySettings: React.FC = () => {
             <NumericInputGroup
               label="Long-press delay"
               name="pressDelayMs"
-              bounds={[1, 400]}
+              bounds={[1, 5000]}
             />,
 
             <ConfigsModal />,

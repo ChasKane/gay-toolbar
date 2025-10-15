@@ -38,19 +38,28 @@
   padding: 0px;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15) !important;
 }
+
 .gay-button-tap {
   z-index: var(--layer-popover);
+  opacity: 0.4;
+}
+.gay-button-tap::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background: var(--swipe-ring-background);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: swipeRing var(--press-delay) ease forwards;
 }
 .gay-button-tap::after {
   content: "";
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 3rem;
-  height: 3rem;
-  opacity: 0.8;
-  background: var(--swipe-ring-background);
-  border-radius: 50%; /* Make it circular */
+  background: var(--button-press-background);
+  border-radius: 50%;
   transform: translate(-50%, -50%);
   animation: tapRing var(--press-delay) ease forwards;
 }
@@ -63,36 +72,48 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 5rem; /* Starting diameter of the ring */
-  height: 5rem;
   background: var(--button-press-background);
-  border-radius: 50%; /* Make it circular */
+  border-radius: 50%;
   transform: translate(-50%, -50%);
   opacity: 0.8;
-  z-index: 999999;
-  animation: pressRing 0.05s ease forwards;
+  animation: pressRing 0.2s ease forwards;
 }
 
 /*=====================================================================*/
 
+@keyframes swipeRing {
+  0% {
+    width: 5rem;
+    height: 5rem;
+  }
+  100% {
+    width: 30rem;
+    height: 30rem;
+  }
+}
 @keyframes tapRing {
   0% {
     width: 3rem;
     height: 3rem;
-    opacity: 0.3;
   }
   100% {
-    width: 10rem;
-    height: 10rem;
-    opacity: 0.1;
+    width: 6rem;
+    height: 6rem;
   }
 }
 
 @keyframes pressRing {
-  100% {
+  0% {
     width: 6rem;
     height: 6rem;
-    opacity: 0.3;
+  }
+  50% {
+    width: 8rem;
+    height: 8rem;
+  }
+  100% {
+    width: 0rem;
+    height: 0rem;
   }
 }
 

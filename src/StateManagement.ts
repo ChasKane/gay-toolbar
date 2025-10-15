@@ -13,8 +13,8 @@ import {
   takeSnapshot,
   addConfigToMarkdown,
   removeConfigFromMarkdown,
-  parseMarkdownConfigs,
   MarkdownConfig,
+  parseMarkdownConfigs,
 } from "./utils";
 
 // Re-export MarkdownConfig for use in other files
@@ -173,11 +173,11 @@ export const useSettings = create<GayToolbarSettings & SettingsActions>()(
 // ---------------- Not saved to data.json ----------------
 
 export const useEditor = create<EditorState & EditorActions>()((set) => ({
-  isEditing: true,
-  // isEditing: false,
-  // selectedButtonId: "maqw9s0e",
-  // selectedButtonId: "maqw9s0e",
+  isEditing: false,
+  // isEditing: true,
   selectedButtonId: "",
+  // selectedButtonId: "maqw9s0e",
+  // selectedButtonId: "maqw9s0e",
 
   setIsEditing: (isEditing) => {
     // drag ops (on android at least) hide keyboard and there's no way around it,
@@ -228,8 +228,6 @@ export const migrateConfigsToMarkdown = async (
     const markdownFile =
       plugin.app.vault.getAbstractFileByPath(savedConfigsFilePath);
     if (markdownFile) {
-      // File already exists, no migration needed
-      console.log("Markdown file already exists, skipping migration");
       return;
     }
 

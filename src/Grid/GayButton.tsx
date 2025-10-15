@@ -47,7 +47,7 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
     (window.innerWidth - gridGap * numCols - gridPadding * 2) / numCols;
   const bgScale = rowHeight / colWidth;
 
-  let ring: string = backgroundColor;
+  let ring: string = "";
   if (swipeCommands && swipeCommands.length) {
     const numCommands = swipeCommands?.length ?? 0;
     ring = `conic-gradient(from ${
@@ -206,9 +206,16 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
           // debugger;
           e.currentTarget.setPointerCapture(e.pointerId);
           pointerDataRef.current.initXY = { x: e.clientX, y: e.clientY };
+          pointerDataRef.current.currXY = { x: e.clientX, y: e.clientY };
 
-          const el = buttonRef.current;
+          const el = buttonRef.current?.firstElementChild;
           el?.addClass("gay-button-tap");
+
+          // Set the grid slot's z-index to bring it to front
+          const gridSlot = el?.closest(".slot") as HTMLElement;
+          if (gridSlot) {
+            gridSlot.style.zIndex = "999999";
+          }
 
           pointerDataRef.current.startTime = Date.now();
           pointerDataRef.current.pointerDown = true;
@@ -221,8 +228,9 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
                 pointerDataRef.current.initXY,
                 pointerDataRef.current.currXY
               ) < 10
-            )
+            ) {
               el?.addClass("gay-button-press");
+            }
           }, pressDelayMs);
         }}
         onPointerMove={(e: any) => {
@@ -235,7 +243,7 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
             return;
           }
           if (!pointerDataRef.current.initXY) return;
-          const el = buttonRef.current;
+          const el = buttonRef.current?.firstElementChild;
           const endTime = Date.now();
           pointerDataRef.current.pointerDown = false;
 
@@ -245,6 +253,7 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
               y: e.clientY,
             }) < 10
           ) {
+            // TAP/PRESS
             const delta = endTime - pointerDataRef.current.startTime;
             if (delta < pressDelayMs) {
               // tap
@@ -253,13 +262,12 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
                 plugin?.app.commands.executeCommandById(onTapCommandId);
             } else {
               // long-press
-              console.log("press");
               if (!isEditing && onPressCommandId)
                 // @ts-ignore | app.commands exists; not sure why it's not in the API...
                 plugin?.app.commands.executeCommandById(onPressCommandId);
             }
           } else if (swipeCommands && swipeCommands.length) {
-            // swipe
+            // SWIPE
             const angle = getAngle(pointerDataRef.current.initXY, {
               x: e.clientX,
               y: e.clientY,
@@ -272,7 +280,15 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
             const swipeCommandId =
               swipeCommands[swipeIdx]?.commandId ?? "error";
             console.log(swipeCommandId, swipeIdx, angle);
-            // TODO draw highlighted swipe's icon, then float it briefly on selection
+
+            // Highlight the selected swipe icon and float it briefly
+            const selectedSwipeIcon = swipeRefs.current[swipeIdx]?.current;
+            if (selectedSwipeIcon) {
+              selectedSwipeIcon.classList.add("swipe-icon-highlighted");
+              setTimeout(() => {
+                selectedSwipeIcon.classList.remove("swipe-icon-highlighted");
+              }, 1000);
+            }
 
             // @ts-ignore | app.commands exists; not sure why it's not in the API...
             plugin?.app.commands.executeCommandById(swipeCommandId);
@@ -282,20 +298,34 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
           pointerDataRef.current.currXY = undefined;
           el?.removeClass("gay-button-tap");
           onPressCommandId && el?.removeClass("gay-button-press");
+
+          // Reset the grid slot's z-index
+          const gridSlot = el?.closest(".slot") as HTMLElement;
+          if (gridSlot) {
+            gridSlot.style.zIndex = "";
+          }
         }}
         onPointerCancel={(e: any) => {
           console.log("pointer cancel");
-          const el = buttonRef.current;
+          const el = buttonRef.current?.firstElementChild;
           el?.removeClass("gay-button-tap");
           el?.removeClass("gay-button-press");
 
           pointerDataRef.current.initXY = undefined;
           pointerDataRef.current.currXY = undefined;
+
+          // Reset the grid slot's z-index
+          const gridSlot = el?.closest(".slot") as HTMLElement;
+          if (gridSlot) {
+            gridSlot.style.zIndex = "";
+          }
         }}
         // onPointerLeave={(e) => console.log("leave", e.target)}
         // onPointerOut={(e) => console.log("out", e.target)}
         // onPointerOver={(e) => console.log("over", e.target)}
       >
+        {/* set tap/press classes on this instead of button to isolate transparency contexts */}
+        <div />
         <div className={pressIcon && "tap-icon"} ref={tapIconRef}></div>
         {pressIcon && <div className="press-icon" ref={pressIconRef}></div>}
       </button>
