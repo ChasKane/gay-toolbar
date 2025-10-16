@@ -2,6 +2,11 @@
 @import "./grid.css";
 @import "./settings.css";
 
+div[style*="position: absolute"] > svg,
+div[style*="position: fixed"] > svg {
+  display: block;
+}
+
 .full-size {
   width: 100%;
   height: 100%;
