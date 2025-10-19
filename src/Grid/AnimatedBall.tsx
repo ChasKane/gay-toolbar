@@ -15,29 +15,18 @@ const AnimatedBall: React.FC<AnimatedBallProps> = React.memo(
     const iconRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-      console.log("AnimatedBall useEffect:", {
-        icon,
-        diameter,
-        hasRef: !!iconRef.current,
-      });
       if (icon && iconRef.current) {
-        console.log("Setting icon:", icon);
-        // Clear any existing content
         iconRef.current.innerHTML = "";
-        // Use setIcon to properly render the Obsidian icon
         setIcon(iconRef.current, icon);
 
-        // Style the SVG icon
         const svg = iconRef.current.firstChild as HTMLElement;
         if (svg) {
-          console.log("SVG found, styling:", svg);
-          // Use getLuminanceGuidedIconColor for better contrast
           const iconColor = getLuminanceGuidedIconColor(
             color || "rgba(255, 255, 255, 0.8)"
           );
           svg.style.color = iconColor;
           svg.style.filter = "drop-shadow(0 0 6px rgba(0,0,0,0.8))";
-          svg.style.width = `${diameter * 0.6}px`; // Make it larger
+          svg.style.width = `${diameter * 0.6}px`;
           svg.style.height = `${diameter * 0.6}px`;
           svg.style.display = "block";
           svg.style.position = "relative";

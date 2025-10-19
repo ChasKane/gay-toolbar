@@ -47,7 +47,7 @@ const AnimatedTrail: React.FC<TrailProps> = React.memo(
 
     // Update position when target changes
     useEffect(() => {
-      if (isActive) {
+      if (isActive && !isFadingRef.current) {
         // Calculate velocity for smooth movement
         const deltaX = targetX - lastPositionRef.current.x;
         const deltaY = targetY - lastPositionRef.current.y;
@@ -65,17 +65,20 @@ const AnimatedTrail: React.FC<TrailProps> = React.memo(
         }
 
         // Update each ball to follow a different point in the history
-        springs.forEach((spring, index) => {
-          const historyIndex = Math.max(
-            0,
-            positionHistoryRef.current.length - 1 - index * 2
-          );
-          const targetPos = positionHistoryRef.current[historyIndex] || {
-            x: targetX,
-            y: targetY,
-          };
-          spring.xy.start([targetPos.x, targetPos.y]);
-        });
+        // Only update if not fading out
+        if (!isFadingRef.current) {
+          springs.forEach((spring, index) => {
+            const historyIndex = Math.max(
+              0,
+              positionHistoryRef.current.length - 1 - index * 2
+            );
+            const targetPos = positionHistoryRef.current[historyIndex] || {
+              x: targetX,
+              y: targetY,
+            };
+            spring.xy.start([targetPos.x, targetPos.y]);
+          });
+        }
 
         lastPositionRef.current = { x: targetX, y: targetY };
       }
@@ -88,19 +91,80 @@ const AnimatedTrail: React.FC<TrailProps> = React.memo(
 
         // Continue moving in the direction of last velocity
         const velocity = velocityRef.current;
-        const finalX = lastPositionRef.current.x + velocity.x * 2; // Continue with velocity
-        const finalY = lastPositionRef.current.y + velocity.y * 2;
+        const finalX = lastPositionRef.current.x + velocity.x * -2; // Continue with velocity
+        const finalY = lastPositionRef.current.y + velocity.y * -2;
 
         // Start fade out animation with continued movement and scaling
         springs.forEach((spring, index) => {
           spring.xy.start([finalX, finalY]);
-          spring.opacity.start(0.5); // Much less stark - fade to 30% instead of 0%
-          // Scale up significantly - each ball gets a different scale for variety
-          const scaleAmount = 3 + index * 0.8; // 3x, 3.8x, 4.6x, 5.4x - much more dramatic scaling
-          spring.scale.start(scaleAmount, {
-            config: { tension: 150, friction: 25 }, // Slower, more gradual animation
-          });
+          spring.opacity.start(0.1);
+
+          if (index === 0) {
+            // console.log(
+            //   "🎯 LEADING BALL SCALE ANIMATION:",
+            //   id,
+            // "isFading:",
+            // isFadingRef.current,
+            // "isAnimating:",
+            // spring.scale.isAnimating,
+            // "scale:",
+            // spring.scale.get()
+            // );
+
+            spring.scale.start(5, {
+              config: { tension: 400, friction: 20 }, // More aggressive for faster approach
+            });
+
+            // console.log(
+            //   "🎯 AFTER SCALE START:",
+            // id,
+            //   "value:",
+            //   springs[0].scale.get(),
+            //   "isAnimating:",
+            //   springs[0].scale.isAnimating,
+            //   "isPaused:",
+            //   springs[0].scale.isPaused,
+            //   "isDelayed:",
+            //   springs[0].scale.isDelayed,
+            //   "queue:",
+            //   springs[0].scale.queue,
+            //   "velocity:",
+            //   springs[0].scale.velocity,
+            //   "animation:",
+            //   springs[0].scale.animation
+            // );
+          }
         });
+
+        const logScale = (label: string, delay: number) => {
+          setTimeout(() => {
+            console.log(
+              `🎬 ${label}:`,
+              id,
+              "value:",
+              springs[0].scale.get()
+              // "isAnimating:",
+              // springs[0].scale.isAnimating,
+              // "isPaused:",
+              // springs[0].scale.isPaused,
+              // "isDelayed:",
+              // springs[0].scale.isDelayed,
+              // "queue:",
+              // springs[0].scale.queue,
+              // "velocity:",
+              // springs[0].scale.velocity,
+              // "animation:",
+              // springs[0].scale.animation
+            );
+          }, delay);
+        };
+
+        // logScale("INITIAL", 0);
+        // logScale("10%", pressDelayMs * 0.1);
+        // logScale("30%", pressDelayMs * 0.3);
+        // logScale("50%", pressDelayMs * 0.5);
+        // logScale("80%", pressDelayMs * 0.8);
+        logScale("110%", pressDelayMs * 1.1);
 
         // Remove trail after fade out
         fadeOutTimeoutRef.current = setTimeout(() => {
@@ -134,8 +198,6 @@ const AnimatedTrail: React.FC<TrailProps> = React.memo(
           const sizeMultiplier = 1 - index * 0.15; // 100%, 85%, 70%, 55%
           const ballSize = ballDiameter * sizeMultiplier;
           const shouldShowIcon = index === 0 && icon && icon !== undefined;
-
-          // Leading ball gets the icon
 
           return (
             <AnimatedBall

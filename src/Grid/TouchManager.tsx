@@ -79,7 +79,7 @@ const TouchManager: React.FC<TouchManagerProps> = ({
       isActive: true,
       velocityX: 0,
       velocityY: 0,
-      color: "rgba(255, 255, 255, 0.8)", // Start with white, will be updated on first movement
+      color: "rgba(255, 255, 255, 0)", // Start with white, will be updated on first movement
       initX: relativeX,
       initY: relativeY,
     };

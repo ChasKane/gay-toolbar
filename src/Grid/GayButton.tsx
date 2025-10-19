@@ -201,25 +201,7 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
             transform: "translate(-50%,-50%)",
           }}
           onPointerDown={(e: any) => {
-            // for (let i = 0; i < 361; i += 45) {
-            //   console.log(
-            //     [
-            //       i - 1,
-            //       getSwipeIconPosition(
-            //         (i - 1) / 360 + (swipeRingOffsetAngle ?? 0)
-            //       ),
-            //     ],
-            //     [i, getSwipeIconPosition(i / 360 + (swipeRingOffsetAngle ?? 0))],
-            //     [
-            //       i + 1,
-            //       getSwipeIconPosition(
-            //         (i + 1) / 360 + (swipeRingOffsetAngle ?? 0)
-            //       ),
-            //     ]
-            //   );
-            // }
             if (isEditing) return;
-            // debugger;
             e.currentTarget.setPointerCapture(e.pointerId);
             pointerDataRef.current.initXY = { x: e.clientX, y: e.clientY };
             pointerDataRef.current.currXY = { x: e.clientX, y: e.clientY };
@@ -279,9 +261,11 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
                   plugin?.app.commands.executeCommandById(onTapCommandId);
               } else {
                 // long-press
-                if (!isEditing && onPressCommandId)
+                if (onPressCommandId) {
                   // @ts-ignore | app.commands exists; not sure why it's not in the API...
                   plugin?.app.commands.executeCommandById(onPressCommandId);
+                  console.log("PRESS COMMAND", onPressCommandId);
+                }
               }
             } else if (swipeCommands && swipeCommands.length) {
               // SWIPE
@@ -296,7 +280,6 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
               );
               const swipeCommandId =
                 swipeCommands[swipeIdx]?.commandId ?? "error";
-              console.log(swipeCommandId, swipeIdx, angle);
 
               // Highlight the selected swipe icon and float it briefly
               const selectedSwipeIcon = swipeRefs.current[swipeIdx]?.current;
@@ -309,6 +292,7 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
 
               // @ts-ignore | app.commands exists; not sure why it's not in the API...
               plugin?.app.commands.executeCommandById(swipeCommandId);
+              console.log("SWIPE COMMAND", swipeCommandId, swipeIdx, angle);
             }
 
             pointerDataRef.current.initXY = undefined;
