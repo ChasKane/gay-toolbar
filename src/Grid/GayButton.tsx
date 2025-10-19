@@ -8,6 +8,9 @@ import {
   getSwipeIdx,
   Position,
 } from "../utils";
+import TouchManager from "./TouchManager";
+
+const BALL_COUNT = 4;
 
 const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
   const pointerDataRef = useRef<{
@@ -146,209 +149,225 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
   };
 
   return (
-    <div
-      style={{
-        position: "relative",
-        width: "100%",
-        height: "100%",
-        borderRadius: "8px",
-        animation: isEditing ? "wiggle 0.8s infinite ease" : undefined,
-        transformOrigin: "center",
-        scale: isEditing && isSelected ? 1.5 : undefined,
-      }}
+    <TouchManager
+      ballCount={BALL_COUNT}
+      ballDiameter={rowHeight * 0.5}
+      pressDelayMs={pressDelayMs}
+      swipeCommands={
+        swipeCommands?.filter((cmd) => cmd !== null) as Array<{
+          color: string;
+          commandId: string;
+          icon: string;
+        }>
+      }
+      swipeRingOffsetAngle={swipeRingOffsetAngle}
     >
-      {swipeCommands && !!swipeCommands.length && (
-        <div
-          style={{
-            position: "absolute",
-            background: ring,
-            width: "100%",
-            aspectRatio: 1,
-            borderRadius: "8px",
-            top: "50%",
-            left: "50%",
-            transform: `translate(-50%,-50%) scaleY(${bgScale})`,
-          }}
-        />
-      )}
-      <button
-        ref={buttonRef}
-        key={buttonId + "__button-key"}
-        className="gay-button"
+      <div
         style={{
-          position: "absolute",
-          background:
-            backgroundColor +
-            (swipeCommands && !!swipeCommands.length ? " padding-box" : ""),
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%,-50%)",
+          position: "relative",
+          width: "100%",
+          height: "100%",
+          borderRadius: "8px",
+          animation: isEditing ? "wiggle 0.8s infinite ease" : undefined,
+          transformOrigin: "center",
+          scale: isEditing && isSelected ? 1.5 : undefined,
         }}
-        onPointerDown={(e: any) => {
-          // for (let i = 0; i < 361; i += 45) {
-          //   console.log(
-          //     [
-          //       i - 1,
-          //       getSwipeIconPosition(
-          //         (i - 1) / 360 + (swipeRingOffsetAngle ?? 0)
-          //       ),
-          //     ],
-          //     [i, getSwipeIconPosition(i / 360 + (swipeRingOffsetAngle ?? 0))],
-          //     [
-          //       i + 1,
-          //       getSwipeIconPosition(
-          //         (i + 1) / 360 + (swipeRingOffsetAngle ?? 0)
-          //       ),
-          //     ]
-          //   );
-          // }
-          if (isEditing) return;
-          // debugger;
-          e.currentTarget.setPointerCapture(e.pointerId);
-          pointerDataRef.current.initXY = { x: e.clientX, y: e.clientY };
-          pointerDataRef.current.currXY = { x: e.clientX, y: e.clientY };
-
-          const el = buttonRef.current?.firstElementChild;
-          el?.addClass("gay-button-tap");
-
-          // Set the grid slot's z-index to bring it to front
-          const gridSlot = el?.closest(".slot") as HTMLElement;
-          if (gridSlot) {
-            gridSlot.style.zIndex = "999999";
-          }
-
-          pointerDataRef.current.startTime = Date.now();
-          pointerDataRef.current.pointerDown = true;
-
-          pointerDataRef.current.timeout = setTimeout(() => {
-            if (
-              pointerDataRef.current.pointerDown &&
-              onPressCommandId &&
-              getDistance(
-                pointerDataRef.current.initXY,
-                pointerDataRef.current.currXY
-              ) < 10
-            ) {
-              el?.addClass("gay-button-press");
-            }
-          }, pressDelayMs);
-        }}
-        onPointerMove={(e: any) => {
-          pointerDataRef.current.currXY = { x: e.clientX, y: e.clientY };
-        }}
-        onPointerUp={(e: any) => {
-          if (isEditing) {
-            if (isSelected) setSelectedButtonId("");
-            else setSelectedButtonId(buttonId);
-            return;
-          }
-          if (!pointerDataRef.current.initXY) return;
-          const el = buttonRef.current?.firstElementChild;
-          const endTime = Date.now();
-          pointerDataRef.current.pointerDown = false;
-
-          if (
-            getDistance(pointerDataRef.current.initXY, {
-              x: e.clientX,
-              y: e.clientY,
-            }) < 10
-          ) {
-            // TAP/PRESS
-            const delta = endTime - pointerDataRef.current.startTime;
-            if (delta < pressDelayMs) {
-              // tap
-              if (onTapCommandId)
-                // @ts-ignore | app.commands exists; not sure why it's not in the API...
-                plugin?.app.commands.executeCommandById(onTapCommandId);
-            } else {
-              // long-press
-              if (!isEditing && onPressCommandId)
-                // @ts-ignore | app.commands exists; not sure why it's not in the API...
-                plugin?.app.commands.executeCommandById(onPressCommandId);
-            }
-          } else if (swipeCommands && swipeCommands.length) {
-            // SWIPE
-            const angle = getAngle(pointerDataRef.current.initXY, {
-              x: e.clientX,
-              y: e.clientY,
-            });
-            const swipeIdx = getSwipeIdx(
-              angle,
-              swipeRingOffsetAngle ?? 0,
-              swipeCommands.length
-            );
-            const swipeCommandId =
-              swipeCommands[swipeIdx]?.commandId ?? "error";
-            console.log(swipeCommandId, swipeIdx, angle);
-
-            // Highlight the selected swipe icon and float it briefly
-            const selectedSwipeIcon = swipeRefs.current[swipeIdx]?.current;
-            if (selectedSwipeIcon) {
-              selectedSwipeIcon.classList.add("swipe-icon-highlighted");
-              setTimeout(() => {
-                selectedSwipeIcon.classList.remove("swipe-icon-highlighted");
-              }, 1000);
-            }
-
-            // @ts-ignore | app.commands exists; not sure why it's not in the API...
-            plugin?.app.commands.executeCommandById(swipeCommandId);
-          }
-
-          pointerDataRef.current.initXY = undefined;
-          pointerDataRef.current.currXY = undefined;
-          el?.removeClass("gay-button-tap");
-          onPressCommandId && el?.removeClass("gay-button-press");
-
-          // Reset the grid slot's z-index
-          const gridSlot = el?.closest(".slot") as HTMLElement;
-          if (gridSlot) {
-            gridSlot.style.zIndex = "";
-          }
-        }}
-        onPointerCancel={(e: any) => {
-          console.log("pointer cancel");
-          const el = buttonRef.current?.firstElementChild;
-          el?.removeClass("gay-button-tap");
-          el?.removeClass("gay-button-press");
-
-          pointerDataRef.current.initXY = undefined;
-          pointerDataRef.current.currXY = undefined;
-
-          // Reset the grid slot's z-index
-          const gridSlot = el?.closest(".slot") as HTMLElement;
-          if (gridSlot) {
-            gridSlot.style.zIndex = "";
-          }
-        }}
-        // onPointerLeave={(e) => console.log("leave", e.target)}
-        // onPointerOut={(e) => console.log("out", e.target)}
-        // onPointerOver={(e) => console.log("over", e.target)}
       >
-        {/* set tap/press classes on this instead of button to isolate transparency contexts */}
-        <div />
-        <div className={pressIcon && "tap-icon"} ref={tapIconRef}></div>
-        {pressIcon && <div className="press-icon" ref={pressIconRef}></div>}
-      </button>
-      {swipeCommands?.map((c, i) => {
-        return (
+        {swipeCommands && !!swipeCommands.length && (
           <div
-            className="swipe-icon"
-            ref={swipeRefs.current[i]}
-            key={i}
             style={{
               position: "absolute",
-              borderRadius: "50%",
-
-              width: "var(--button-border-width)",
-              height: "var(--button-border-width)",
-              ...getSwipeIconPosition(
-                (360 * i) / swipeCommands!.length + (swipeRingOffsetAngle ?? 0)
-              ),
+              background: ring,
+              width: "100%",
+              aspectRatio: 1,
+              borderRadius: "8px",
+              top: "50%",
+              left: "50%",
+              transform: `translate(-50%,-50%) scaleY(${bgScale})`,
             }}
           />
-        );
-      })}
-    </div>
+        )}
+        <button
+          ref={buttonRef}
+          key={buttonId + "__button-key"}
+          className="gay-button"
+          style={{
+            position: "absolute",
+            background:
+              backgroundColor +
+              (swipeCommands && !!swipeCommands.length ? " padding-box" : ""),
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%,-50%)",
+          }}
+          onPointerDown={(e: any) => {
+            // for (let i = 0; i < 361; i += 45) {
+            //   console.log(
+            //     [
+            //       i - 1,
+            //       getSwipeIconPosition(
+            //         (i - 1) / 360 + (swipeRingOffsetAngle ?? 0)
+            //       ),
+            //     ],
+            //     [i, getSwipeIconPosition(i / 360 + (swipeRingOffsetAngle ?? 0))],
+            //     [
+            //       i + 1,
+            //       getSwipeIconPosition(
+            //         (i + 1) / 360 + (swipeRingOffsetAngle ?? 0)
+            //       ),
+            //     ]
+            //   );
+            // }
+            if (isEditing) return;
+            // debugger;
+            e.currentTarget.setPointerCapture(e.pointerId);
+            pointerDataRef.current.initXY = { x: e.clientX, y: e.clientY };
+            pointerDataRef.current.currXY = { x: e.clientX, y: e.clientY };
+
+            const el = buttonRef.current?.firstElementChild;
+            el?.addClass("gay-button-tap");
+
+            // Set the grid slot's z-index to bring it to front
+            const gridSlot = el?.closest(".slot") as HTMLElement;
+            if (gridSlot) {
+              gridSlot.style.zIndex = "999999";
+            }
+
+            pointerDataRef.current.startTime = Date.now();
+            pointerDataRef.current.pointerDown = true;
+
+            pointerDataRef.current.timeout = setTimeout(() => {
+              el?.removeClass("gay-button-tap");
+              if (
+                pointerDataRef.current.pointerDown &&
+                onPressCommandId &&
+                getDistance(
+                  pointerDataRef.current.initXY,
+                  pointerDataRef.current.currXY
+                ) < 10
+              ) {
+                el?.addClass("gay-button-press");
+              }
+            }, pressDelayMs);
+          }}
+          onPointerMove={(e: any) => {
+            pointerDataRef.current.currXY = { x: e.clientX, y: e.clientY };
+          }}
+          onPointerUp={(e: any) => {
+            if (isEditing) {
+              if (isSelected) setSelectedButtonId("");
+              else setSelectedButtonId(buttonId);
+              return;
+            }
+            if (!pointerDataRef.current.initXY) return;
+            const el = buttonRef.current?.firstElementChild;
+            const endTime = Date.now();
+            pointerDataRef.current.pointerDown = false;
+
+            if (
+              getDistance(pointerDataRef.current.initXY, {
+                x: e.clientX,
+                y: e.clientY,
+              }) < 10
+            ) {
+              // TAP/PRESS
+              const delta = endTime - pointerDataRef.current.startTime;
+              if (delta < pressDelayMs) {
+                // tap
+                if (onTapCommandId)
+                  // @ts-ignore | app.commands exists; not sure why it's not in the API...
+                  plugin?.app.commands.executeCommandById(onTapCommandId);
+              } else {
+                // long-press
+                if (!isEditing && onPressCommandId)
+                  // @ts-ignore | app.commands exists; not sure why it's not in the API...
+                  plugin?.app.commands.executeCommandById(onPressCommandId);
+              }
+            } else if (swipeCommands && swipeCommands.length) {
+              // SWIPE
+              const angle = getAngle(pointerDataRef.current.initXY, {
+                x: e.clientX,
+                y: e.clientY,
+              });
+              const swipeIdx = getSwipeIdx(
+                angle,
+                swipeRingOffsetAngle ?? 0,
+                swipeCommands.length
+              );
+              const swipeCommandId =
+                swipeCommands[swipeIdx]?.commandId ?? "error";
+              console.log(swipeCommandId, swipeIdx, angle);
+
+              // Highlight the selected swipe icon and float it briefly
+              const selectedSwipeIcon = swipeRefs.current[swipeIdx]?.current;
+              if (selectedSwipeIcon) {
+                selectedSwipeIcon.classList.add("swipe-icon-highlighted");
+                setTimeout(() => {
+                  selectedSwipeIcon.classList.remove("swipe-icon-highlighted");
+                }, 1000);
+              }
+
+              // @ts-ignore | app.commands exists; not sure why it's not in the API...
+              plugin?.app.commands.executeCommandById(swipeCommandId);
+            }
+
+            pointerDataRef.current.initXY = undefined;
+            pointerDataRef.current.currXY = undefined;
+            el?.removeClass("gay-button-tap");
+            onPressCommandId && el?.removeClass("gay-button-press");
+
+            // Reset the grid slot's z-index
+            const gridSlot = el?.closest(".slot") as HTMLElement;
+            if (gridSlot) {
+              gridSlot.style.zIndex = "";
+            }
+          }}
+          onPointerCancel={(e: any) => {
+            console.log("pointer cancel");
+            const el = buttonRef.current?.firstElementChild;
+            el?.removeClass("gay-button-tap");
+            el?.removeClass("gay-button-press");
+
+            pointerDataRef.current.initXY = undefined;
+            pointerDataRef.current.currXY = undefined;
+
+            // Reset the grid slot's z-index
+            const gridSlot = el?.closest(".slot") as HTMLElement;
+            if (gridSlot) {
+              gridSlot.style.zIndex = "";
+            }
+          }}
+          // onPointerLeave={(e) => console.log("leave", e.target)}
+          // onPointerOut={(e) => console.log("out", e.target)}
+          // onPointerOver={(e) => console.log("over", e.target)}
+        >
+          {/* set tap/press classes on this instead of button to isolate transparency contexts */}
+          <div />
+          <div className={pressIcon && "tap-icon"} ref={tapIconRef}></div>
+          {pressIcon && <div className="press-icon" ref={pressIconRef}></div>}
+        </button>
+        {swipeCommands?.map((c, i) => {
+          return (
+            <div
+              className="swipe-icon"
+              ref={swipeRefs.current[i]}
+              key={i}
+              style={{
+                position: "absolute",
+                borderRadius: "50%",
+
+                width: "var(--button-border-width)",
+                height: "var(--button-border-width)",
+                ...getSwipeIconPosition(
+                  (360 * i) / swipeCommands!.length +
+                    (swipeRingOffsetAngle ?? 0)
+                ),
+              }}
+            />
+          );
+        })}
+      </div>
+    </TouchManager>
   );
 };
 

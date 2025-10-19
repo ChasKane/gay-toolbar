@@ -152,8 +152,8 @@
     height: 5rem;
   }
   100% {
-    width: 30rem;
-    height: 30rem;
+    width: 10rem;
+    height: 10rem;
   }
 }
 @keyframes tapRing {
@@ -198,6 +198,35 @@
   100% {
     transform: rotate(-1.5deg) scale(1);
   }
+}
+
+/* Animated Ball Trail Styles */
+.animated-ball {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform, opacity;
+  z-index: 1000;
+}
+
+.animated-ball-trail {
+  position: absolute;
+  pointer-events: none;
+  will-change: transform, opacity;
+  z-index: 1000;
+}
+
+/* Performance optimizations for animations */
+.animated-ball,
+.animated-ball-trail {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Touch gesture optimization */
+.touch-manager {
+  touch-action: none;
 }
 
 @import "./button-settings.css";
