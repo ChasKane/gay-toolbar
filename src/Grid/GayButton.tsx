@@ -8,6 +8,8 @@ import {
   getSwipeIdx,
   Position,
 } from "../utils";
+import { animated, useSpring } from "@react-spring/web";
+import ReactDOM from "react-dom";
 
 const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
   const pointerDataRef = useRef<{
@@ -64,6 +66,11 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
         .join(", ") ?? "transparent,transparent"
     })`;
   }
+
+  const spring = useSpring({
+    xy: [0, 0],
+    config: { tension: 300, friction: 35 },
+  });
 
   useLayoutEffect(() => {
     // * BACKGROUND
@@ -140,8 +147,6 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
       left: `calc(50% + (50%*${x}))`,
       top: `calc(50% + (50%*${y}))`,
       transform: `translate(-50%,-50%) translate(calc(50%*${-x!}), calc(50%*${-y!}))`,
-      // transform: `translate(-50%,-50%)`,
-      // transform: `translate(-calc(50%*${y}), -calc(50%*${y}))`,
     };
   };
 
@@ -185,28 +190,14 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
           transform: "translate(-50%,-50%)",
         }}
         onPointerDown={(e: any) => {
-          // for (let i = 0; i < 361; i += 45) {
-          //   console.log(
-          //     [
-          //       i - 1,
-          //       getSwipeIconPosition(
-          //         (i - 1) / 360 + (swipeRingOffsetAngle ?? 0)
-          //       ),
-          //     ],
-          //     [i, getSwipeIconPosition(i / 360 + (swipeRingOffsetAngle ?? 0))],
-          //     [
-          //       i + 1,
-          //       getSwipeIconPosition(
-          //         (i + 1) / 360 + (swipeRingOffsetAngle ?? 0)
-          //       ),
-          //     ]
-          //   );
-          // }
           if (isEditing) return;
-          // debugger;
           e.currentTarget.setPointerCapture(e.pointerId);
           pointerDataRef.current.initXY = { x: e.clientX, y: e.clientY };
           pointerDataRef.current.currXY = { x: e.clientX, y: e.clientY };
+          spring.xy.start([e.clientX, e.clientY]);
+          setTimeout(() => {
+            console.log(spring.xy.get());
+          }, 3000);
 
           const el = buttonRef.current?.firstElementChild;
           el?.addClass("gay-button-tap");
@@ -221,6 +212,7 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
           pointerDataRef.current.pointerDown = true;
 
           pointerDataRef.current.timeout = setTimeout(() => {
+            el?.removeClass("gay-button-tap");
             if (
               pointerDataRef.current.pointerDown &&
               onPressCommandId &&
@@ -234,7 +226,10 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
           }, pressDelayMs);
         }}
         onPointerMove={(e: any) => {
+          if (!pointerDataRef.current.initXY) return;
+          console.log(pointerDataRef.current.currXY, e.clientX, e.clientY);
           pointerDataRef.current.currXY = { x: e.clientX, y: e.clientY };
+          spring.xy.start([e.clientX, e.clientY]);
         }}
         onPointerUp={(e: any) => {
           if (isEditing) {
@@ -348,6 +343,23 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
           />
         );
       })}
+      {ReactDOM.createPortal(
+        <animated.div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            transform: spring.xy.to(
+              (x, y) => `translate(-50%, -50%) translate(${x}px, ${y}px)`
+            ),
+            width: 100,
+            height: 100,
+            background: "red",
+            borderRadius: "50%",
+          }}
+        />,
+        document.body
+      )}
     </div>
   );
 };
