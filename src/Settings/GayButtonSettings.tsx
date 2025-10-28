@@ -433,30 +433,76 @@ const GayButtonSettings: React.FC = () => {
                     setSubMenu(false);
                   }}
                 />
-                {c && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "50%",
-                      left: "50%",
-                      transform: "translate(-50%, 53%)",
-                    }}
-                  >
-                    <GayColorPicker
-                      isSwipeCommand
-                      color={c.color || "#000000"}
-                      onChange={(color) =>
-                        updateButton(selectedButtonId, {
-                          swipeCommands: replaceAt(swipeCommands ?? [], i, {
-                            commandId: c.commandId,
-                            icon: c.icon,
-                            color: color,
-                          }),
-                        })
-                      }
-                    ></GayColorPicker>
-                  </div>
-                )}
+                {c &&
+                  (() => {
+                    const angle =
+                      (360 * i) / swipeCommands!.length +
+                      (swipeRingOffsetAngle ?? 0);
+                    const normalizedAngle = ((angle % 360) + 360) % 360;
+                    const isNearRight =
+                      normalizedAngle >= 330 || normalizedAngle <= 30;
+                    const pos = isNearRight
+                      ? { left: "0%", transform: "translate(-100%, -50%)" }
+                      : { right: "0%", transform: "translate(100%, -50%)" };
+                    return (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "50%",
+                          ...pos,
+                        }}
+                      >
+                        <GayColorPicker
+                          isSwipeCommand
+                          color={c.color || "#000000"}
+                          onChange={(color) =>
+                            updateButton(selectedButtonId, {
+                              swipeCommands: replaceAt(swipeCommands ?? [], i, {
+                                commandId: c.commandId,
+                                icon: c.icon,
+                                color: color,
+                              }),
+                            })
+                          }
+                        ></GayColorPicker>
+                      </div>
+                    );
+                  })()}
+                {c &&
+                  (() => {
+                    const angle =
+                      (360 * i) / swipeCommands!.length +
+                      (swipeRingOffsetAngle ?? 0);
+                    const normalizedAngle = ((angle % 360) + 360) % 360;
+                    const isNearBottom =
+                      normalizedAngle >= 50 && normalizedAngle <= 130;
+                    return (
+                      <small
+                        style={{
+                          position: "absolute",
+                          top: isNearBottom ? "0%" : "100%",
+                          left: "50%",
+                          transform: isNearBottom
+                            ? "translate(-50%, -100%)"
+                            : "translate(-50%, 0%)",
+                          fontSize: "xx-small",
+                          textAlign: "center",
+                          width: "10ch",
+                          pointerEvents: "none",
+                          backgroundColor:
+                            "color-mix(in srgb, var(--background-primary) 50%, transparent)",
+                          padding: "0.2rem",
+                          borderRadius: "0.2rem",
+                          color: "var(--text-primary)",
+                        }}
+                      >
+                        {
+                          // @ts-ignore
+                          plugin?.app.commands.findCommand(c.commandId)?.name
+                        }
+                      </small>
+                    );
+                  })()}
               </div>
             );
           })}
