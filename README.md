@@ -1,12 +1,14 @@
 # **The Most Colorful Obsidian Toolbar**
 
-A fully customizable, collapsible toolbar that floats above the keyboard, replacing the default toolbar.
+A fully customizable, collapsible toolbar that floats above the keyboard, replacing the default toolbar. Highly polished, feature-rich. Built (and maintained!) with ❤️
 
-In edit mode (wrench 🔧 icon, or obsidian command `Gay Toolbar: Toggle edit mode`), each button can be assigned a primary (tap) and optional secondary (long-press) obsidian command. Buttons can be moved between slots by long-pressing and dragging. Their colors can be customized from a customizable color palette or assigned in bulk. The background color of the whole toolbar can be set to a solid color, or you can use your own CSS value for crazy radial gradients or whatever. Did I mention this toolbar is customizable? The number and size of rows and columns can also be set independently, and when you arrive at a config you like, you can snapshot it like a video game save slot.
+In edit mode (wrench 🔧 icon, or obsidian command `Gay Toolbar: Toggle edit mode`), each button can be assigned a primary (tap) and optional secondary (long-press) obsidian command, as well as any number of swipe commands, each assigned to a different swipe direction. Buttons can be moved between slnt swipeots by long-pressing and dragging in edit mode. Their colors can be customized from a customizable color palette or assigned in bulk. The background color of the whole toolbar can be set to a solid color, or you can use your own CSS value for crazy radial gradients or whatever. Did I mention this toolbar is customizable? The number and size of rows and columns can also be set independently, and when you arrive at a config you like, you can snapshot it like a video game save slot.
 ![Image of gay-toolbar](https://github.com/user-attachments/assets/7a988e76-a193-40e4-bc16-1463dfbff3b4)
 
 | ![Image of toolbar settings](https://github.com/user-attachments/assets/acc5123a-3460-49c8-99d2-6a31a06dbd6b) | ![Image of button settings](https://github.com/user-attachments/assets/a12e6246-7baa-4fc9-80ef-382c66e77e93) |
 | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+
+> P.S. My partner and I are looking for freelance work. She specializes in real-time full-stack app development (web sockets, Go, etc.). I specialize in real-time front ends, animation, and performace. Togeather, we've built apps, AI integrations, and plugins, and much more.
 
 ---
 
@@ -18,12 +20,13 @@ In edit mode (wrench 🔧 icon, or obsidian command `Gay Toolbar: Toggle edit mo
   - Move (via dragging), add, remove, and personalize buttons (color, icons, and commands).
   - Button slots can remain empty, creating gaps in the toolbar if desired.
   - Save and load configs -- freely experiment and return to layouts you know work for you if you get lost.
-- **(Up To) Two Commands Per Button:**
+- **Many Commands Per Button:**
   - **Primary Action:** Triggered by a tap.
-  - **Secondary Action:** Triggered by a long press (tap and hold for a _customizable duration_, default: 200).
-  - Both actions can have distinct, customizable icons.
+  - **Secondary Action:** Triggered by a long press (tap and hold for a _customizable duration_, default: 200ms).
+  - **Swipe Actions:** Triggered by swiping from the button in the assigned direction.
+  - Each action can have distinct, customizable icons.
 - **Smart Icon Colors:**
-  - Icon colors are automatically chosen to maximize contrast against button background colors, using perceived luminance. _This. was not easy._
+  - Icon colors are automatically chosen to maximize contrast against button background colors, using perceived luminance. _This, was not easy._
 - **Show/Hide Toolbar:** The `Gay Toolbar: Minimize` command hides the toolbar, leaving one floating button that re-opens the toolbar. In the default config, it's the middle button in the right-most column.
 
 ---
@@ -41,7 +44,7 @@ In edit mode (wrench 🔧 icon, or obsidian command `Gay Toolbar: Toggle edit mo
 - **Add Buttons:** Tap an empty slot (`+`) to insert a button (new button color is chosen randomly from color presets -- edit these in the color picker modal).
 - **Edit Buttons:** Tap an existing button to change its **primary action/icon** (bottom right button), **secondary action/icon** (top left button), or **color**, or to remove it.
 - **Drag & Drop:** Long-press to initiate a drag operation to move buttons. If you drop a button on a non-empty slot, the button in that slot swaps positions with the one being dragged.
-- **Secondary Actions:** Assign a **long press** command with its own icon for each button as desired. The press duration is user-configurable in the main settings via the `Long-press delay` option. Personally, I like to group related commands like `undo/redo` and `indent/outdent`.
+- **Group Actions:** Assign multiple commands per button, each with its own icon. The press duration is user-configurable in the main settings via the `Long-press delay` option. Personally, I like to group related commands like `undo/redo` and `indent/outdent`.
 
 ---
 
@@ -60,3 +63,34 @@ _If you’re excited about seeing any of these or other ideas implemented, I’d
   - **Swipe Right:** Indent.
   - **Swipe Down:** Move the block down.
   - **Swipe Up:** Move the block up.
+
+---
+
+# **Contributions**
+
+## **Development Setup**
+
+To run the plugin locally:
+
+1. Install dependencies:
+
+   ```bash
+   npm i
+   ```
+
+2. Start development mode:
+   ```bash
+   npm run dev
+   ```
+
+## **Android Development Sync**
+
+To sync changes to your Android Obsidian installation via ADB on save, have `npm run dev` running in another terminal and then:
+
+```bash
+fswatch -o main.js styles.css manifest.json data.json | xargs -n1 -I{} sh -c 'echo "Files changed, syncing..."; adb push main.js <path/to/.obsidian>/plugins/gay-toolbar/ && adb push styles.css <path/to/.obsidian>/plugins/gay-toolbar/ && adb push manifest.json <path/to/.obsidian>/plugins/gay-toolbar/ && adb push data.json <path/to/.obsidian>/plugins/gay-toolbar/ && echo "Sync complete"'
+```
+
+Replace `<path/to/.obsidian>` with your actual Obsidian vault path. The `data.json` sync is optional - you can remove it from the command if you don't want to sync your settings.
+
+I've found the [hot-reload plugin](https://github.com/shabegom/obsidian-hot-reload-mobile) sometimes useful, as well as the [dev tools plugin](https://github.com/KjellConnelly/obsidian-dev-tools), tho for the latter case it's often easier to use the chrome devtools on mac, connected to android via adb. Lmk if you need help; happy to accept PRs!

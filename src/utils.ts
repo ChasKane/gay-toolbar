@@ -1,6 +1,6 @@
 import * as culori from "culori";
 import { toPng } from "html-to-image";
-import { off } from "process";
+import { GayToolbarSettings, savedConfigKeys } from "./types";
 
 export type Position = { x: number; y: number };
 
@@ -158,6 +158,19 @@ export const groomValue = (
     bounds[1]
   );
 
+export const setCSSVariables = (
+  pressDelayMs: number,
+  rowHeight: number,
+  swipeBorderWidth: number = 20
+) => {
+  const parentNode = document.querySelector(".app-container") as HTMLElement;
+  if (parentNode) {
+    parentNode.style.setProperty("--press-delay", `${pressDelayMs}ms`);
+    const borderWidth = `${rowHeight * (swipeBorderWidth / 100)}px`;
+    parentNode.style.setProperty("--button-border-width", borderWidth);
+  }
+};
+
 export const centerButtonsRadius = 0.5;
 export const positionCentralItem: (multiple: number) => any = (
   multiple: number
@@ -268,4 +281,85 @@ export const removeConfigFromMarkdown = (
     (config: MarkdownConfig) => config.id !== configId
   );
   return generateMarkdownContent(updatedConfigs);
+};
+
+/**
+ * Calculates the position for swipe icons around a button.
+ * Uses a piecewise linear approximation to position icons in 8 octants.
+ *
+ * @param idx - The index of the swipe command (0-based)
+ * @param swipeCommandsLength - Total number of swipe commands
+ * @param swipeRingOffsetAngle - Offset angle in degrees for the swipe ring
+ * @returns CSS positioning object with top, left, and transform properties
+ */
+export const getSwipeIconPosition = (
+  idx: number,
+  swipeCommandsLength: number,
+  swipeRingOffsetAngle: number
+): { top: string; left: string; transform: string } => {
+  const angle = (360 * idx) / swipeCommandsLength + (swipeRingOffsetAngle ?? 0);
+
+  // Normalize angle to 0-360 range to handle cases where angle >= 360
+  const normalizedAngle = ((angle % 360) + 360) % 360;
+
+  const rad = (normalizedAngle * Math.PI) / 180;
+  let x: number = 0;
+  let y: number = 0;
+
+  // TODO do this better using interpolation, minding bgScale
+  if (normalizedAngle >= 0 && normalizedAngle < 45) {
+    x = 1;
+    y = normalizedAngle / 45;
+  } else if (normalizedAngle >= 1 * 45 && normalizedAngle < 3 * 45) {
+    x = -(normalizedAngle / 45 - 2);
+    y = 1;
+  } else if (normalizedAngle >= 3 * 45 && normalizedAngle < 5 * 45) {
+    x = -1;
+    y = -(normalizedAngle / 45 - 4);
+  } else if (normalizedAngle >= 5 * 45 && normalizedAngle < 7 * 45) {
+    x = normalizedAngle / 45 - 6;
+    y = -1;
+  } else if (normalizedAngle >= 7 * 45 && normalizedAngle < 360) {
+    x = 1;
+    y = normalizedAngle / 45 - 8;
+  }
+
+  return {
+    left: `calc(50% + (50%*${x}))`,
+    top: `calc(50% + (50%*${y}))`,
+    transform: `translate(-50%,-50%) translate(calc(50%*${-x!}), calc(50%*${-y!}))`,
+  };
+};
+
+/**
+ * Migrates settings by adding missing keys from default settings
+ * @param settings - Current settings object (will be mutated)
+ * @param defaultSettings - Default settings to migrate from
+ * @param savedConfigKeys - Keys that should be migrated
+ * @returns Whether any keys were added (for logging purposes)
+ */
+export const migrateSettings = (
+  settings: GayToolbarSettings,
+  defaultSettings: GayToolbarSettings
+): boolean => {
+  let hasMissingKeys = false;
+
+  for (const key of savedConfigKeys) {
+    if (
+      !(key in settings) ||
+      settings[key as keyof typeof settings] === undefined
+    ) {
+      console.log(
+        `Adding missing setting: ${key} = ${JSON.stringify(
+          defaultSettings[key as keyof typeof defaultSettings]
+        )}`
+      );
+      // Only assign if the default has the key and is not undefined
+      (settings as any)[key] =
+        defaultSettings[key as keyof typeof defaultSettings];
+      hasMissingKeys = true;
+    }
+  }
+
+  return hasMissingKeys;
 };

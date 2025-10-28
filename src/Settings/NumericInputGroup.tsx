@@ -1,6 +1,6 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useSettings } from "../StateManagement";
-import { groomValue } from "utils";
+import { groomValue, setCSSVariables } from "../utils";
 
 const SliderInputGroup: React.FC<{
   label: string;
@@ -10,13 +10,16 @@ const SliderInputGroup: React.FC<{
 }> = ({ label, name, bounds, step = 1 }) => {
   //@ts-ignore -- we know name will be in GayToolbarSettings
   const value = useSettings((state) => state[name]);
+  const pressDelayMs = useSettings((state) => state.pressDelayMs);
+  const rowHeight = useSettings((state) => state.rowHeight);
+  const swipeBorderWidth = useSettings((state) => state.swipeBorderWidth);
   const SetSettings = useSettings((state) => state.setSettings);
+
+  useEffect(() => {
+    setCSSVariables(pressDelayMs, rowHeight, swipeBorderWidth);
+  }, [pressDelayMs, rowHeight, swipeBorderWidth]);
+
   const setSettings = (newSettings: any) => {
-    if (name === "pressDelayMs")
-      document.body.style.setProperty(
-        "--press-delay",
-        `${newSettings.pressDelayMs}ms`
-      );
     SetSettings(newSettings);
   };
 

@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef } from "react";
 import { useGesture } from "@use-gesture/react";
-import { getAngle, getSwipeIdx } from "../utils";
+import { getAngle, getSwipeIdx, getDistance } from "../utils";
 import AnimatedTrail from "./AnimatedTrail";
 
 interface Trail {
@@ -23,6 +23,7 @@ interface TouchManagerProps {
   pressDelayMs: number;
   swipeCommands?: Array<{ color: string; commandId: string; icon: string }>;
   swipeRingOffsetAngle?: number;
+  buttonBackgroundColor?: string;
 }
 
 const TouchManager: React.FC<TouchManagerProps> = ({
@@ -32,6 +33,7 @@ const TouchManager: React.FC<TouchManagerProps> = ({
   pressDelayMs,
   swipeCommands,
   swipeRingOffsetAngle = 0,
+  buttonBackgroundColor,
 }) => {
   const [trails, setTrails] = useState<Trail[]>([]);
   const trailIdCounter = useRef(0);
@@ -42,6 +44,19 @@ const TouchManager: React.FC<TouchManagerProps> = ({
     (initX: number, initY: number, currentX: number, currentY: number) => {
       if (!swipeCommands || swipeCommands.length === 0) {
         return { color: "rgba(255, 255, 255, 0.8)", icon: undefined };
+      }
+
+      // Check if mouse is far enough from start position to show icon
+      const distance = getDistance(
+        { x: initX, y: initY },
+        { x: currentX, y: currentY }
+      );
+
+      if (distance < 10) {
+        return {
+          color: buttonBackgroundColor || "rgba(255, 255, 255, 0.8)",
+          icon: undefined,
+        };
       }
 
       // Use the same logic as GayButton: calculate angle from init to current position
@@ -61,7 +76,7 @@ const TouchManager: React.FC<TouchManagerProps> = ({
         icon: command?.icon,
       };
     },
-    [swipeCommands, swipeRingOffsetAngle]
+    [swipeCommands, swipeRingOffsetAngle, buttonBackgroundColor]
   );
 
   const createTrail = useCallback((x: number, y: number) => {
@@ -141,7 +156,7 @@ const TouchManager: React.FC<TouchManagerProps> = ({
 
   const bind = useGesture(
     {
-      onDrag: ({ active, xy: [x, y], first, last, event }) => {
+      onDrag: ({ active, xy: [x, y], first, last }) => {
         if (first) {
           // Create new trail on first touch
           createTrail(x, y);
@@ -161,16 +176,6 @@ const TouchManager: React.FC<TouchManagerProps> = ({
           }
         }
       },
-      onMove: ({ active, xy: [x, y] }) => {
-        if (active) {
-          // Update the most recent active trail during move
-          const activeTrails = trails.filter((t) => t.isActive);
-          if (activeTrails.length > 0) {
-            const latestTrail = activeTrails[activeTrails.length - 1];
-            updateTrail(latestTrail.id, x, y);
-          }
-        }
-      },
     },
     {
       drag: {
@@ -183,7 +188,7 @@ const TouchManager: React.FC<TouchManagerProps> = ({
   return (
     <div
       ref={containerRef}
-      {...bind()}
+      {...(swipeCommands && swipeCommands.length ? bind() : {})}
       className="touch-manager"
       style={{
         position: "relative",

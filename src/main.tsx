@@ -2,6 +2,7 @@ import { App, Platform, Plugin, PluginSettingTab, Setting } from "obsidian";
 import { createRoot, Root } from "react-dom/client";
 import GayToolbar from "./GayTOOLBAR";
 import DEFAULT_SETTINGS from "./Settings/DEFAULT_SETTINGS";
+import { setCSSVariables, migrateSettings } from "./utils";
 import {
   usePlugin,
   useSettings,
@@ -9,7 +10,7 @@ import {
   loadConfigsFromMarkdown,
   migrateConfigsToMarkdown,
 } from "./StateManagement";
-import { GayToolbarSettings } from "./types";
+import { GayToolbarSettings, savedConfigKeys } from "./types";
 
 export default class GayToolbarPlugin extends Plugin {
   settings: GayToolbarSettings;
@@ -20,7 +21,6 @@ export default class GayToolbarPlugin extends Plugin {
   async onload() {
     await this.loadSettings();
 
-    // Always add the settings tab
     this.addSettingTab(new GayToolbarSettingsTab(this.app, this));
 
     if (this.settings.mobileOnly && Platform.isDesktop) {
@@ -43,11 +43,13 @@ export default class GayToolbarPlugin extends Plugin {
     this.addCommand({
       id: "load-default-settings",
       name: "Load default settings",
-      callback: () => {
-        useSettings.setState((prev) => ({
-          ...DEFAULT_SETTINGS,
-          configs: [...(prev.configs || [])],
-        }));
+      callback: async () => {
+        // Load existing configs from markdown file before resetting
+        await migrateConfigsToMarkdown(
+          this,
+          this.settings.savedConfigsFilePath
+        );
+        useSettings.setState({ ...DEFAULT_SETTINGS });
       },
     });
     this.addCommand({
@@ -70,6 +72,10 @@ export default class GayToolbarPlugin extends Plugin {
         }));
       },
     });
+    this.addCommand({
+      id: "no-op",
+      name: "Do nothing",
+    });
 
     this.app.workspace.onLayoutReady(() => {
       this.toolbarRoot?.unmount?.();
@@ -79,15 +85,21 @@ export default class GayToolbarPlugin extends Plugin {
       const parentNode: HTMLElement | null =
         document.querySelector(".app-container");
       if (parentNode) {
-        parentNode.style.setProperty(
-          "--press-delay",
-          `${this.settings.pressDelayMs}ms`
+        setCSSVariables(
+          this.settings.pressDelayMs,
+          this.settings.rowHeight,
+          this.settings.swipeBorderWidth
         );
-        parentNode.style.setProperty("--button-border-width", "0.4rem");
         this.toolbarNode = createDiv("gay-toolbar-container");
         this.toolbarRoot = createRoot(this.toolbarNode);
         this.toolbarRoot.render(<GayToolbar />);
-        parentNode.appendChild(this.toolbarNode);
+
+        const navbarElement = document.querySelector(".mobile-navbar");
+        if (navbarElement && parentNode.contains(navbarElement)) {
+          parentNode.insertBefore(this.toolbarNode, navbarElement);
+        } else {
+          parentNode.appendChild(this.toolbarNode);
+        }
       }
     });
   }
@@ -107,6 +119,32 @@ export default class GayToolbarPlugin extends Plugin {
     if (!this.settings.savedConfigsFilePath) {
       this.settings.savedConfigsFilePath = "GayToolbarSavedConfigs.md";
       await this.saveSettings(this.settings);
+    }
+
+    // Initialize minimizedToolbarLoc from default settings if not exists
+    if (!this.settings.minimizedToolbarLoc) {
+      this.settings.minimizedToolbarLoc = DEFAULT_SETTINGS.minimizedToolbarLoc;
+      await this.saveSettings(this.settings);
+    }
+
+    // Fix invalid position values (ensure positive pixel values)
+    if (this.settings.minimizedToolbarLoc) {
+      const [x, y] = this.settings.minimizedToolbarLoc;
+      const clampedX = Math.max(0, x);
+      const clampedY = Math.max(0, y);
+
+      if (clampedX !== x || clampedY !== y) {
+        this.settings.minimizedToolbarLoc = [clampedX, clampedY];
+        await this.saveSettings(this.settings);
+      }
+    }
+
+    // Migrate missing settings keys from default settings
+    const hasMissingKeys = migrateSettings(this.settings, DEFAULT_SETTINGS);
+
+    if (hasMissingKeys) {
+      await this.saveSettings(this.settings);
+      console.log("Settings migration completed - missing keys added");
     }
 
     // Migrate existing configs to markdown file if needed

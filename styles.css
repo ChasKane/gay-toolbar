@@ -81,12 +81,20 @@
   width: 80%;
   height: 80%;
 }
+.tap-icon-no-press > svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+}
 .press-icon > svg {
   position: absolute;
   top: 0px;
   left: 0px;
-  width: 50%;
-  height: 50%;
+  width: 45%;
+  height: 45%;
 }
 .swipe-icon > svg {
   width: 100%;
@@ -96,14 +104,16 @@
 .gay-button {
   position: relative;
   display: flex; /* fixes misalignment-on-iphone bug */
+  border: 0.35rem solid transparent;
   border-radius: 8px;
-  border: var(--button-border-width) solid transparent;
   width: 100%;
   height: 100%;
   padding: 0px;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15) !important;
 }
-
+.gay-button-border {
+  border: var(--button-border-width) solid transparent;
+}
 .gay-button-tap {
   z-index: var(--layer-popover);
   opacity: 0.4;
@@ -428,11 +438,10 @@ div[style*="position: fixed"] > svg {
 .settings-main {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  gap: 4px;
 }
 
 .toolbar-setting-wrapper {
-  margin-top: 4px;
-  margin-bottom: 4px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -441,6 +450,18 @@ div[style*="position: fixed"] > svg {
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
+/* Make specific text blocks wrap */
+.toolbar-setting-wrapper label,
+.toolbar-setting-wrapper p,
+.toolbar-setting-wrapper button {
+  white-space: normal;
+  word-wrap: break-word;
+  max-width: 100%;
+}
+
+.coffee-plea {
+  grid-column: 1 / -1;
+}
 .buy-me-a-coffee-button {
   display: flex;
   align-items: center;

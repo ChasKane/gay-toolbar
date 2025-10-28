@@ -10,20 +10,22 @@ const GayColorPicker: React.FC<{
   color: string;
   onChange: (color: string) => void;
 }> = ({ isSwipeCommand, color, onChange }) => {
+  // Ensure color is never undefined or null
+  const safeColor = color || "#000000";
   const { presetColors, deletePresetColor, setSettings } = useSettings();
   const [isOpen, setIsOpen] = useState(false);
   const modalOverlayRef = useRef(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const [selectedColor, setSelectedColor] = useColor(color);
+  const [selectedColor, setSelectedColor] = useColor(safeColor);
 
   useLayoutEffect(() => {
     if (buttonRef.current) {
       setIcon(buttonRef.current, "palette");
     }
-  }, [color]);
+  }, [safeColor]);
 
-  const selectedColorIsPreset = presetColors.includes(color);
+  const selectedColorIsPreset = presetColors.includes(safeColor);
 
   return (
     <>
@@ -84,13 +86,13 @@ const GayColorPicker: React.FC<{
                   }}
                 >
                   <button
-                    style={{ backgroundColor: color }}
+                    style={{ backgroundColor: safeColor }}
                     onClick={
                       selectedColorIsPreset
-                        ? () => deletePresetColor(color)
+                        ? () => deletePresetColor(safeColor)
                         : () =>
                             setSettings({
-                              presetColors: [color, ...presetColors],
+                              presetColors: [safeColor, ...presetColors],
                             })
                     }
                   >
@@ -99,7 +101,7 @@ const GayColorPicker: React.FC<{
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
                         fill="none"
-                        stroke={getLuminanceGuidedIconColor(color)}
+                        stroke={getLuminanceGuidedIconColor(safeColor)}
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -118,7 +120,7 @@ const GayColorPicker: React.FC<{
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
                         fill="none"
-                        stroke={getLuminanceGuidedIconColor(color)}
+                        stroke={getLuminanceGuidedIconColor(safeColor)}
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -150,14 +152,14 @@ const GayColorPicker: React.FC<{
                             onChange(preset);
                           }}
                         >
-                          {color === preset && (
+                          {safeColor === preset && (
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               width="24"
                               height="24"
                               viewBox="0 0 24 24"
                               fill="none"
-                              stroke={getLuminanceGuidedIconColor(color)}
+                              stroke={getLuminanceGuidedIconColor(safeColor)}
                               strokeWidth="2"
                               strokeLinecap="round"
                               strokeLinejoin="round"

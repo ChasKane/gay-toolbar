@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useSpring, animated } from "@react-spring/web";
+import React, { forwardRef, useEffect, useRef, useState } from "react";
+import { useSpring, animated, SpringRef } from "@react-spring/web";
 import AnimatedBall from "./AnimatedBall";
 
 interface TrailProps {
@@ -15,7 +15,7 @@ interface TrailProps {
   icon?: string;
 }
 
-const AnimatedTrail: React.FC<TrailProps> = React.memo(
+const AnimatedTrail = React.memo<TrailProps>(
   ({
     id,
     targetX,
@@ -35,7 +35,7 @@ const AnimatedTrail: React.FC<TrailProps> = React.memo(
     const animationFrameRef = useRef<number>();
     const positionHistoryRef = useRef<Array<{ x: number; y: number }>>([]);
 
-    // Create individual springs for each ball
+    // no useTrail because we need to update each of the springs continuously.
     const springs = Array.from({ length: ballCount }, (_, index) => {
       return useSpring({
         xy: [targetX, targetY],
@@ -91,92 +91,32 @@ const AnimatedTrail: React.FC<TrailProps> = React.memo(
 
         // Continue moving in the direction of last velocity
         const velocity = velocityRef.current;
-        const finalX = lastPositionRef.current.x + velocity.x * -2; // Continue with velocity
-        const finalY = lastPositionRef.current.y + velocity.y * -2;
+        const finalX = lastPositionRef.current.x + velocity.x * 3;
+        const finalY = lastPositionRef.current.y + velocity.y * 3;
 
-        // Start fade out animation with continued movement and scaling
-        springs.forEach((spring, index) => {
-          spring.xy.start([finalX, finalY]);
-          spring.opacity.start(0.1);
-
-          if (index === 0) {
-            // console.log(
-            //   "🎯 LEADING BALL SCALE ANIMATION:",
-            //   id,
-            // "isFading:",
-            // isFadingRef.current,
-            // "isAnimating:",
-            // spring.scale.isAnimating,
-            // "scale:",
-            // spring.scale.get()
-            // );
-
-            spring.scale.start(5, {
-              config: { tension: 400, friction: 20 }, // More aggressive for faster approach
-            });
-
-            // console.log(
-            //   "🎯 AFTER SCALE START:",
-            // id,
-            //   "value:",
-            //   springs[0].scale.get(),
-            //   "isAnimating:",
-            //   springs[0].scale.isAnimating,
-            //   "isPaused:",
-            //   springs[0].scale.isPaused,
-            //   "isDelayed:",
-            //   springs[0].scale.isDelayed,
-            //   "queue:",
-            //   springs[0].scale.queue,
-            //   "velocity:",
-            //   springs[0].scale.velocity,
-            //   "animation:",
-            //   springs[0].scale.animation
-            // );
-          }
-        });
-
-        const logScale = (label: string, delay: number) => {
-          setTimeout(() => {
-            console.log(
-              `🎬 ${label}:`,
-              id,
-              "value:",
-              springs[0].scale.get()
-              // "isAnimating:",
-              // springs[0].scale.isAnimating,
-              // "isPaused:",
-              // springs[0].scale.isPaused,
-              // "isDelayed:",
-              // springs[0].scale.isDelayed,
-              // "queue:",
-              // springs[0].scale.queue,
-              // "velocity:",
-              // springs[0].scale.velocity,
-              // "animation:",
-              // springs[0].scale.animation
-            );
-          }, delay);
-        };
-
-        // logScale("INITIAL", 0);
-        // logScale("10%", pressDelayMs * 0.1);
-        // logScale("30%", pressDelayMs * 0.3);
-        // logScale("50%", pressDelayMs * 0.5);
-        // logScale("80%", pressDelayMs * 0.8);
-        logScale("110%", pressDelayMs * 1.1);
+        setTimeout(() => {
+          // setTimeout to ensure react's re-render doesn't overwrite these spring updates.
+          // Start fade out animation with continued movement and scaling
+          springs.forEach((spring, index) => {
+            spring.xy.start([finalX, finalY]);
+            spring.opacity.start(0.7);
+            if (index === 0) {
+              spring.scale.start(4);
+            }
+          });
+        }, 0);
 
         // Remove trail after fade out
         fadeOutTimeoutRef.current = setTimeout(() => {
           onComplete(id);
         }, pressDelayMs);
-      }
 
-      return () => {
-        if (fadeOutTimeoutRef.current) {
-          clearTimeout(fadeOutTimeoutRef.current);
-        }
-      };
+        return () => {
+          if (fadeOutTimeoutRef.current) {
+            clearTimeout(fadeOutTimeoutRef.current);
+          }
+        };
+      }
     }, [isActive, id, onComplete, pressDelayMs]);
 
     // Cleanup on unmount
@@ -198,6 +138,15 @@ const AnimatedTrail: React.FC<TrailProps> = React.memo(
           const sizeMultiplier = 1 - index * 0.15; // 100%, 85%, 70%, 55%
           const ballSize = ballDiameter * sizeMultiplier;
           const shouldShowIcon = index === 0 && icon && icon !== undefined;
+          const transform = spring.xy.to(
+            (x, y) =>
+              // spring.scale.to(
+              //   (scale: number) =>
+              `translate3d(${x - (ballSize * spring.scale.get()) / 2}px, ${
+                y - (ballSize * spring.scale.get()) / 2
+              }px, 0)`
+            // )
+          );
 
           return (
             <AnimatedBall
@@ -205,15 +154,10 @@ const AnimatedTrail: React.FC<TrailProps> = React.memo(
               diameter={ballSize}
               color={color}
               icon={shouldShowIcon ? icon : undefined} // Only show icon in the leading ball
+              scale={spring.scale}
               style={{
-                transform: spring.xy.to(
-                  (x, y) =>
-                    `translate3d(${x - ballSize / 2}px, ${
-                      y - ballSize / 2
-                    }px, 0)`
-                ),
+                transform,
                 opacity: spring.opacity,
-                scale: spring.scale,
                 zIndex: 1000 + (ballCount - index), // Leading ball (index 0) gets highest z-index
               }}
             />

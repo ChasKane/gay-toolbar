@@ -38,6 +38,7 @@ describe("ButtonGrid", () => {
         onTapCommandId: "test-command",
         swipeCommands: [],
         swipeRingOffsetAngle: 0,
+        colorIdx: 0,
       },
     };
 

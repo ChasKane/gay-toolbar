@@ -6,7 +6,6 @@ import { useSettings, usePlugin, useEditor } from "../StateManagement";
 import chooseNewCommand from "../Settings/chooseNewCommand";
 import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import React from "react";
-import { debug } from "console";
 
 const ButtonGrid: React.FC = () => {
   const addButton = useSettings((state) => state.addButton);
@@ -22,6 +21,7 @@ const ButtonGrid: React.FC = () => {
   const gridPadding = useSettings((state) => state.gridPadding);
   const backgroundColor = useSettings((state) => state.backgroundColor);
   const customBackground = useSettings((state) => state.customBackground);
+  const useCustomBackground = useSettings((state) => state.useCustomBackground);
 
   const plugin = usePlugin();
   const ref = useRef<HTMLDivElement>(null);
@@ -136,7 +136,7 @@ const ButtonGrid: React.FC = () => {
         gridTemplateColumns: `repeat(${numCols}, minmax(0, 1fr))`,
         gap: `${gridGap}px ${gridGap}px`,
         padding: `${gridPadding}px`,
-        background: customBackground || backgroundColor,
+        background: useCustomBackground ? customBackground : backgroundColor,
       }}
     >
       {slots}

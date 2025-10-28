@@ -12,9 +12,12 @@ export const getEmptySettings = () =>
     gridPadding: 2,
     backgroundColor: "pink",
     customBackground: "",
+    useCustomBackground: false,
     mobileOnly: false,
     pressDelayMs: 200,
+    swipeBorderWidth: 20,
     isMinimized: false,
+    annoyingText: true,
     presetColors: [
       "#add8e6",
       "#ffb6c1",
@@ -28,6 +31,7 @@ export const getEmptySettings = () =>
     ],
     configs: [],
     savedConfigsFilePath: "GayToolbarSavedConfigs.md",
+    minimizedToolbarLoc: [0.9, 50],
   } as GayToolbarSettings);
 
 export default {
@@ -38,9 +42,12 @@ export default {
   gridPadding: 2,
   backgroundColor: "#817465",
   customBackground: "radial-gradient(circle, #55d1fc, #f0a0b8, #e6e6e6)",
+  useCustomBackground: false,
   mobileOnly: false,
   pressDelayMs: 170,
+  swipeBorderWidth: 20,
   isMinimized: false,
+  annoyingText: true,
   buttonIds: [
     "m2xox333",
     "m2xox3l7",
@@ -91,6 +98,7 @@ export default {
       pressIcon: "lucide-outdent",
       swipeCommands: [],
       swipeRingOffsetAngle: 0,
+      colorIdx: 0,
     },
     m2xox3l7: {
       id: "m2xox3l7",
@@ -101,6 +109,7 @@ export default {
       pressIcon: "lucide-redo-2",
       swipeCommands: [],
       swipeRingOffsetAngle: 0,
+      colorIdx: 0,
     },
     m2xox3l8: {
       id: "m2xox3l8",
@@ -111,6 +120,7 @@ export default {
       pressIcon: "lucide-link",
       swipeCommands: [],
       swipeRingOffsetAngle: 0,
+      colorIdx: 0,
     },
     m35ng391: {
       id: "m35ng391",
@@ -119,6 +129,7 @@ export default {
       backgroundColor: "#ff9966",
       swipeCommands: [],
       swipeRingOffsetAngle: 0,
+      colorIdx: 0,
     },
     m35ng392: {
       id: "m35ng392",
@@ -127,6 +138,7 @@ export default {
       backgroundColor: "#ff804d",
       swipeCommands: [],
       swipeRingOffsetAngle: 0,
+      colorIdx: 0,
     },
     m35ng393: {
       id: "m35ng393",
@@ -135,6 +147,7 @@ export default {
       backgroundColor: "#ff6666",
       swipeCommands: [],
       swipeRingOffsetAngle: 0,
+      colorIdx: 0,
     },
     m35ng394: {
       id: "m35ng394",
@@ -143,6 +156,7 @@ export default {
       backgroundColor: "#ff3333",
       swipeCommands: [],
       swipeRingOffsetAngle: 0,
+      colorIdx: 0,
     },
     m35ng395: {
       id: "m35ng395",
@@ -153,6 +167,7 @@ export default {
       pressIcon: "lucide-quote",
       swipeCommands: [],
       swipeRingOffsetAngle: 0,
+      colorIdx: 0,
     },
     m2xox3l6: {
       id: "m2xox3l6",
@@ -163,6 +178,7 @@ export default {
       pressIcon: "lucide-terminal-square",
       swipeCommands: [],
       swipeRingOffsetAngle: 0,
+      colorIdx: 0,
     },
     m35ng39d: {
       id: "m35ng39d",
@@ -173,6 +189,7 @@ export default {
       pressIcon: "lucide-settings",
       swipeCommands: [],
       swipeRingOffsetAngle: 0,
+      colorIdx: 0,
     },
     m4olit7j: {
       id: "m4olit7j",
@@ -181,6 +198,7 @@ export default {
       backgroundColor: "#99d699",
       swipeCommands: [],
       swipeRingOffsetAngle: 0,
+      colorIdx: 0,
     },
     m4olqiiv: {
       id: "m4olqiiv",
@@ -189,6 +207,7 @@ export default {
       backgroundColor: "#ffff4d",
       swipeCommands: [],
       swipeRingOffsetAngle: 0,
+      colorIdx: 0,
     },
     m4olryer: {
       id: "m4olryer",
@@ -197,6 +216,7 @@ export default {
       backgroundColor: "#9999ff",
       swipeCommands: [],
       swipeRingOffsetAngle: 0,
+      colorIdx: 0,
     },
     m4oltle4: {
       id: "m4oltle4",
@@ -205,6 +225,7 @@ export default {
       backgroundColor: "#ffffb3",
       swipeCommands: [],
       swipeRingOffsetAngle: 0,
+      colorIdx: 0,
     },
     m4oltu5f: {
       id: "m4oltu5f",
@@ -213,6 +234,7 @@ export default {
       backgroundColor: "#ffff80",
       swipeCommands: [],
       swipeRingOffsetAngle: 0,
+      colorIdx: 0,
     },
     m4uebv5s: {
       id: "m4uebv5s",
@@ -221,6 +243,7 @@ export default {
       backgroundColor: "#a066a0",
       swipeCommands: [],
       swipeRingOffsetAngle: 0,
+      colorIdx: 0,
     },
     m4uecf3l: {
       id: "m4uecf3l",
@@ -229,6 +252,7 @@ export default {
       backgroundColor: "#6666ff",
       swipeCommands: [],
       swipeRingOffsetAngle: 0,
+      colorIdx: 0,
     },
     m4uecv5e: {
       id: "m4uecv5e",
@@ -237,6 +261,7 @@ export default {
       backgroundColor: "#3333ff",
       swipeCommands: [],
       swipeRingOffsetAngle: 0,
+      colorIdx: 0,
     },
   },
   presetColors: [
@@ -252,4 +277,5 @@ export default {
   ],
   configs: [],
   savedConfigsFilePath: "GayToolbarSavedConfigs.md",
+  minimizedToolbarLoc: [0.9, 50], // Default position: 90% from left, 80% from top
 } as GayToolbarSettings;

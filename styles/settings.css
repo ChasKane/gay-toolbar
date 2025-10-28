@@ -38,11 +38,10 @@
 .settings-main {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  gap: 4px;
 }
 
 .toolbar-setting-wrapper {
-  margin-top: 4px;
-  margin-bottom: 4px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -51,6 +50,18 @@
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
+/* Make specific text blocks wrap */
+.toolbar-setting-wrapper label,
+.toolbar-setting-wrapper p,
+.toolbar-setting-wrapper button {
+  white-space: normal;
+  word-wrap: break-word;
+  max-width: 100%;
+}
+
+.coffee-plea {
+  grid-column: 1 / -1;
+}
 .buy-me-a-coffee-button {
   display: flex;
   align-items: center;

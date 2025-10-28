@@ -14,6 +14,17 @@ jest.mock("@react-spring/web", () => ({
       })),
     { start: jest.fn() },
   ],
+  useSpring: () => ({
+    xy: {
+      to: (fn: any) => fn(100, 100),
+      start: jest.fn(),
+    },
+    opacity: 1,
+    scale: {
+      get: () => 1,
+      to: (fn: any) => fn(1),
+    },
+  }),
   animated: {
     div: ({ children, style, ...props }: any) => (
       <div data-testid="animated-ball" style={style} {...props}>

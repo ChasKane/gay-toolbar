@@ -14,6 +14,8 @@ const GayToolbar: React.FC = () => {
   const backgroundColor = useSettings((state) => state.backgroundColor);
   const customBackground = useSettings((state) => state.customBackground);
   const rowHeight = useSettings((state) => state.rowHeight);
+  const annoyingText = useSettings((state) => state.annoyingText);
+  const minimizedToolbarLoc = useSettings((state) => state.minimizedToolbarLoc);
 
   const ref: RefObject<HTMLDivElement> = useRef(null);
 
@@ -28,8 +30,8 @@ const GayToolbar: React.FC = () => {
     return () => {
       if (statusBar) statusBar.style.bottom = "0px";
     };
-    // isEditing and selectedButtonId required because they change the overall toolbar height
-  }, [isEditing, selectedButtonId, isMinimized]);
+    // isEditing, annoyingText, and selectedButtonId required because they change the overall toolbar height
+  }, [isEditing, annoyingText, selectedButtonId, isMinimized]);
 
   if (isMinimized)
     return createPortal(
@@ -37,16 +39,40 @@ const GayToolbar: React.FC = () => {
         ref={ref}
         style={{
           position: "absolute",
-          right: "4px",
-          bottom: Platform.isMobile
-            ? "4px"
-            : (document.querySelector(".status-bar")?.getBoundingClientRect()
-                .height || 0) +
-              4 +
-              "px",
+          left: `${minimizedToolbarLoc[0] * 100}%`,
+          bottom: `${minimizedToolbarLoc[1]}px`,
           zIndex: "var(--layer-status-bar)",
+          maxWidth: "100vw",
+          maxHeight: "100vh",
+          cursor: "grab",
         }}
-        onPointerDown={(e) => e.preventDefault()} // keep keyboard up if up
+        draggable
+        onDragEnd={(e) => {
+          if (!ref.current) return;
+
+          const rect = ref.current.getBoundingClientRect();
+          const maxX = 1 - rect.width / window.innerWidth;
+          const maxY = window.innerHeight - rect.height;
+
+          // Calculate relative position from left edge (0-1 range)
+          // Position toolbar center at drop point, so subtract half width
+          const x = Math.max(
+            0,
+            Math.min(maxX, (e.clientX - rect.width * 0.5) / window.innerWidth)
+          );
+
+          // Calculate position from bottom edge (pixels)
+
+          const y = Math.max(
+            0,
+            Math.min(maxY, window.innerHeight - e.clientY - rect.height * 0.5)
+          );
+
+          useSettings.setState((prev) => ({
+            ...prev,
+            minimizedToolbarLoc: [x, y],
+          }));
+        }}
       >
         <button
           className="gay-button"

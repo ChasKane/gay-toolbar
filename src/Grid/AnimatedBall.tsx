@@ -1,17 +1,18 @@
 import React, { useEffect, useRef } from "react";
-import { animated } from "@react-spring/web";
+import { animated, SpringValue } from "@react-spring/web";
 import { setIcon } from "obsidian";
 import { getLuminanceGuidedIconColor } from "../utils";
 
 interface AnimatedBallProps {
   style: any;
   diameter: number;
+  scale: SpringValue<number>;
   color?: string;
   icon?: string;
 }
 
 const AnimatedBall: React.FC<AnimatedBallProps> = React.memo(
-  ({ style, diameter, color = "rgba(255, 255, 255, 0.8)", icon }) => {
+  ({ style, diameter, scale, color = "rgba(255, 255, 255, 0.8)", icon }) => {
     const iconRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -26,13 +27,11 @@ const AnimatedBall: React.FC<AnimatedBallProps> = React.memo(
           );
           svg.style.color = iconColor;
           svg.style.filter = "drop-shadow(0 0 6px rgba(0,0,0,0.8))";
-          svg.style.width = `${diameter * 0.6}px`;
-          svg.style.height = `${diameter * 0.6}px`;
+          svg.style.width = `100%`;
+          svg.style.height = `100%`;
           svg.style.display = "block";
           svg.style.position = "relative";
           svg.style.zIndex = "20";
-        } else {
-          console.log("No SVG found after setIcon");
         }
       }
     }, [icon, diameter]);
@@ -41,8 +40,8 @@ const AnimatedBall: React.FC<AnimatedBallProps> = React.memo(
       <animated.div
         style={{
           position: "absolute",
-          width: diameter,
-          height: diameter,
+          width: scale?.to((scale: number) => diameter * scale),
+          height: scale?.to((scale: number) => diameter * scale),
           borderRadius: "50%",
           backgroundColor: color,
           pointerEvents: "none",
@@ -65,7 +64,6 @@ const AnimatedBall: React.FC<AnimatedBallProps> = React.memo(
               position: "relative",
               zIndex: 10, // Ensure icon is above the ball background
               pointerEvents: "none",
-              // backgroundColor: "rgba(255, 0, 0, 0.3)", // Temporary red background to see if container is visible
               borderRadius: "50%",
               width: "80%",
               height: "80%",

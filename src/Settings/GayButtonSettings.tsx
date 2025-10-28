@@ -27,6 +27,7 @@ const GayButtonSettings: React.FC = () => {
     id,
     onTapCommandId,
     onPressCommandId,
+    colorIdx,
   } = buttons[selectedButtonId];
 
   const [subMenu, setSubMenu] = useState<boolean>(false);
@@ -250,7 +251,7 @@ const GayButtonSettings: React.FC = () => {
         <div className="central-item" style={positionCentralItem(3)}>
           <span>Background</span>
           <GayColorPicker
-            color={buttons[selectedButtonId]?.backgroundColor}
+            color={buttons[selectedButtonId]?.backgroundColor || "#000000"}
             onChange={(color) =>
               updateButton(selectedButtonId, { backgroundColor: color })
             }
@@ -417,11 +418,15 @@ const GayButtonSettings: React.FC = () => {
                     }
                     if (command)
                       updateButton(selectedButtonId, {
+                        colorIdx: ((colorIdx ?? 0) + 1) % presetColors.length,
                         swipeCommands: [
                           ...replaceAt(swipeCommands ?? [], i, {
                             commandId: command.id,
                             icon: command.icon,
-                            color: presetColors?.[0] ?? "grey",
+                            color:
+                              presetColors[
+                                (colorIdx ?? 0) % presetColors.length
+                              ],
                           }),
                         ],
                       });
@@ -439,7 +444,7 @@ const GayButtonSettings: React.FC = () => {
                   >
                     <GayColorPicker
                       isSwipeCommand
-                      color={c.color}
+                      color={c.color || "#000000"}
                       onChange={(color) =>
                         updateButton(selectedButtonId, {
                           swipeCommands: replaceAt(swipeCommands ?? [], i, {

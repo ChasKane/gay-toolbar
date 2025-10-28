@@ -12,6 +12,7 @@ import { setIcon } from "obsidian";
 import GayColorPicker from "./GayColorPicker";
 import ConfigsModal from "./ConfigsModal";
 import GayButtonSettings from "./GayButtonSettings";
+import { getLuminanceGuidedIconColor } from "../utils";
 
 const GaySettings: React.FC = () => {
   const plugin = usePlugin();
@@ -24,11 +25,16 @@ const GaySettings: React.FC = () => {
   const deleteButton = useSettings((state) => state.deleteButton);
   const backgroundColor = useSettings((state) => state.backgroundColor);
   const customBackground = useSettings((state) => state.customBackground);
+  const useCustomBackground = useSettings((state) => state.useCustomBackground);
   const mobileOnly = useSettings((state) => state.mobileOnly);
   const buttons = useSettings((state) => state.buttons);
   const buttonIds = useSettings((state) => state.buttonIds);
+  const annoyingText = useSettings((state) => state.annoyingText);
+  const presetColors = useSettings((state) => state.presetColors);
 
   const backBtnListener = useRef<{ remove: () => {} } | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [marqueeColor, setMarqueeColor] = useState("#000000");
 
   const deleteButtonRef = useRef<HTMLButtonElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -37,6 +43,34 @@ const GaySettings: React.FC = () => {
     if (deleteButtonRef.current) setIcon(deleteButtonRef.current, "trash-2");
     if (closeButtonRef.current) setIcon(closeButtonRef.current, "x");
   }, [selectedButtonId]);
+
+  // Calculate marquee color based on container background
+  useEffect(() => {
+    if (containerRef.current) {
+      const computedStyle = window.getComputedStyle(containerRef.current);
+      const backgroundColor = computedStyle.backgroundColor;
+
+      // Convert RGBA to hex
+      const rgbaToHex = (rgba: string) => {
+        const match = rgba.match(
+          /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*[\d.]+)?\)/
+        );
+        if (match) {
+          const r = parseInt(match[1]);
+          const g = parseInt(match[2]);
+          const b = parseInt(match[3]);
+          return `#${((1 << 24) + (r << 16) + (g << 8) + b)
+            .toString(16)
+            .slice(1)}`;
+        }
+        return rgba; // Return as-is if not RGBA format
+      };
+
+      const hexColor = rgbaToHex(backgroundColor);
+      const color = getLuminanceGuidedIconColor(hexColor);
+      setMarqueeColor(color);
+    }
+  }, [backgroundColor, customBackground]);
 
   // listen for back button on android to exit edit mode
   useEffect(() => {
@@ -54,45 +88,90 @@ const GaySettings: React.FC = () => {
   }, [setIsEditing]);
 
   const wrapToolbarSettings = (nodes: ReactNode[]) =>
-    nodes.map((n, idx) => (
-      <div key={idx} className="toolbar-setting-wrapper">
-        {n}
-      </div>
-    ));
+    nodes.map((n, idx) => {
+      // Get random background color from presetColors or generate random color
+      const getRandomBackgroundColor = () => {
+        if (presetColors && presetColors.length > 0) {
+          const randomIdx = Math.floor(Math.random() * presetColors.length);
+          const color = presetColors[randomIdx];
+          // Convert hex to rgba with low alpha
+          return `${color}20`; // 20 = ~12% opacity in hex
+        } else {
+          // Generate random color if presetColors is empty
+          const randomColor = `#${Math.floor(Math.random() * 16777215)
+            .toString(16)
+            .padStart(6, "0")}`;
+          return `${randomColor}20`; // 20 = ~12% opacity in hex
+        }
+      };
+
+      return (
+        <div
+          key={idx}
+          className="toolbar-setting-wrapper"
+          style={{ backgroundColor: getRandomBackgroundColor() }}
+        >
+          {n}
+        </div>
+      );
+    });
 
   return (
-    <div className="gay-settings-container">
+    <div ref={containerRef} className="gay-settings-container">
       {selectedButtonId ? (
         <GayButtonSettings />
       ) : (
         <div className="settings-main">
+          {annoyingText ? (
+            <div className="coffee-plea" style={{ color: marqueeColor }}>
+              I spent a long time on this plugin so here's our handshake: if you
+              use SWIPE COMMANDS, plzzzzzzz buy me a coffee? I can't be asked to
+              gatekeep it by adding purchase verification, so, scout's honor,
+              m'kay?
+            </div>
+          ) : (
+            <div className="coffee-plea" style={{ color: marqueeColor }}>
+              See additional settings in Obsidian's settings under "Gay
+              Toolbar".
+            </div>
+          )}
+
           {wrapToolbarSettings([
             // BUY ME A COFFEE
             <a
               href="https://www.buymeacoffee.com/ChasKane"
               className="buy-me-a-coffee-button"
+              onClick={() => {
+                setSettings({ annoyingText: !annoyingText });
+              }}
             >
-              <span className="buy-me-a-coffee-emoji">☕️</span>
-              Scald me
+              <span
+                className="buy-me-a-coffee-emoji"
+                style={{ scale: "3.5", transform: "rotate(35deg)" }}
+              >
+                ☕️
+              </span>
+              <div
+                style={{
+                  textWrap: "balance",
+                  textAlign: "center",
+                  fontSize: "x-small",
+                  maxWidth: "min-content",
+                }}
+              >
+                {annoyingText ? "Delete annoying text" : "Show annoying text"}
+              </div>
             </a>,
-
-            // "MOBILE ONLY" setting
-            <div>
-              <label style={{ paddingRight: "8px" }} htmlFor="mobile-only">
-                Mobile only
-              </label>
-              <input
-                id="mobile-only"
-                type="checkbox"
-                defaultChecked={mobileOnly}
-                onChange={(e) => setSettings({ mobileOnly: e.target.checked })}
-              ></input>
-            </div>,
 
             <NumericInputGroup
               label="Columns"
               name="numCols"
               bounds={[1, 20]}
+            />,
+            <NumericInputGroup
+              label="Swipe border %"
+              name="swipeBorderWidth"
+              bounds={[1, 50]}
             />,
             <NumericInputGroup label="Rows" name="numRows" bounds={[1, 10]} />,
             <NumericInputGroup
@@ -102,14 +181,14 @@ const GaySettings: React.FC = () => {
             />,
             <NumericInputGroup label="Gap" name="gridGap" bounds={[0, 20]} />,
             <NumericInputGroup
-              label="Padding"
-              name="gridPadding"
-              bounds={[0, 20]}
-            />,
-            <NumericInputGroup
               label="Long-press delay"
               name="pressDelayMs"
               bounds={[1, 5000]}
+            />,
+            <NumericInputGroup
+              label="Padding"
+              name="gridPadding"
+              bounds={[0, 20]}
             />,
 
             <ConfigsModal />,
@@ -124,18 +203,16 @@ const GaySettings: React.FC = () => {
                 <input
                   id="custom-css"
                   type="checkbox"
-                  checked={!backgroundColor}
+                  checked={useCustomBackground}
                   onChange={(e) => {
-                    if (!e.target.checked)
-                      setSettings({ backgroundColor: " " });
-                    else setSettings({ backgroundColor: "" });
+                    setSettings({ useCustomBackground: e.target.checked });
                   }}
                 ></input>
               </div>
-              {backgroundColor && (
+              {!useCustomBackground && (
                 <div className="toolbar-setting-wrapper">
                   <GayColorPicker
-                    color={backgroundColor}
+                    color={backgroundColor!}
                     onChange={(color) =>
                       setSettings({ backgroundColor: color })
                     }
@@ -179,7 +256,7 @@ const GaySettings: React.FC = () => {
         </div>
       )}
       <div className="gay-settings-footer">
-        {!backgroundColor && !selectedButtonId && (
+        {useCustomBackground && !selectedButtonId && (
           <label htmlFor="customBackground">
             <>
               Custom CSS{" "}

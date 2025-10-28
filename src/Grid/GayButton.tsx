@@ -6,9 +6,11 @@ import {
   getDistance,
   getLuminanceGuidedIconColor,
   getSwipeIdx,
+  getSwipeIconPosition,
   Position,
 } from "../utils";
 import TouchManager from "./TouchManager";
+import { useResponsiveScale } from "../hooks/useResponsiveScale";
 
 const BALL_COUNT = 4;
 
@@ -46,9 +48,7 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
 
   const isSelected = buttonId === selectedButtonId;
 
-  const colWidth =
-    (window.innerWidth - gridGap * numCols - gridPadding * 2) / numCols;
-  const bgScale = rowHeight / colWidth;
+  const bgScale = useResponsiveScale(rowHeight, gridGap, numCols, gridPadding);
 
   let ring: string = "";
   if (swipeCommands && swipeCommands.length) {
@@ -115,39 +115,6 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
     });
   }, [isEditing, tapIcon, pressIcon, backgroundColor, swipeCommands]);
 
-  const getSwipeIconPosition = (
-    angle: number
-  ): { top: string; left: string; transform: string } => {
-    const rad = (angle * Math.PI) / 180;
-    let x: number = 0;
-    let y: number = 0;
-    // TODO do this better using interpolation, minding bgScale
-    if (angle >= 0 && angle < 45) {
-      x = 1;
-      y = angle / 45;
-    } else if (angle >= 1 * 45 && angle < 3 * 45) {
-      x = -(angle / 45 - 2);
-      y = 1;
-    } else if (angle >= 3 * 45 && angle < 5 * 45) {
-      x = -1;
-      y = -(angle / 45 - 4);
-    } else if (angle >= 5 * 45 && angle < 7 * 45) {
-      x = angle / 45 - 6;
-      y = -1;
-    } else if (angle >= 7 * 45 && angle < 360) {
-      x = 1;
-      y = angle / 45 - 8;
-    }
-
-    return {
-      left: `calc(50% + (50%*${x}))`,
-      top: `calc(50% + (50%*${y}))`,
-      transform: `translate(-50%,-50%) translate(calc(50%*${-x!}), calc(50%*${-y!}))`,
-      // transform: `translate(-50%,-50%)`,
-      // transform: `translate(-calc(50%*${y}), -calc(50%*${y}))`,
-    };
-  };
-
   return (
     <TouchManager
       ballCount={BALL_COUNT}
@@ -161,6 +128,7 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
         }>
       }
       swipeRingOffsetAngle={swipeRingOffsetAngle}
+      buttonBackgroundColor={backgroundColor}
     >
       <div
         style={{
@@ -190,7 +158,10 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
         <button
           ref={buttonRef}
           key={buttonId + "__button-key"}
-          className="gay-button"
+          className={[
+            "gay-button",
+            swipeCommands && !!swipeCommands.length ? "gay-button-border" : "",
+          ].join(" ")}
           style={{
             position: "absolute",
             background:
@@ -264,7 +235,6 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
                 if (onPressCommandId) {
                   // @ts-ignore | app.commands exists; not sure why it's not in the API...
                   plugin?.app.commands.executeCommandById(onPressCommandId);
-                  console.log("PRESS COMMAND", onPressCommandId);
                 }
               }
             } else if (swipeCommands && swipeCommands.length) {
@@ -292,7 +262,6 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
 
               // @ts-ignore | app.commands exists; not sure why it's not in the API...
               plugin?.app.commands.executeCommandById(swipeCommandId);
-              console.log("SWIPE COMMAND", swipeCommandId, swipeIdx, angle);
             }
 
             pointerDataRef.current.initXY = undefined;
@@ -307,7 +276,6 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
             }
           }}
           onPointerCancel={(e: any) => {
-            console.log("pointer cancel");
             const el = buttonRef.current?.firstElementChild;
             el?.removeClass("gay-button-tap");
             el?.removeClass("gay-button-press");
@@ -321,35 +289,33 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
               gridSlot.style.zIndex = "";
             }
           }}
-          // onPointerLeave={(e) => console.log("leave", e.target)}
-          // onPointerOut={(e) => console.log("out", e.target)}
-          // onPointerOver={(e) => console.log("over", e.target)}
         >
           {/* set tap/press classes on this instead of button to isolate transparency contexts */}
           <div />
-          <div className={pressIcon && "tap-icon"} ref={tapIconRef}></div>
+          <div
+            className={pressIcon ? "tap-icon" : "tap-icon-no-press"}
+            ref={tapIconRef}
+          ></div>
           {pressIcon && <div className="press-icon" ref={pressIconRef}></div>}
         </button>
-        {swipeCommands?.map((c, i) => {
-          return (
-            <div
-              className="swipe-icon"
-              ref={swipeRefs.current[i]}
-              key={i}
-              style={{
-                position: "absolute",
-                borderRadius: "50%",
-
-                width: "var(--button-border-width)",
-                height: "var(--button-border-width)",
-                ...getSwipeIconPosition(
-                  (360 * i) / swipeCommands!.length +
-                    (swipeRingOffsetAngle ?? 0)
-                ),
-              }}
-            />
-          );
-        })}
+        {swipeCommands?.map((c, i) => (
+          <div
+            className="swipe-icon"
+            ref={swipeRefs.current[i]}
+            key={i}
+            style={{
+              position: "absolute",
+              borderRadius: "50%",
+              width: "var(--button-border-width)",
+              height: "var(--button-border-width)",
+              ...getSwipeIconPosition(
+                i,
+                swipeCommands!.length,
+                swipeRingOffsetAngle ?? 0
+              ),
+            }}
+          />
+        ))}
       </div>
     </TouchManager>
   );

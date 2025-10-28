@@ -41,6 +41,7 @@ export const useSettings = create<GayToolbarSettings & SettingsActions>()(
           [id]: {
             id: id,
             tapIcon: icon,
+            colorIdx: 0,
             onTapCommandId: onTapCommandId,
             backgroundColor:
               prev.presetColors[
@@ -204,10 +205,10 @@ export const loadConfigsFromMarkdown = async (
 
     const content = await plugin.app.vault.read(file as any);
     const configs = parseMarkdownConfigs(content);
-    console.log(`Loaded ${configs.length} configs from markdown file`);
+    console.log(`Loaded ${configs.length} saved configs from markdown file`);
     return configs;
   } catch (error) {
-    console.error("Error loading configs from markdown file:", error);
+    console.error("Error loading saved configs from markdown file:", error);
     return [];
   }
 };
@@ -233,7 +234,11 @@ export const migrateConfigsToMarkdown = async (
 
     // Check if there are existing configs in the settings
     const currentSettings = useSettings.getState();
-    if (!currentSettings.configs || currentSettings.configs.length === 0) {
+    if (
+      !("configs" in currentSettings) ||
+      !currentSettings.configs ||
+      currentSettings.configs.length === 0
+    ) {
       // No configs to migrate
       console.log("No configs to migrate");
       return;
@@ -267,7 +272,7 @@ export const migrateConfigsToMarkdown = async (
     // are not immediately visible to getAbstractFileByPath() until restart
 
     // Clear configs from settings to improve startup performance
-    useSettings.setState({ configs: [] });
+    useSettings.setState({ configs: undefined });
 
     // Remove configs field entirely from plugin settings
     delete plugin.settings.configs;
