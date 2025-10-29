@@ -124,10 +124,8 @@ const GaySettings: React.FC = () => {
         <div className="settings-main">
           {annoyingText ? (
             <div className="coffee-plea" style={{ color: marqueeColor }}>
-              I spent a long time on this plugin so here's our handshake: if you
-              use SWIPE COMMANDS, plzzzzzzz buy me a coffee? I can't be asked to
-              gatekeep it by adding purchase verification, so, scout's honor,
-              m'kay?
+              If you use SWIPE COMMANDS, buy me a coffee? ☕
+              I can’t be bothered with license checks — scout’s honor, m’kay?
             </div>
           ) : (
             <div className="coffee-plea" style={{ color: marqueeColor }}>
