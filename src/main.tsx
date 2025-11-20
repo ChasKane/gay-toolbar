@@ -147,6 +147,38 @@ export default class GayToolbarPlugin extends Plugin {
       console.log("Settings migration completed - missing keys added");
     }
 
+    // Ensure customCommands is initialized (for users upgrading from older versions)
+    if (!this.settings.customCommands) {
+      this.settings.customCommands = [];
+      await this.saveSettings(this.settings);
+    }
+
+    // Load custom commands on startup
+    if (
+      this.settings.customCommands &&
+      this.settings.customCommands.length > 0
+    ) {
+      this.settings.customCommands.forEach((cmd) => {
+        try {
+          const executeCode = new Function(
+            "plugin",
+            "app",
+            "console",
+            cmd.content
+          ) as (plugin: any, app: any, console: any) => void;
+          this.addCommand({
+            id: cmd.id,
+            name: cmd.name,
+            callback: () => {
+              executeCode(this, this.app, console);
+            },
+          });
+        } catch (error) {
+          console.error(`Error loading custom command ${cmd.id}:`, error);
+        }
+      });
+    }
+
     // Migrate existing configs to markdown file if needed
     try {
       await migrateConfigsToMarkdown(this, this.settings.savedConfigsFilePath);

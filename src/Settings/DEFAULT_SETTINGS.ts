@@ -32,6 +32,7 @@ export const getEmptySettings = () =>
     configs: [],
     savedConfigsFilePath: "GayToolbarSavedConfigs.md",
     minimizedToolbarLoc: [0.9, 50],
+    customCommands: [],
   } as GayToolbarSettings);
 
 export default {
@@ -278,4 +279,5 @@ export default {
   configs: [],
   savedConfigsFilePath: "GayToolbarSavedConfigs.md",
   minimizedToolbarLoc: [0.9, 50], // Default position: 90% from left, 80% from top
+  customCommands: [],
 } as GayToolbarSettings;

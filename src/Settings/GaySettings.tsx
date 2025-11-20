@@ -12,6 +12,7 @@ import { setIcon } from "obsidian";
 import GayColorPicker from "./GayColorPicker";
 import ConfigsModal from "./ConfigsModal";
 import GayButtonSettings from "./GayButtonSettings";
+import CommandAdderModal from "./CommandAdderModal";
 import { getLuminanceGuidedIconColor } from "../utils";
 
 const GaySettings: React.FC = () => {
@@ -124,8 +125,8 @@ const GaySettings: React.FC = () => {
         <div className="settings-main">
           {annoyingText ? (
             <div className="coffee-plea" style={{ color: marqueeColor }}>
-              If you use SWIPE COMMANDS, buy me a coffee? ☕
-              I can’t be bothered with license checks — scout’s honor, m’kay?
+              If you use SWIPE COMMANDS, buy me a coffee? ☕ I can’t be bothered
+              with license checks — scout’s honor, m’kay?
             </div>
           ) : (
             <div className="coffee-plea" style={{ color: marqueeColor }}>
@@ -190,6 +191,8 @@ const GaySettings: React.FC = () => {
             />,
 
             <ConfigsModal />,
+
+            <CommandAdderModal />,
 
             // TOOLBAR BACKGROUND
             <div>

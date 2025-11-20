@@ -129,6 +129,7 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
       }
       swipeRingOffsetAngle={swipeRingOffsetAngle}
       buttonBackgroundColor={backgroundColor}
+      isEditing={isEditing}
     >
       <div
         style={{

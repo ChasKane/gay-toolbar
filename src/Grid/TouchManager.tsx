@@ -24,6 +24,7 @@ interface TouchManagerProps {
   swipeCommands?: Array<{ color: string; commandId: string; icon: string }>;
   swipeRingOffsetAngle?: number;
   buttonBackgroundColor?: string;
+  isEditing?: boolean;
 }
 
 const TouchManager: React.FC<TouchManagerProps> = ({
@@ -34,6 +35,7 @@ const TouchManager: React.FC<TouchManagerProps> = ({
   swipeCommands,
   swipeRingOffsetAngle = 0,
   buttonBackgroundColor,
+  isEditing = false,
 }) => {
   const [trails, setTrails] = useState<Trail[]>([]);
   const trailIdCounter = useRef(0);
@@ -188,7 +190,7 @@ const TouchManager: React.FC<TouchManagerProps> = ({
   return (
     <div
       ref={containerRef}
-      {...(swipeCommands && swipeCommands.length ? bind() : {})}
+      {...(swipeCommands && swipeCommands.length && !isEditing ? bind() : {})}
       className="touch-manager"
       style={{
         position: "relative",

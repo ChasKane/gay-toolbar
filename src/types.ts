@@ -21,6 +21,12 @@ export type EditorActions = {
   setSelectedButtonId: (id: string) => void;
 };
 
+export type CustomCommand = {
+  name: string;
+  id: string;
+  content: string;
+};
+
 export type Config = {
   id: string;
   date: number;
@@ -47,6 +53,7 @@ export const savedConfigKeys = [
   "annoyingText",
   "presetColors",
   "minimizedToolbarLoc",
+  "customCommands",
 ] as const;
 export type SavedConfigKeys = (typeof savedConfigKeys)[number];
 
@@ -69,6 +76,7 @@ export type SavedConfigValues = {
   annoyingText: boolean;
   presetColors: string[];
   minimizedToolbarLoc: Coord;
+  customCommands: CustomCommand[];
 };
 
 export type SavedConfig = {

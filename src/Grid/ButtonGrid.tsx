@@ -47,10 +47,24 @@ const ButtonGrid: React.FC = () => {
 
     return monitorForElements({
       onDrop({ source, location }) {
-        const [sx, sy] = source.data.location as [number, number];
+        const sourceLocation = source.data.location as
+          | [number, number]
+          | undefined;
+        if (!sourceLocation) {
+          // Not a grid drag/drop event
+          return;
+        }
+
         const destination = location.current.dropTargets[0];
         if (!destination) return;
-        const [dx, dy] = destination.data.location as [number, number];
+
+        const destinationLocation = destination.data.location as
+          | [number, number]
+          | undefined;
+        if (!destinationLocation) return;
+
+        const [sx, sy] = sourceLocation;
+        const [dx, dy] = destinationLocation;
 
         moveButton(source.data.buttonId as string, [dx, dy]);
         if (buttonIdGrid[dx][dy])

@@ -9,7 +9,7 @@ In edit mode (wrench 🔧 icon, or obsidian command `Gay Toolbar: Toggle edit mo
 | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
 
 > P.S. My partner and I are looking for freelance work. She specializes in real-time full-stack app development (web sockets, Go, etc.). I specialize in real-time front ends, animation, and performace. Togeather, we've built apps, AI integrations, plugins, and much more.
-> P.P.S. I've found [Code Editor Shortcuts](https://github.com/timhor/obsidian-editor-shortcuts) to be utterly indispensible so I hignly recommend you explore what other plugins add the behavior you want so you can add it to your Gay toolbar.
+> P.P.S. I've found [Code Editor Shortcuts](https://github.com/timhor/obsidian-editor-shortcuts) to be utterly indispensible so I highly recommend you explore what other plugins add the behavior you want so you can add it to your Gay toolbar.
 
 ---
 
@@ -39,6 +39,28 @@ In edit mode (wrench 🔧 icon, or obsidian command `Gay Toolbar: Toggle edit mo
 - The default config includes a 🔧 wrench icon in the top right -— tap it to enter **Edit Mode**, or run `Gay Toolbar: Toggle Edit Mode` via the Command Palette.
 - Save the current config and load previous saved configs anytime via the "Saved Configs" modal.
 - Use a custom background (your own css value, eg `radial-gradient(circle at bottom, pink, grey, white)`).
+- **Create Custom Commands:** Use "Consult with the Great and Wise command adder" to create your own Obsidian commands with custom JavaScript. Write JavaScript code that has access to `plugin`, `app`, and `console` objects. Test commands before saving, and manage all your custom commands in a table. Commands are persisted and automatically loaded on startup.
+
+**Example Command** - Toggle underline on selected text:
+
+```javascript
+const view = app.workspace.activeEditor;
+if (view && view.editor) {
+  const editor = view.editor;
+  const selection = editor.getSelection();
+  if (selection) {
+    const underlineRegex = /^\s*<u>(.*?)<\/u>\s*$/s;
+    const match = selection.match(underlineRegex);
+    if (match) {
+      editor.replaceSelection(match[1]);
+    } else {
+      editor.replaceSelection(`<u>${selection}</u>`);
+    }
+  } else {
+    new Notice("No text selected");
+  }
+}
+```
 
 ### **Button Settings**
 
