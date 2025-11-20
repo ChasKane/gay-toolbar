@@ -3,12 +3,12 @@ import ReactDOM from "react-dom";
 import { ColorPicker, useColor } from "react-color-palette";
 import { useSettings } from "../StateManagement";
 import { getLuminanceGuidedIconColor, hexToIColor } from "../utils";
-import { setIcon } from "obsidian";
 import {
   draggable,
   dropTargetForElements,
   monitorForElements,
 } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import { setIcon } from "obsidian";
 
 const GayColorPicker: React.FC<{
   isSwipeCommand?: boolean;
@@ -224,6 +224,7 @@ const ColorSwatch: React.FC<ColorSwatchProps> = ({
   onDragEnd,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const handleIconRef = useRef<HTMLDivElement>(null);
   const [isDraggedOver, setIsDraggedOver] = useState(false);
 
   useEffect(() => {
@@ -317,73 +318,36 @@ const ColorSwatch: React.FC<ColorSwatchProps> = ({
           </svg>
         )}
       </div>
-      {/* Grip indicator - 6 dots in 2 columns of 3 */}
       <div
+        ref={handleIconRef}
         style={{
+          width: "20px",
+          height: "20px",
           display: "flex",
-          gap: "3px",
-          flexDirection: "column",
-          opacity: 0.5,
           alignItems: "center",
-          padding: "4px 0",
-          cursor: draggedIndex === index ? "grabbing" : "grab",
+          justifyContent: "center",
+          opacity: 0.6,
+          pointerEvents: "none",
         }}
-        onClick={(e) => e.stopPropagation()}
       >
-        <div style={{ display: "flex", gap: "3px" }}>
-          <div
-            style={{
-              width: "3px",
-              height: "3px",
-              borderRadius: "50%",
-              backgroundColor: "#666",
-            }}
-          />
-          <div
-            style={{
-              width: "3px",
-              height: "3px",
-              borderRadius: "50%",
-              backgroundColor: "#666",
-            }}
-          />
-        </div>
-        <div style={{ display: "flex", gap: "3px" }}>
-          <div
-            style={{
-              width: "3px",
-              height: "3px",
-              borderRadius: "50%",
-              backgroundColor: "#666",
-            }}
-          />
-          <div
-            style={{
-              width: "3px",
-              height: "3px",
-              borderRadius: "50%",
-              backgroundColor: "#666",
-            }}
-          />
-        </div>
-        <div style={{ display: "flex", gap: "3px" }}>
-          <div
-            style={{
-              width: "3px",
-              height: "3px",
-              borderRadius: "50%",
-              backgroundColor: "#666",
-            }}
-          />
-          <div
-            style={{
-              width: "3px",
-              height: "3px",
-              borderRadius: "50%",
-              backgroundColor: "#666",
-            }}
-          />
-        </div>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#666"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <circle cx="9" cy="5" r="1" />
+          <circle cx="15" cy="5" r="1" />
+          <circle cx="9" cy="12" r="1" />
+          <circle cx="15" cy="12" r="1" />
+          <circle cx="9" cy="19" r="1" />
+          <circle cx="15" cy="19" r="1" />
+        </svg>
       </div>
     </div>
   );

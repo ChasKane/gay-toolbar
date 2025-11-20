@@ -1,7 +1,7 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import { usePlugin, useSettings } from "../StateManagement";
-import { Notice } from "obsidian";
+import { Notice, setIcon } from "obsidian";
 import { CustomCommand } from "../types";
 
 const CommandAdderModal = () => {
@@ -145,7 +145,7 @@ const CommandAdderModal = () => {
       >
         <div className="gay-modal">
           <div className="gay-config-header">
-            <h2>Consult with the adder of commands</h2>
+            <h2>Command editor</h2>
           </div>
           <div
             style={{
@@ -191,7 +191,7 @@ const CommandAdderModal = () => {
               </label>
               <label
                 style={{
-                  fontSize: "small",
+                  fontSize: "x-small",
                   display: "block",
                   marginBottom: "0.5rem",
                 }}
@@ -264,12 +264,12 @@ const CommandAdderModal = () => {
                       marginBottom: "1rem",
                     }}
                   >
-                    Click a row to load it into the form above. Restart Obsidian
-                    required to remove commands.
+                    Click a row to load it into the form above.
                   </div>
                   <table
                     style={{
                       width: "100%",
+                      tableLayout: "fixed",
                       borderCollapse: "collapse",
                       fontSize: "0.9rem",
                     }}
@@ -308,7 +308,7 @@ const CommandAdderModal = () => {
                             textAlign: "center",
                             padding: "0.5rem",
                             fontWeight: "bold",
-                            width: "150px",
+                            width: "80px",
                           }}
                         >
                           Actions
@@ -317,73 +317,12 @@ const CommandAdderModal = () => {
                     </thead>
                     <tbody>
                       {customCommands.map((cmd) => (
-                        <tr
+                        <CommandRow
                           key={cmd.id}
-                          style={{
-                            borderBottom: "1px solid #eee",
-                          }}
-                        >
-                          <td style={{ padding: "0.5rem" }}>{cmd.name}</td>
-                          <td style={{ padding: "0.5rem" }}>
-                            <code style={{ fontSize: "0.85rem" }}>
-                              {cmd.id}
-                            </code>
-                          </td>
-                          <td style={{ padding: "0.5rem" }}>
-                            <code
-                              style={{
-                                fontSize: "0.8rem",
-                                color: "#666",
-                                maxWidth: "300px",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                whiteSpace: "nowrap",
-                                display: "block",
-                              }}
-                              title={cmd.content}
-                            >
-                              {cmd.content.substring(0, 50)}
-                              {cmd.content.length > 50 ? "..." : ""}
-                            </code>
-                          </td>
-                          <td
-                            style={{
-                              padding: "0.5rem",
-                              textAlign: "center",
-                            }}
-                          >
-                            <div
-                              style={{
-                                display: "flex",
-                                gap: "0.5rem",
-                                justifyContent: "center",
-                              }}
-                            >
-                              <button
-                                className="mod-warning"
-                                style={{
-                                  padding: "0.25rem 0.5rem",
-                                  fontSize: "0.8rem",
-                                  cursor: "pointer",
-                                }}
-                                onClick={() => handleDeleteCommand(cmd.id)}
-                              >
-                                Delete
-                              </button>
-                              <button
-                                style={{
-                                  padding: "0.25rem 0.5rem",
-                                  marginLeft: "1rem",
-                                  fontSize: "0.8rem",
-                                  cursor: "pointer",
-                                }}
-                                onClick={() => handleRowClick(cmd)}
-                              >
-                                Edit
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
+                          cmd={cmd}
+                          onLoad={handleRowClick}
+                          onDelete={handleDeleteCommand}
+                        />
                       ))}
                     </tbody>
                   </table>
@@ -402,6 +341,92 @@ const CommandAdderModal = () => {
       </label>
       <button onClick={() => setIsOpen(true)}>Open</button>
     </>
+  );
+};
+
+const CommandRow: React.FC<{
+  cmd: CustomCommand;
+  onLoad: (cmd: CustomCommand) => void;
+  onDelete: (id: string) => void;
+}> = ({ cmd, onLoad, onDelete }) => {
+  const deleteButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (deleteButtonRef.current) {
+      setIcon(deleteButtonRef.current, "trash-2");
+    }
+  }, []);
+
+  return (
+    <tr
+      onClick={() => onLoad(cmd)}
+      style={{
+        borderBottom: "1px solid #eee",
+        cursor: "pointer",
+      }}
+    >
+      <td style={{ padding: "0.5rem", fontSize: "x-small" }}>{cmd.name}</td>
+      <td style={{ padding: "0.5rem" }}>
+        <code style={{ fontSize: "x-small" }}>{cmd.id}</code>
+      </td>
+      <td
+        style={{
+          padding: "0.5rem",
+          width: "35%",
+          maxWidth: 0,
+        }}
+      >
+        <code
+          style={{
+            fontSize: "x-small",
+            color: "#666",
+            display: "block",
+            width: "100%",
+            minWidth: "0px",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+          title={cmd.content}
+        >
+          {cmd.content.substring(0, 50)}
+          {cmd.content.length > 50 ? "..." : ""}
+        </code>
+      </td>
+      <td
+        style={{
+          padding: "0.5rem",
+          textAlign: "center",
+          verticalAlign: "middle",
+          width: "2.5rem",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            ref={deleteButtonRef}
+            className="mod-warning"
+            style={{
+              width: "2rem",
+              height: "32px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: "4px",
+              fontSize: "1.1rem",
+              padding: 0,
+            }}
+            onClick={() => onDelete(cmd.id)}
+            aria-label="Delete command"
+          />
+        </div>
+      </td>
+    </tr>
   );
 };
 
