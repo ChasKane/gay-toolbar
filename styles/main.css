@@ -15,6 +15,7 @@ div[style*="position: fixed"] > svg {
 .gay-toolbar-container {
   transition: bottom 0.05s linear;
   max-height: 80%;
+  padding-bottom: var(--bottom-buffer, 0px);
 }
 .gay-toolbar {
   /* From https://css.glass */

@@ -137,9 +137,9 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
           width: "100%",
           height: "100%",
           borderRadius: "8px",
-          animation: isEditing ? "wiggle 0.8s infinite ease" : undefined,
+          animation: isEditing && !isSelected ? "wiggle 0.8s infinite ease" : undefined,
           transformOrigin: "center",
-          scale: isEditing && isSelected ? 1.5 : undefined,
+          transform: isEditing && isSelected ? "scale(1.5)" : undefined,
         }}
       >
         {swipeCommands && !!swipeCommands.length && (

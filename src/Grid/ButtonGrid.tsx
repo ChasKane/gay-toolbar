@@ -129,7 +129,7 @@ const ButtonGrid: React.FC = () => {
       }
       slots.push(
         <GridSlot
-          key={JSON.stringify([i, j])}
+          key={JSON.stringify([i, j, rowHeight])}
           location={[i, j]}
           buttonId={buttonId}
         >

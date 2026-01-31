@@ -13,11 +13,12 @@ const SliderInputGroup: React.FC<{
   const pressDelayMs = useSettings((state) => state.pressDelayMs);
   const rowHeight = useSettings((state) => state.rowHeight);
   const swipeBorderWidth = useSettings((state) => state.swipeBorderWidth);
+  const bottomBuffer = useSettings((state) => state.bottomBuffer ?? 0);
   const SetSettings = useSettings((state) => state.setSettings);
 
   useEffect(() => {
-    setCSSVariables(pressDelayMs, rowHeight, swipeBorderWidth);
-  }, [pressDelayMs, rowHeight, swipeBorderWidth]);
+    setCSSVariables(pressDelayMs, rowHeight, swipeBorderWidth, bottomBuffer);
+  }, [pressDelayMs, rowHeight, swipeBorderWidth, bottomBuffer]);
 
   const setSettings = (newSettings: any) => {
     SetSettings(newSettings);

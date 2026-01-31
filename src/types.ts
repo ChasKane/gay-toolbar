@@ -54,6 +54,7 @@ export const savedConfigKeys = [
   "presetColors",
   "minimizedToolbarLoc",
   "customCommands",
+  "bottomBuffer",
 ] as const;
 export type SavedConfigKeys = (typeof savedConfigKeys)[number];
 
@@ -77,6 +78,7 @@ export type SavedConfigValues = {
   presetColors: string[];
   minimizedToolbarLoc: Coord;
   customCommands: CustomCommand[];
+  bottomBuffer: number;
 };
 
 export type SavedConfig = {

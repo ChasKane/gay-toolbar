@@ -189,6 +189,11 @@ const GaySettings: React.FC = () => {
               name="gridPadding"
               bounds={[0, 20]}
             />,
+            <NumericInputGroup
+              label="Bottom buffer (Android nav buttons)"
+              name="bottomBuffer"
+              bounds={[0, 200]}
+            />,
 
             <ConfigsModal />,
 

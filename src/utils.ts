@@ -161,13 +161,15 @@ export const groomValue = (
 export const setCSSVariables = (
   pressDelayMs: number,
   rowHeight: number,
-  swipeBorderWidth: number = 20
+  swipeBorderWidth: number = 20,
+  bottomBuffer: number = 0
 ) => {
   const parentNode = document.querySelector(".app-container") as HTMLElement;
   if (parentNode) {
     parentNode.style.setProperty("--press-delay", `${pressDelayMs}ms`);
     const borderWidth = `${rowHeight * (swipeBorderWidth / 100)}px`;
     parentNode.style.setProperty("--button-border-width", borderWidth);
+    parentNode.style.setProperty("--bottom-buffer", `${bottomBuffer}px`);
   }
 };
 

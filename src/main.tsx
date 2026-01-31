@@ -17,6 +17,80 @@ export default class GayToolbarPlugin extends Plugin {
   toolbarRoot: Root;
   toolbarNode: HTMLElement;
   unsubscribeSettingsSync: () => void;
+  navbarObserver: MutationObserver | null = null;
+  hideNavbarTimeout: number | null = null;
+  keyboardHideListener: any = null;
+  keyboardShowListener: any = null;
+  layoutChangeCallback: (() => void) | null = null;
+
+  hideNavbar() {
+    if (!Platform.isMobile) return;
+    
+    const navbarElement = document.querySelector(".mobile-navbar") as HTMLElement;
+    if (navbarElement) {
+      navbarElement.style.display = "none";
+    }
+  }
+
+  setBottomBufferCssValue(value: number) {
+    const parentNode = document.querySelector(".app-container") as HTMLElement;
+    if (parentNode) {
+      parentNode.style.setProperty("--bottom-buffer", `${Math.max(0, value)}px`);
+    }
+  }
+
+  setupKeyboardListeners() {
+    if (!Platform.isMobile) return;
+
+    // Hide navbar immediately
+    this.hideNavbar();
+
+    // Set up MutationObserver to watch for navbar being added/remounted
+    const appContainer = document.querySelector(".app-container");
+    if (appContainer) {
+      this.navbarObserver = new MutationObserver(() => {
+        // Clear any pending timeout
+        if (this.hideNavbarTimeout !== null) {
+          clearTimeout(this.hideNavbarTimeout);
+        }
+        
+        // Use a small timeout to catch navbar after it's added to DOM
+        this.hideNavbarTimeout = window.setTimeout(() => {
+          this.hideNavbar();
+        }, 0);
+      });
+
+      this.navbarObserver.observe(appContainer, {
+        childList: true,
+        subtree: true,
+      });
+    }
+
+    // @ts-ignore Capacitor exists on mobile
+    if (Platform.isMobile && window.Capacitor?.Plugins?.Keyboard) {
+      // @ts-ignore Capacitor exists on mobile
+      this.keyboardHideListener = window.Capacitor.Plugins.Keyboard.addListener(
+        "keyboardWillHide",
+        () => {
+          this.hideNavbar();
+          this.setBottomBufferCssValue(this.settings.bottomBuffer ?? 0);
+        }
+      );
+      // @ts-ignore Capacitor exists on mobile
+      this.keyboardShowListener = window.Capacitor.Plugins.Keyboard.addListener(
+        "keyboardWillShow",
+        () => {
+          this.setBottomBufferCssValue(0);
+        }
+      );
+    }
+
+    // Listen for navigation events (Obsidian may remount navbar on navigation)
+    this.layoutChangeCallback = () => {
+      this.hideNavbar();
+    };
+    this.app.workspace.on("layout-change", this.layoutChangeCallback);
+  }
 
   async onload() {
     await this.loadSettings();
@@ -26,6 +100,9 @@ export default class GayToolbarPlugin extends Plugin {
     if (this.settings.mobileOnly && Platform.isDesktop) {
       return;
     }
+
+    // Set up keyboard listeners for mobile
+    this.setupKeyboardListeners();
 
     this.addCommand({
       id: "edit-toolbar",
@@ -82,14 +159,20 @@ export default class GayToolbarPlugin extends Plugin {
       this.toolbarNode?.remove();
       document.querySelector(".gay-toolbar-container")?.remove(); // not sure why this is sometimes necessary
 
+      // Hide navbar when layout is ready
+      this.hideNavbar();
+
       const parentNode: HTMLElement | null =
         document.querySelector(".app-container");
       if (parentNode) {
         setCSSVariables(
           this.settings.pressDelayMs,
           this.settings.rowHeight,
-          this.settings.swipeBorderWidth
+          this.settings.swipeBorderWidth,
+          this.settings.bottomBuffer ?? 0
         );
+        // Assume keyboard hidden on startup
+        this.setBottomBufferCssValue(this.settings.bottomBuffer ?? 0);
         this.toolbarNode = createDiv("gay-toolbar-container");
         this.toolbarRoot = createRoot(this.toolbarNode);
         this.toolbarRoot.render(<GayToolbar />);
@@ -200,6 +283,36 @@ export default class GayToolbarPlugin extends Plugin {
     this.toolbarNode?.remove();
     document.querySelector(".gay-toolbar-container")?.remove(); // not sure why this is sometimes necessary
     this.unsubscribeSettingsSync?.();
+    
+    // Clean up navbar hiding
+    if (this.navbarObserver) {
+      this.navbarObserver.disconnect();
+      this.navbarObserver = null;
+    }
+    if (this.hideNavbarTimeout !== null) {
+      clearTimeout(this.hideNavbarTimeout);
+      this.hideNavbarTimeout = null;
+    }
+    if (this.keyboardHideListener) {
+      this.keyboardHideListener.remove();
+      this.keyboardHideListener = null;
+    }
+    if (this.keyboardShowListener) {
+      this.keyboardShowListener.remove();
+      this.keyboardShowListener = null;
+    }
+    if (this.layoutChangeCallback) {
+      this.app.workspace.off("layout-change", this.layoutChangeCallback);
+      this.layoutChangeCallback = null;
+    }
+    
+    // Restore navbar visibility on unload
+    if (Platform.isMobile) {
+      const navbarElement = document.querySelector(".mobile-navbar") as HTMLElement;
+      if (navbarElement) {
+        navbarElement.style.display = "";
+      }
+    }
   }
 }
 
