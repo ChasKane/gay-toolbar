@@ -77,6 +77,49 @@ export const useSettings = create<GayToolbarSettings & SettingsActions>()(
         presetColors: prev.presetColors.filter((c) => c !== color),
       })),
 
+    toggleAccordion: (section) =>
+      set((prev: GayToolbarSettings) => ({
+        openAccordions: {
+          ...prev.openAccordions,
+          [section]: !prev.openAccordions[section],
+        },
+      })),
+
+    swapButtonColors: (buttonIdA, buttonIdB) =>
+      set((prev: GayToolbarSettings) => {
+        const a = prev.buttons[buttonIdA];
+        const b = prev.buttons[buttonIdB];
+        if (!a || !b) return prev;
+        const lenA = a.swipeCommands?.length ?? 0;
+        const lenB = b.swipeCommands?.length ?? 0;
+        const sameSwipeCount = lenA === lenB;
+        const swipesA = sameSwipeCount
+          ? (a.swipeCommands ?? []).map((entry, i) => {
+              if (entry === null) return null;
+              const other = b.swipeCommands?.[i];
+              const color =
+                other && typeof other === "object" ? other.color : b.backgroundColor;
+              return { ...entry, color };
+            })
+          : a.swipeCommands;
+        const swipesB = sameSwipeCount
+          ? (b.swipeCommands ?? []).map((entry, i) => {
+              if (entry === null) return null;
+              const other = a.swipeCommands?.[i];
+              const color =
+                other && typeof other === "object" ? other.color : a.backgroundColor;
+              return { ...entry, color };
+            })
+          : b.swipeCommands;
+        return {
+          buttons: {
+            ...prev.buttons,
+            [buttonIdA]: { ...a, backgroundColor: b.backgroundColor, swipeCommands: swipesA },
+            [buttonIdB]: { ...b, backgroundColor: a.backgroundColor, swipeCommands: swipesB },
+          },
+        };
+      }),
+
     addConfig: async () => {
       const snapshot = await takeSnapshot();
       const plugin = usePlugin.getState();
@@ -175,10 +218,9 @@ export const useSettings = create<GayToolbarSettings & SettingsActions>()(
 
 export const useEditor = create<EditorState & EditorActions>()((set) => ({
   isEditing: false,
-  // isEditing: true,
   selectedButtonId: "",
-  // selectedButtonId: "maqw9s0e",
-  // selectedButtonId: "maqw9s0e",
+  settingsScreen: "main",
+  colorPickerContext: null,
 
   setIsEditing: (isEditing) => {
     // drag ops (on android at least) hide keyboard and there's no way around it,
@@ -189,6 +231,8 @@ export const useEditor = create<EditorState & EditorActions>()((set) => ({
     set({ isEditing: isEditing });
   },
   setSelectedButtonId: (id) => set({ selectedButtonId: id }),
+  setSettingsScreen: (screen) => set({ settingsScreen: screen }),
+  setColorPickerContext: (ctx) => set({ colorPickerContext: ctx }),
 }));
 export const usePlugin = create<GayToolbarPlugin | null>()(() => null);
 
@@ -205,7 +249,6 @@ export const loadConfigsFromMarkdown = async (
 
     const content = await plugin.app.vault.read(file as any);
     const configs = parseMarkdownConfigs(content);
-    console.log(`Loaded ${configs.length} saved configs from markdown file`);
     return configs;
   } catch (error) {
     console.error("Error loading saved configs from markdown file:", error);
@@ -221,7 +264,6 @@ export const migrateConfigsToMarkdown = async (
   try {
     // Safety check for undefined path
     if (!savedConfigsFilePath) {
-      console.log("No savedConfigsFilePath provided, skipping migration");
       return;
     }
 
@@ -239,8 +281,6 @@ export const migrateConfigsToMarkdown = async (
       !currentSettings.configs ||
       currentSettings.configs.length === 0
     ) {
-      // No configs to migrate
-      console.log("No configs to migrate");
       return;
     }
 
@@ -257,10 +297,8 @@ export const migrateConfigsToMarkdown = async (
 
       // Use vault.create (higher-level API)
       await plugin.app.vault.create(normalizedPath, markdownContent);
-      console.log("Markdown file created successfully");
     } catch (error) {
       if (error.message && error.message.includes("File already exists")) {
-        console.log("Markdown file already exists, skipping creation");
         // File already exists, that's fine - continue with cleanup
       } else {
         console.error("Failed to create markdown file:", error);
@@ -278,9 +316,6 @@ export const migrateConfigsToMarkdown = async (
     delete plugin.settings.configs;
     await plugin.saveSettings();
 
-    console.log(
-      `Migrated ${currentSettings.configs.length} configs to ${savedConfigsFilePath} and cleared from settings`
-    );
   } catch (error) {
     console.error("Error migrating configs to markdown file:", error);
   }

@@ -10,6 +10,8 @@ import React from "react";
 const ButtonGrid: React.FC = () => {
   const addButton = useSettings((state) => state.addButton);
   const moveButton = useSettings((state) => state.moveButton);
+  const swapButtonColors = useSettings((state) => state.swapButtonColors);
+  const adoptSlotColorsOnDrop = useSettings((state) => state.adoptSlotColorsOnDrop);
   const setSelectedButtonId = useEditor((state) => state.setSelectedButtonId);
 
   const isEditing = useEditor((state) => state.isEditing);
@@ -65,14 +67,23 @@ const ButtonGrid: React.FC = () => {
 
         const [sx, sy] = sourceLocation;
         const [dx, dy] = destinationLocation;
+        const sourceId = source.data.buttonId as string;
+        const destId = buttonIdGrid[dx][dy];
 
-        moveButton(source.data.buttonId as string, [dx, dy]);
-        if (buttonIdGrid[dx][dy])
-          // swap locations if dropTarget isn't empty
-          moveButton(buttonIdGrid[dx][dy], [sx, sy]);
+        if (adoptSlotColorsOnDrop && destId) {
+          swapButtonColors(sourceId, destId);
+        }
+        moveButton(sourceId, [dx, dy]);
+        if (destId) moveButton(destId, [sx, sy]);
       },
     });
-  }, [buttonLocations, moveButton, isEditing]);
+  }, [
+    buttonLocations,
+    moveButton,
+    swapButtonColors,
+    adoptSlotColorsOnDrop,
+    isEditing,
+  ]);
 
   const buttonIdGrid: Array<Array<string>> = useMemo(() => {
     const arr = Array(numRows);

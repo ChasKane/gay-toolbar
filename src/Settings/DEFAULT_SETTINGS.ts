@@ -34,6 +34,12 @@ export const getEmptySettings = () =>
     minimizedToolbarLoc: [0.9, 50],
     customCommands: [],
     bottomBuffer: 0,
+    adoptSlotColorsOnDrop: false,
+    openAccordions: {
+      layout: false,
+      appearance: false,
+      other: false,
+    },
   } as GayToolbarSettings);
 
 export default {
@@ -282,4 +288,10 @@ export default {
   minimizedToolbarLoc: [0.9, 50], // Default position: 90% from left, 80% from top
   customCommands: [],
   bottomBuffer: 0,
+  adoptSlotColorsOnDrop: false,
+  openAccordions: {
+    layout: false,
+    appearance: false,
+    other: false,
+  },
 } as GayToolbarSettings;

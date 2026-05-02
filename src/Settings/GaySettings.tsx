@@ -1,40 +1,43 @@
 import React, {
-  ReactNode,
   useEffect,
   useLayoutEffect,
   useRef,
   useState,
 } from "react";
-import NumericInputGroup from "./NumericInputGroup";
 import { useEditor, usePlugin, useSettings } from "../StateManagement";
-import chooseNewCommand from "./chooseNewCommand";
+import type { SettingsScreen } from "../types";
 import { setIcon } from "obsidian";
-import GayColorPicker from "./GayColorPicker";
-import ConfigsModal from "./ConfigsModal";
-import GayButtonSettings from "./GayButtonSettings";
-import CommandAdderModal from "./CommandAdderModal";
 import { getLuminanceGuidedIconColor } from "../utils";
+import ButtonSettings from "./ButtonSettings";
+import Configs from "./Configs";
+import CommandEditor from "./CommandEditor";
+import RestoreDefaults from "./RestoreDefaults";
+import GayColorPicker from "./GayColorPicker";
+import MainSettings from "./MainSettings";
 
 const GaySettings: React.FC = () => {
   const plugin = usePlugin();
-  const { setIsEditing, selectedButtonId, setSelectedButtonId } = useEditor(
-    (state) => state
-  );
+  const {
+    setIsEditing,
+    selectedButtonId,
+    setSelectedButtonId,
+    setSettingsScreen,
+    settingsScreen,
+    colorPickerContext,
+    setColorPickerContext,
+  } = useEditor((state) => state);
 
-  const setSettings = useSettings((state) => state.setSettings);
-  const updateButton = useSettings((state) => state.updateButton);
   const deleteButton = useSettings((state) => state.deleteButton);
   const backgroundColor = useSettings((state) => state.backgroundColor);
   const customBackground = useSettings((state) => state.customBackground);
-  const useCustomBackground = useSettings((state) => state.useCustomBackground);
-  const mobileOnly = useSettings((state) => state.mobileOnly);
-  const buttons = useSettings((state) => state.buttons);
-  const buttonIds = useSettings((state) => state.buttonIds);
-  const annoyingText = useSettings((state) => state.annoyingText);
-  const presetColors = useSettings((state) => state.presetColors);
 
   const backBtnListener = useRef<{ remove: () => {} } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const mainScrollTopRef = useRef(0);
+  const prevScreenRef = useRef<{
+    settingsScreen: SettingsScreen;
+    selectedButtonId: string;
+  }>({ settingsScreen: "main", selectedButtonId: "" });
   const [marqueeColor, setMarqueeColor] = useState("#000000");
 
   const deleteButtonRef = useRef<HTMLButtonElement>(null);
@@ -45,13 +48,10 @@ const GaySettings: React.FC = () => {
     if (closeButtonRef.current) setIcon(closeButtonRef.current, "x");
   }, [selectedButtonId]);
 
-  // Calculate marquee color based on container background
   useEffect(() => {
     if (containerRef.current) {
       const computedStyle = window.getComputedStyle(containerRef.current);
-      const backgroundColor = computedStyle.backgroundColor;
-
-      // Convert RGBA to hex
+      const bg = computedStyle.backgroundColor;
       const rgbaToHex = (rgba: string) => {
         const match = rgba.match(
           /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*[\d.]+)?\)/
@@ -64,228 +64,139 @@ const GaySettings: React.FC = () => {
             .toString(16)
             .slice(1)}`;
         }
-        return rgba; // Return as-is if not RGBA format
+        return rgba;
       };
-
-      const hexColor = rgbaToHex(backgroundColor);
-      const color = getLuminanceGuidedIconColor(hexColor);
-      setMarqueeColor(color);
+      const hexColor = rgbaToHex(bg);
+      setMarqueeColor(getLuminanceGuidedIconColor(hexColor));
     }
   }, [backgroundColor, customBackground]);
 
-  // listen for back button on android to exit edit mode
+  // Maintain scroll position only for main settings; reset to top for other screens
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const isMain =
+      settingsScreen === "main" && !selectedButtonId;
+    const wasMain =
+      prevScreenRef.current.settingsScreen === "main" &&
+      !prevScreenRef.current.selectedButtonId;
+
+    if (wasMain && !isMain) {
+      mainScrollTopRef.current = container.scrollTop;
+    }
+    prevScreenRef.current = {
+      settingsScreen,
+      selectedButtonId: selectedButtonId ?? "",
+    };
+
+    if (isMain) {
+      container.scrollTop = mainScrollTopRef.current;
+    } else {
+      container.scrollTop = 0;
+    }
+  }, [settingsScreen, selectedButtonId]);
+
+  // When user selects a different button in the grid while color picker is open (button mode), keep picker target in sync
+  useEffect(() => {
+    if (
+      settingsScreen === "color-picker" &&
+      colorPickerContext?.type === "button" &&
+      colorPickerContext.buttonId !== selectedButtonId
+    ) {
+      setColorPickerContext({ type: "button", buttonId: selectedButtonId });
+    }
+  }, [
+    selectedButtonId,
+    settingsScreen,
+    colorPickerContext?.type,
+    colorPickerContext?.type === "button" ? colorPickerContext.buttonId : null,
+    setColorPickerContext,
+  ]);
+
   useEffect(() => {
     (async () => {
       backBtnListener.current?.remove?.();
       backBtnListener.current =
         // @ts-ignore Capacitor exists on mobile because Obsidian mobile is built on it
-        await window.Capacitor?.Plugins?.App?.addListener("backButton", () =>
-          setIsEditing(false)
-        );
+        await window.Capacitor?.Plugins?.App?.addListener("backButton", () => {
+          if (settingsScreen === "color-picker") {
+            setSettingsScreen("main");
+            setColorPickerContext(null);
+            return;
+          }
+          if (selectedButtonId) {
+            setSelectedButtonId("");
+            setSettingsScreen("main");
+            return;
+          }
+          if (settingsScreen !== "main") {
+            setSettingsScreen("main");
+            return;
+          }
+          setIsEditing(false);
+        });
     })();
     return () => {
       backBtnListener.current?.remove?.();
     };
-  }, [setIsEditing]);
+  }, [
+    setIsEditing,
+    setSelectedButtonId,
+    setSettingsScreen,
+    settingsScreen,
+    selectedButtonId,
+    setColorPickerContext,
+  ]);
 
-  const wrapToolbarSettings = (nodes: ReactNode[]) =>
-    nodes.map((n, idx) => {
-      // Get random background color from presetColors or generate random color
-      const getRandomBackgroundColor = () => {
-        if (presetColors && presetColors.length > 0) {
-          const randomIdx = Math.floor(Math.random() * presetColors.length);
-          const color = presetColors[randomIdx];
-          // Convert hex to rgba with low alpha
-          return `${color}20`; // 20 = ~12% opacity in hex
-        } else {
-          // Generate random color if presetColors is empty
-          const randomColor = `#${Math.floor(Math.random() * 16777215)
-            .toString(16)
-            .padStart(6, "0")}`;
-          return `${randomColor}20`; // 20 = ~12% opacity in hex
-        }
-      };
+  const handleBackToMain = () => setSettingsScreen("main");
+  const handleBackFromButtonSettings = () => {
+    setSelectedButtonId("");
+    setSettingsScreen("main");
+  };
+  const handleBackFromColorPicker = () => {
+    setSettingsScreen("main");
+    setColorPickerContext(null);
+  };
 
+  const renderContent = () => {
+    if (settingsScreen === "color-picker") {
+      return <GayColorPicker onBack={handleBackFromColorPicker} />;
+    }
+    if (selectedButtonId) {
       return (
-        <div
-          key={idx}
-          className="toolbar-setting-wrapper"
-          style={{ backgroundColor: getRandomBackgroundColor() }}
-        >
-          {n}
-        </div>
+        <ButtonSettings onBack={handleBackFromButtonSettings} />
       );
-    });
+    }
+    switch (settingsScreen) {
+      case "configs":
+        return <Configs onBack={handleBackToMain} />;
+      case "command-editor":
+        return <CommandEditor onBack={handleBackToMain} />;
+      case "restore-defaults":
+        return (
+          <RestoreDefaults
+            onBack={handleBackToMain}
+            onConfirm={() => {
+              if (plugin) {
+                // @ts-ignore
+                plugin.app.commands.executeCommandById(
+                  "gay-toolbar:load-default-settings"
+                );
+              }
+              setSettingsScreen("main");
+            }}
+            onCancel={handleBackToMain}
+          />
+        );
+      default:
+        return <MainSettings marqueeColor={marqueeColor} />;
+    }
+  };
 
   return (
     <div ref={containerRef} className="gay-settings-container">
-      {selectedButtonId ? (
-        <GayButtonSettings />
-      ) : (
-        <div className="settings-main">
-          {annoyingText ? (
-            <div className="coffee-plea" style={{ color: marqueeColor }}>
-              If you use SWIPE COMMANDS, buy me a coffee? ☕ I can’t be bothered
-              with license checks — scout’s honor, m’kay?
-            </div>
-          ) : (
-            <div className="coffee-plea" style={{ color: marqueeColor }}>
-              See additional settings in Obsidian's settings under "Gay
-              Toolbar".
-            </div>
-          )}
-
-          {wrapToolbarSettings([
-            // BUY ME A COFFEE
-            <a
-              href="https://www.buymeacoffee.com/ChasKane"
-              className="buy-me-a-coffee-button"
-              onClick={() => {
-                setSettings({ annoyingText: !annoyingText });
-              }}
-            >
-              <span
-                className="buy-me-a-coffee-emoji"
-                style={{ scale: "3.5", transform: "rotate(35deg)" }}
-              >
-                ☕️
-              </span>
-              <div
-                style={{
-                  textWrap: "balance",
-                  textAlign: "center",
-                  fontSize: "x-small",
-                  maxWidth: "min-content",
-                }}
-              >
-                {annoyingText ? "Delete annoying text" : "Show annoying text"}
-              </div>
-            </a>,
-
-            <NumericInputGroup
-              label="Columns"
-              name="numCols"
-              bounds={[1, 20]}
-            />,
-            <NumericInputGroup
-              label="Swipe border %"
-              name="swipeBorderWidth"
-              bounds={[1, 50]}
-            />,
-            <NumericInputGroup label="Rows" name="numRows" bounds={[1, 10]} />,
-            <NumericInputGroup
-              label="Row height"
-              name="rowHeight"
-              bounds={[5, 70]}
-            />,
-            <NumericInputGroup label="Gap" name="gridGap" bounds={[0, 20]} />,
-            <NumericInputGroup
-              label="Long-press delay"
-              name="pressDelayMs"
-              bounds={[1, 5000]}
-            />,
-            <NumericInputGroup
-              label="Padding"
-              name="gridPadding"
-              bounds={[0, 20]}
-            />,
-            <NumericInputGroup
-              label="Bottom buffer (Android nav buttons)"
-              name="bottomBuffer"
-              bounds={[0, 200]}
-            />,
-
-            <ConfigsModal />,
-
-            <CommandAdderModal />,
-
-            // TOOLBAR BACKGROUND
-            <div>
-              <label>Toolbar background</label>
-              <div className="toolbar-setting-wrapper">
-                <label style={{ paddingRight: "8px" }} htmlFor="custom-css">
-                  Use custom CSS
-                </label>
-                <input
-                  id="custom-css"
-                  type="checkbox"
-                  checked={useCustomBackground}
-                  onChange={(e) => {
-                    setSettings({ useCustomBackground: e.target.checked });
-                  }}
-                ></input>
-              </div>
-              {!useCustomBackground && (
-                <div className="toolbar-setting-wrapper">
-                  <GayColorPicker
-                    color={backgroundColor!}
-                    onChange={(color) =>
-                      setSettings({ backgroundColor: color })
-                    }
-                  ></GayColorPicker>
-                </div>
-              )}
-            </div>,
-
-            // SET ALL BUTTON COLORS
-            <div>
-              <p style={{ paddingRight: "8px" }}>Set all button colors</p>
-              {buttonIds.length && (
-                <div className="toolbar-setting-wrapper">
-                  <GayColorPicker
-                    color={buttons[buttonIds[0]].backgroundColor}
-                    onChange={(color) =>
-                      buttonIds.forEach((id) =>
-                        updateButton(id, { backgroundColor: color })
-                      )
-                    }
-                  ></GayColorPicker>
-                </div>
-              )}
-            </div>,
-
-            // RESTORE DEFAULTS
-            <div>
-              <p style={{ paddingRight: "8px" }}>Lost?</p>
-              <button
-                onClick={() => {
-                  // @ts-ignore | app.commands exists; not sure why it's not in the API...
-                  plugin?.app.commands.executeCommandById(
-                    "gay-toolbar:load-default-settings"
-                  );
-                }}
-              >
-                Load default settings
-              </button>
-            </div>,
-          ])}
-        </div>
-      )}
+      {renderContent()}
       <div className="gay-settings-footer">
-        {useCustomBackground && !selectedButtonId && (
-          <label htmlFor="customBackground">
-            <>
-              Custom CSS{" "}
-              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/background">
-                background
-              </a>{" "}
-              value
-            </>
-            <input
-              style={{
-                width: "100%",
-                display: "inline-grid",
-              }}
-              type="text"
-              placeholder='No "background: " and no ";"'
-              value={customBackground}
-              onChange={(e) =>
-                setSettings({ customBackground: e.target.value || " " })
-              }
-              name="customBackground"
-            ></input>
-          </label>
-        )}
         <div className="float-right">
           {selectedButtonId && (
             <button
@@ -301,6 +212,8 @@ const GaySettings: React.FC = () => {
             onClick={() => {
               setIsEditing(false);
               setSelectedButtonId("");
+              setSettingsScreen("main");
+              setColorPickerContext(null);
             }}
           />
         </div>

@@ -1,6 +1,7 @@
 @import "./button-settings.css";
 @import "./grid.css";
 @import "./settings.css";
+@import "./components.css";
 
 div[style*="position: absolute"] > svg,
 div[style*="position: fixed"] > svg {
@@ -17,7 +18,8 @@ div[style*="position: fixed"] > svg {
   max-height: 80%;
   padding-bottom: var(--bottom-buffer, 0px);
 }
-.gay-toolbar {
+.gay-toolbar-main {
+  position: relative;
   /* From https://css.glass */
   border-radius: 8px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);

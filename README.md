@@ -2,14 +2,14 @@
 
 A fully customizable, collapsible toolbar that floats above the keyboard, replacing the default toolbar. Highly polished, feature-rich. Built (and maintained!) with ❤️
 
-In edit mode (wrench 🔧 icon, or obsidian command `Gay Toolbar: Toggle edit mode`), each button can be assigned a primary (tap) and optional secondary (long-press) obsidian command, as well as any number of swipe commands, each assigned to a different swipe direction. Buttons can be moved between slnt swipeots by long-pressing and dragging in edit mode. Their colors can be customized from a customizable color palette or assigned in bulk. The background color of the whole toolbar can be set to a solid color, or you can use your own CSS value for crazy radial gradients or whatever. Did I mention this toolbar is customizable? The number and size of rows and columns can also be set independently, and when you arrive at a config you like, you can snapshot it like a video game save slot.
+In edit mode (wrench 🔧 icon, or obsidian command `Gay Toolbar: Toggle edit mode`), each button can be assigned a primary (tap) and optional secondary (long-press) obsidian command, as well as any number of swipe commands, each assigned to a different swipe direction. Buttons can be moved between slots by long-pressing and dragging in edit mode. Their colors can be customized from a customizable color palette or assigned in bulk. The background color of the whole toolbar can be set to a solid color, or you can use your own CSS value for crazy radial gradients or whatever. Did I mention this toolbar is customizable? The number and size of rows and columns can also be set independently, and when you arrive at a config you like, you can snapshot it like a video game save slot.
 ![Image of gay-toolbar](https://github.com/user-attachments/assets/47aad823-1d29-4930-b86e-dd24f772a5f3)
 
 | ![Image of toolbar settings](https://github.com/user-attachments/assets/bcb87425-7271-4657-8a6e-d2204d8a4c2f) | ![Image of button settings](https://github.com/user-attachments/assets/a8ba9d7e-4918-45ba-a948-fcb74cb091b3) |
 | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
 
-> P.S. My partner and I are looking for freelance work. She specializes in real-time full-stack app development (web sockets, Go, etc.). I specialize in real-time front ends, animation, and performace. Togeather, we've built apps, AI integrations, plugins, and much more.
-> P.P.S. I've found [Code Editor Shortcuts](https://github.com/timhor/obsidian-editor-shortcuts) to be utterly indispensible so I highly recommend you explore what other plugins add the behavior you want so you can add it to your Gay toolbar.
+> P.S. My partner and I are looking for freelance work. She specializes in real-time full-stack app development (web sockets, Go, etc.). I specialize in real-time front ends, animation, and performance. Together, we've built apps, AI integrations, plugins, and much more.
+> P.P.S. I've found [Code Editor Shortcuts](https://github.com/timhor/obsidian-editor-shortcuts) to be utterly indispensable so I highly recommend you explore what other plugins add the behavior you want so you can add it to your Gay toolbar.
 
 ---
 
@@ -36,10 +36,11 @@ In edit mode (wrench 🔧 icon, or obsidian command `Gay Toolbar: Toggle edit mo
 
 ### **Main Settings** (if no button is selected)
 
-- The default config includes a 🔧 wrench icon in the top right -— tap it to enter **Edit Mode**, or run `Gay Toolbar: Toggle Edit Mode` via the Command Palette.
-- Save the current config and load previous saved configs anytime via the "Saved Configs" modal.
-- Use a custom background (your own css value, eg `radial-gradient(circle at bottom, pink, grey, white)`).
-- **Create Custom Commands:** Use "Consult with the Great and Wise command adder" to create your own Obsidian commands with custom JavaScript. Write JavaScript code that has access to `plugin`, `app`, and `console` objects. Test commands before saving, and manage all your custom commands in a table. Commands are persisted and automatically loaded on startup.
+- The default config includes a 🔧 wrench icon in the top right — tap it to enter **Edit Mode**, or run `Gay Toolbar: Toggle Edit Mode` via the Command Palette.
+- **Saved Configs:** Save the current config and load previous saved configs anytime. Configs are stored in a markdown file in your vault; the file path is configurable in Obsidian Settings → Gay Toolbar (“Saved configs file path”).
+- Use a custom background (your own CSS value, e.g. `radial-gradient(circle at bottom, pink, grey, white)`). Layout, appearance, and other options are grouped in accordion sections.
+- **Custom Commands:** Open the **Command editor** from main settings to create your own Obsidian commands with custom JavaScript (the editor is JavaScript only; no in-app TypeScript compilation). Write JavaScript that has access to `plugin`, `app`, and `console`. Use **Test** to run the code; any `console.log`/`warn`/`error` output appears in the panel below. For full debugging, use Help → Developer tools. Test commands before saving and manage them in a table. Commands are persisted and loaded on startup. You can also **Restore defaults** (toolbar layout and settings) from the main settings without losing your custom commands or color presets.
+- **Mobile only:** In Obsidian Settings → Gay Toolbar you can enable “Mobile only” so the toolbar is shown only on mobile (restart to apply).
 
 **Example Command** - Toggle underline on selected text:
 
@@ -101,9 +102,24 @@ To run the plugin locally:
    npm i
    ```
 
-2. Start development mode:
+2. Start development mode (builds `main.js` from `src/main.tsx`, watches source and `styles/*.css` and writes combined `styles.css`):
+
    ```bash
    npm run dev
+   ```
+
+3. Build for production:
+
+   ```bash
+   npm run build
+   ```
+
+4. Run tests:
+
+   ```bash
+   npm run test
+   npm run test:watch    # watch mode
+   npm run test:coverage # coverage report
    ```
 
 ## **Android Development Sync**

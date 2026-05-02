@@ -1,8 +1,8 @@
-import { App, Platform, Plugin, PluginSettingTab, Setting } from "obsidian";
+import { addIcon, App, Platform, Plugin, PluginSettingTab, removeIcon, Setting } from "obsidian";
 import { createRoot, Root } from "react-dom/client";
 import GayToolbar from "./GayTOOLBAR";
 import DEFAULT_SETTINGS from "./Settings/DEFAULT_SETTINGS";
-import { setCSSVariables, migrateSettings } from "./utils";
+import { setCSSVariables, migrateSettings, migrateOpenAccordions } from "./utils";
 import {
   usePlugin,
   useSettings,
@@ -10,7 +10,33 @@ import {
   loadConfigsFromMarkdown,
   migrateConfigsToMarkdown,
 } from "./StateManagement";
-import { GayToolbarSettings, savedConfigKeys } from "./types";
+import {
+  GayToolbarSettings,
+  persistedSettingsKeys,
+  savedConfigKeys,
+} from "./types";
+
+const ICON: string = `<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+	<g id="rainbowflag">
+		<defs>
+			<linearGradient id="Rainbow" x1="0" x2="0" y1="0" y2="1" gradientUnits="objectBoundingBox">
+				<stop offset="0" stop-color="#F00"/>
+				<stop offset="0.1667" stop-color="#F00"/>
+				<stop offset="0.1667" stop-color="#FF9800"/>
+				<stop offset="0.3333" stop-color="#FF9800"/>
+				<stop offset="0.3333" stop-color="#FF0"/>
+				<stop offset="0.5" stop-color="#FF0"/>
+				<stop offset="0.5" stop-color="#009800"/>
+				<stop offset="0.6667" stop-color="#009800"/>
+				<stop offset="0.6667" stop-color="#00F"/>
+				<stop offset="0.8333" stop-color="#00F"/>
+				<stop offset="0.8333" stop-color="#980098"/>
+				<stop offset="1.00" stop-color="#980098"/>
+			</linearGradient>
+		</defs>
+		<rect id="RainbowFlag" fill="url(#Rainbow)" width="100%" height="90%" y="5%"/>
+	</g>
+</svg>`
 
 export default class GayToolbarPlugin extends Plugin {
   settings: GayToolbarSettings;
@@ -35,7 +61,8 @@ export default class GayToolbarPlugin extends Plugin {
   setBottomBufferCssValue(value: number) {
     const parentNode = document.querySelector(".app-container") as HTMLElement;
     if (parentNode) {
-      parentNode.style.setProperty("--bottom-buffer", `${Math.max(0, value)}px`);
+      const effective = Platform.isMobile ? Math.max(0, value) : 0;
+      parentNode.style.setProperty("--bottom-buffer", `${effective}px`);
     }
   }
 
@@ -93,6 +120,8 @@ export default class GayToolbarPlugin extends Plugin {
   }
 
   async onload() {
+    addIcon("gay-toolbar", ICON);
+
     await this.loadSettings();
 
     this.addSettingTab(new GayToolbarSettingsTab(this.app, this));
@@ -126,7 +155,16 @@ export default class GayToolbarPlugin extends Plugin {
           this,
           this.settings.savedConfigsFilePath
         );
-        useSettings.setState({ ...DEFAULT_SETTINGS });
+        const current = useSettings.getState();
+        const toMerge: Partial<GayToolbarSettings> = {};
+        for (const k of persistedSettingsKeys) {
+          (toMerge as any)[k] = (DEFAULT_SETTINGS as any)[k];
+        }
+        // Preserve customCommands, presetColors, and savedConfigsFilePath
+        toMerge.customCommands = current.customCommands ?? [];
+        toMerge.presetColors = current.presetColors ?? [];
+        toMerge.savedConfigsFilePath = current.savedConfigsFilePath;
+        useSettings.setState(toMerge);
       },
     });
     this.addCommand({
@@ -165,11 +203,12 @@ export default class GayToolbarPlugin extends Plugin {
       const parentNode: HTMLElement | null =
         document.querySelector(".app-container");
       if (parentNode) {
+        const bottomBuffer = Platform.isMobile ? (this.settings.bottomBuffer ?? 0) : 0;
         setCSSVariables(
           this.settings.pressDelayMs,
           this.settings.rowHeight,
           this.settings.swipeBorderWidth,
-          this.settings.bottomBuffer ?? 0
+          bottomBuffer
         );
         // Assume keyboard hidden on startup
         this.setBottomBufferCssValue(this.settings.bottomBuffer ?? 0);
@@ -221,18 +260,24 @@ export default class GayToolbarPlugin extends Plugin {
         await this.saveSettings(this.settings);
       }
     }
-
-    // Migrate missing settings keys from default settings
-    const hasMissingKeys = migrateSettings(this.settings, DEFAULT_SETTINGS);
-
+    // Migrate missing settings keys and openAccordions
+    let hasMissingKeys = migrateSettings(this.settings, DEFAULT_SETTINGS);
+    if (migrateOpenAccordions(this.settings, DEFAULT_SETTINGS)) {
+      hasMissingKeys = true;
+    }
     if (hasMissingKeys) {
       await this.saveSettings(this.settings);
-      console.log("Settings migration completed - missing keys added");
     }
 
     // Ensure customCommands is initialized (for users upgrading from older versions)
     if (!this.settings.customCommands) {
       this.settings.customCommands = [];
+      await this.saveSettings(this.settings);
+    }
+
+    // Ensure presetColors is initialized (for users upgrading from older versions)
+    if (!this.settings.presetColors || !Array.isArray(this.settings.presetColors)) {
+      this.settings.presetColors = [...DEFAULT_SETTINGS.presetColors];
       await this.saveSettings(this.settings);
     }
 
@@ -270,11 +315,23 @@ export default class GayToolbarPlugin extends Plugin {
     }
 
     usePlugin.setState(this);
-    useSettings.setState(this.settings);
+
+    // Merge only persisted data into store so we never overwrite actions (e.g. toggleAccordion)
+    const toMerge: Partial<GayToolbarSettings> = {};
+    for (const k of persistedSettingsKeys) {
+      if ((this.settings as any)[k] !== undefined) {
+        (toMerge as any)[k] = (this.settings as any)[k];
+      }
+    }
+    useSettings.setState(toMerge);
 
     this.unsubscribeSettingsSync = useSettings.subscribe((state) => {
       this.settings = state;
-      this.saveSettings(this.settings);
+      const persisted: Partial<GayToolbarSettings> = {};
+      for (const k of persistedSettingsKeys) {
+        (persisted as any)[k] = (state as any)[k];
+      }
+      this.saveSettings(persisted as GayToolbarSettings);
     });
   }
 
@@ -317,6 +374,8 @@ export default class GayToolbarPlugin extends Plugin {
 }
 
 class GayToolbarSettingsTab extends PluginSettingTab {
+  icon="gay-toolbar";
+
   plugin: GayToolbarPlugin;
 
   constructor(app: App, plugin: GayToolbarPlugin) {

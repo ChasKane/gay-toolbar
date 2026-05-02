@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
+import { Platform } from "obsidian";
 import { useSettings } from "../StateManagement";
 import { groomValue, setCSSVariables } from "../utils";
 
@@ -7,7 +8,8 @@ const SliderInputGroup: React.FC<{
   name: string;
   bounds: [number, number];
   step?: number;
-}> = ({ label, name, bounds, step = 1 }) => {
+  hideLabel?: boolean;
+}> = ({ label, name, bounds, step = 1, hideLabel = false }) => {
   //@ts-ignore -- we know name will be in GayToolbarSettings
   const value = useSettings((state) => state[name]);
   const pressDelayMs = useSettings((state) => state.pressDelayMs);
@@ -17,7 +19,8 @@ const SliderInputGroup: React.FC<{
   const SetSettings = useSettings((state) => state.setSettings);
 
   useEffect(() => {
-    setCSSVariables(pressDelayMs, rowHeight, swipeBorderWidth, bottomBuffer);
+    const effectiveBottomBuffer = Platform.isMobile ? bottomBuffer : 0;
+    setCSSVariables(pressDelayMs, rowHeight, swipeBorderWidth, effectiveBottomBuffer);
   }, [pressDelayMs, rowHeight, swipeBorderWidth, bottomBuffer]);
 
   const setSettings = (newSettings: any) => {
@@ -27,8 +30,8 @@ const SliderInputGroup: React.FC<{
   const [isEmpty, setIsEmpty] = useState(false);
 
   return (
-    <div>
-      <label className="gay-input-label">{label}</label>
+    <div className="numeric-input-group">
+      {!hideLabel && <label className="gay-input-label">{label}</label>}
 
       <div className="gay-input">
         <button
@@ -42,6 +45,7 @@ const SliderInputGroup: React.FC<{
         <input
           className="gay-numeric-input"
           type="number"
+          aria-label={label}
           value={isEmpty ? "" : value}
           min={bounds[0]}
           max={bounds[1]}

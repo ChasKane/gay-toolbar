@@ -109,7 +109,7 @@ const GayToolbar: React.FC = () => {
       document.querySelector(".horizontal-main-container")!
     );
   return (
-    <div ref={ref} className="gay-toolbar">
+    <div ref={ref} className="gay-toolbar-main">
       {isEditing && <GaySettings />}
       <ButtonGrid />
     </div>

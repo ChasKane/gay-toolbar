@@ -12,13 +12,36 @@ export type GayButtonSettings = {
   colorIdx: number;
 };
 
+export type SettingsScreen =
+  | "main"
+  | "configs"
+  | "command-editor"
+  | "restore-defaults"
+  | "color-picker";
+
+export type ColorPickerContext =
+  | { type: "toolbar" }
+  | { type: "all-buttons" }
+  | { type: "button"; buttonId: string }
+  | { type: "swipe"; buttonId: string; swipeIndex: number };
+
+export type SettingsAccordionSections = {
+  layout: boolean;
+  appearance: boolean;
+  other: boolean;
+};
+
 export type EditorState = {
   isEditing: boolean;
   selectedButtonId: string;
+  settingsScreen: SettingsScreen;
+  colorPickerContext: ColorPickerContext | null;
 };
 export type EditorActions = {
   setIsEditing: (isEditing: boolean) => void;
   setSelectedButtonId: (id: string) => void;
+  setSettingsScreen: (screen: SettingsScreen) => void;
+  setColorPickerContext: (ctx: ColorPickerContext | null) => void;
 };
 
 export type CustomCommand = {
@@ -51,10 +74,9 @@ export const savedConfigKeys = [
   "swipeBorderWidth",
   "isMinimized",
   "annoyingText",
-  "presetColors",
   "minimizedToolbarLoc",
-  "customCommands",
   "bottomBuffer",
+  "adoptSlotColorsOnDrop",
 ] as const;
 export type SavedConfigKeys = (typeof savedConfigKeys)[number];
 
@@ -75,10 +97,9 @@ export type SavedConfigValues = {
   swipeBorderWidth: number;
   isMinimized: boolean;
   annoyingText: boolean;
-  presetColors: string[];
   minimizedToolbarLoc: Coord;
-  customCommands: CustomCommand[];
   bottomBuffer: number;
+  adoptSlotColorsOnDrop: boolean;
 };
 
 export type SavedConfig = {
@@ -89,10 +110,24 @@ export type GayToolbarSettings = SavedConfig & {
   presetColors: string[];
   configs?: Config[]; // Optional - removed after migration to markdown
   savedConfigsFilePath: string;
+  openAccordions: SettingsAccordionSections;
+  customCommands: CustomCommand[];
 };
+
+/** Keys persisted to data.json. Excludes store-only behavior (e.g. toggleAccordion). */
+export const persistedSettingsKeys = [
+  ...savedConfigKeys,
+  "configs",
+  "savedConfigsFilePath",
+  "openAccordions",
+  "customCommands",
+  "presetColors",
+] as const;
+export type PersistedSettingsKey = (typeof persistedSettingsKeys)[number];
 
 export type SettingsActions = {
   setSettings: (newSettings: Partial<GayToolbarSettings>) => void;
+  toggleAccordion: (section: keyof SettingsAccordionSections) => void;
   moveButton: (buttonId: string, location: Coord) => void;
   addButton: (
     id: string,
@@ -106,4 +141,5 @@ export type SettingsActions = {
   deletePresetColor: (color: string) => void;
   addConfig: () => void;
   deleteConfig: (id: string) => void;
+  swapButtonColors: (buttonIdA: string, buttonIdB: string) => void;
 };

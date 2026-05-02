@@ -1,6 +1,16 @@
 import * as culori from "culori";
 import { toPng } from "html-to-image";
-import { GayToolbarSettings, savedConfigKeys } from "./types";
+import {
+  GayToolbarSettings,
+  savedConfigKeys,
+  SettingsAccordionSections,
+} from "./types";
+
+const ACCORDION_SECTIONS: (keyof SettingsAccordionSections)[] = [
+  "layout",
+  "appearance",
+  "other",
+];
 
 export type Position = { x: number; y: number };
 
@@ -337,7 +347,6 @@ export const getSwipeIconPosition = (
  * Migrates settings by adding missing keys from default settings
  * @param settings - Current settings object (will be mutated)
  * @param defaultSettings - Default settings to migrate from
- * @param savedConfigKeys - Keys that should be migrated
  * @returns Whether any keys were added (for logging purposes)
  */
 export const migrateSettings = (
@@ -351,11 +360,6 @@ export const migrateSettings = (
       !(key in settings) ||
       settings[key as keyof typeof settings] === undefined
     ) {
-      console.log(
-        `Adding missing setting: ${key} = ${JSON.stringify(
-          defaultSettings[key as keyof typeof defaultSettings]
-        )}`
-      );
       // Only assign if the default has the key and is not undefined
       (settings as any)[key] =
         defaultSettings[key as keyof typeof defaultSettings];
@@ -364,4 +368,40 @@ export const migrateSettings = (
   }
 
   return hasMissingKeys;
+};
+
+/**
+ * Merges and normalizes openAccordions from defaults with current settings.
+ * @param settings - Current settings (will be mutated)
+ * @param defaultSettings - Default settings to merge from
+ * @returns Whether openAccordions was updated (so caller can persist)
+ */
+export const migrateOpenAccordions = (
+  settings: GayToolbarSettings,
+  defaultSettings: GayToolbarSettings
+): boolean => {
+  const defaultAccordions = defaultSettings.openAccordions;
+  const current = settings.openAccordions;
+  const merged: SettingsAccordionSections = {
+    ...defaultAccordions,
+    ...(current && typeof current === "object" ? current : {}),
+  };
+  for (const s of ACCORDION_SECTIONS) {
+    if (typeof merged[s] !== "boolean") merged[s] = defaultAccordions[s];
+  }
+  const currentKeys =
+    current && typeof current === "object" ? Object.keys(current) : [];
+  const needsMigration =
+    !current ||
+    ACCORDION_SECTIONS.some((s) => (current as Record<string, unknown>)?.[s] === undefined) ||
+    currentKeys.some((key) => !ACCORDION_SECTIONS.includes(key as keyof SettingsAccordionSections));
+  if (needsMigration) {
+    settings.openAccordions = {
+      layout: merged.layout,
+      appearance: merged.appearance,
+      other: merged.other,
+    };
+    return true;
+  }
+  return false;
 };

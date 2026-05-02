@@ -1,10 +1,11 @@
 import DEFAULT_SETTINGS from "../Settings/DEFAULT_SETTINGS";
+import { getEmptySettings } from "../Settings/DEFAULT_SETTINGS";
 import {
   GayButtonSettings,
   GayToolbarSettings,
   savedConfigKeys,
 } from "../types";
-import { migrateSettings } from "../utils";
+import { migrateOpenAccordions, migrateSettings } from "../utils";
 
 describe("Settings Migration", () => {
   it("should identify missing settings keys correctly", () => {
@@ -92,6 +93,9 @@ describe("Settings Migration", () => {
       annoyingText: false,
       presetColors: ["#custom1", "#custom2"],
       minimizedToolbarLoc: [0.5, 25],
+      customCommands: [],
+      bottomBuffer: 0,
+      adoptSlotColorsOnDrop: false,
     };
 
     const hasMissingKeys = migrateSettings(
@@ -145,20 +149,63 @@ describe("Settings Migration", () => {
     expect(settingsWithUndefined.pressDelayMs).toBe(200); // Should preserve existing values
   });
 
-  it("should log missing settings", () => {
-    const consoleSpy = jest.spyOn(console, "log").mockImplementation();
-
+  it("should add missing settings when keys are absent", () => {
     const oldSettings: Partial<GayToolbarSettings> = {
       numRows: 2,
-      // Missing: swipeBorderWidth
+      // Missing: swipeBorderWidth, adoptSlotColorsOnDrop, and others
     };
 
-    migrateSettings(oldSettings as GayToolbarSettings, DEFAULT_SETTINGS);
-
-    expect(consoleSpy).toHaveBeenCalledWith(
-      `Adding missing setting: swipeBorderWidth = ${DEFAULT_SETTINGS.swipeBorderWidth}`
+    const hasMissingKeys = migrateSettings(
+      oldSettings as GayToolbarSettings,
+      DEFAULT_SETTINGS
     );
 
-    consoleSpy.mockRestore();
+    expect(hasMissingKeys).toBe(true);
+    expect(oldSettings.swipeBorderWidth).toBe(
+      DEFAULT_SETTINGS.swipeBorderWidth
+    );
+    expect(oldSettings.adoptSlotColorsOnDrop).toBe(
+      DEFAULT_SETTINGS.adoptSlotColorsOnDrop
+    );
+  });
+
+  it("should not add openAccordions via migrateSettings (migrated separately in main)", () => {
+    expect(savedConfigKeys).not.toContain("openAccordions");
+    const oldSettings: Partial<GayToolbarSettings> = { numRows: 2 };
+    migrateSettings(oldSettings as GayToolbarSettings, DEFAULT_SETTINGS);
+    expect(oldSettings.openAccordions).toBeUndefined();
+  });
+
+  it("should include openAccordions in default settings and getEmptySettings", () => {
+    const defaultShape = {
+      layout: false,
+      appearance: false,
+      other: false,
+    };
+    expect(DEFAULT_SETTINGS.openAccordions).toEqual(defaultShape);
+    expect(getEmptySettings().openAccordions).toEqual(defaultShape);
+  });
+
+  it("migrateOpenAccordions merges defaults with current and normalizes", () => {
+    const settings = getEmptySettings();
+    delete (settings as Partial<GayToolbarSettings>).openAccordions;
+    const changed = migrateOpenAccordions(settings, DEFAULT_SETTINGS);
+    expect(changed).toBe(true);
+    expect(settings.openAccordions).toEqual(DEFAULT_SETTINGS.openAccordions);
+  });
+
+  it("migrateOpenAccordions returns false when openAccordions already complete", () => {
+    const settings = getEmptySettings();
+    const changed = migrateOpenAccordions(settings, DEFAULT_SETTINGS);
+    expect(changed).toBe(false);
+  });
+
+  it("migrateOpenAccordions removes obsolete sections", () => {
+    const settings = getEmptySettings();
+    (settings.openAccordions as Record<string, boolean>).notifications = true;
+    const changed = migrateOpenAccordions(settings, DEFAULT_SETTINGS);
+    expect(changed).toBe(true);
+    expect(settings.openAccordions).toEqual(DEFAULT_SETTINGS.openAccordions);
+    expect(settings.openAccordions).not.toHaveProperty("notifications");
   });
 });
