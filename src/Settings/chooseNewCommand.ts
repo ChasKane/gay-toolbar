@@ -6,6 +6,11 @@ import {
   FuzzyMatch,
   getIconIds,
 } from "obsidian";
+import {
+  getMainTabCount,
+  isTabOverviewCommand,
+  renderTabCountOnIcon,
+} from "../workspaceState";
 
 export default async function chooseNewCommand(
   plugin: GayToolbarPlugin,
@@ -18,7 +23,7 @@ export default async function chooseNewCommand(
     plugin,
     currentCommandId
   ).awaitSelection();
-  let icon = await new ChooseIconModal(plugin, command.icon).awaitSelection();
+  let icon = await new ChooseIconModal(plugin, command.icon, command).awaitSelection();
 
   return {
     icon: icon ?? command.icon!,
@@ -76,7 +81,11 @@ export class AddCommandModal extends FuzzySuggestModal<Command> {
     //Append the icon if available
     if (item.item.icon) {
       const aux = el.createDiv({ cls: "suggestion-aux" });
-      setIcon(aux.createSpan({ cls: "suggestion-flair" }), item.item.icon);
+      const flair = aux.createSpan({ cls: "suggestion-flair" });
+      setIcon(flair, item.item.icon);
+      if (isTabOverviewCommand(item.item)) {
+        renderTabCountOnIcon(flair, getMainTabCount(this.plugin.app));
+      }
     }
   }
 
@@ -96,12 +105,18 @@ export class AddCommandModal extends FuzzySuggestModal<Command> {
 class ChooseIconModal extends FuzzySuggestModal<string> {
   private plugin: GayToolbarPlugin;
   private defaultIcon: string | undefined;
+  private command: Command | undefined;
 
-  public constructor(plugin: GayToolbarPlugin | null, defaultIcon?: string) {
+  public constructor(
+    plugin: GayToolbarPlugin | null,
+    defaultIcon?: string,
+    command?: Command
+  ) {
     if (!plugin) return;
     super(plugin.app);
     this.plugin = plugin;
     this.defaultIcon = defaultIcon;
+    this.command = command;
     this.setPlaceholder("Choose an icon");
 
     this.setInstructions([
@@ -143,7 +158,11 @@ class ChooseIconModal extends FuzzySuggestModal<string> {
       );
 
     const aux = el.createDiv({ cls: "suggestion-aux" });
-    setIcon(aux.createSpan({ cls: "suggestion-flair" }), item.item);
+    const flair = aux.createSpan({ cls: "suggestion-flair" });
+    setIcon(flair, item.item);
+    if (item.item === this.defaultIcon && isTabOverviewCommand(this.command)) {
+      renderTabCountOnIcon(flair, getMainTabCount(this.plugin.app));
+    }
   }
 
   public getItemText(item: string): string {

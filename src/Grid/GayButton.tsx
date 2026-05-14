@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Platform, setIcon } from "obsidian";
+import { setIcon } from "obsidian";
 import { usePlugin, useSettings, useEditor } from "../StateManagement";
 import {
   getAngle,
@@ -11,8 +11,47 @@ import {
 } from "../utils";
 import TouchManager from "./TouchManager";
 import { useResponsiveScale } from "../hooks/useResponsiveScale";
+import {
+  getCommand,
+  getMainTabCount,
+  isTabOverviewCommand,
+  renderTabCountOnIcon,
+} from "../workspaceState";
 
 const BALL_COUNT = 4;
+const NAVIGATION_COMMAND_IDS = {
+  back: "app:go-back",
+  forward: "app:go-forward",
+} as const;
+
+type NavigationCommandId =
+  (typeof NAVIGATION_COMMAND_IDS)[keyof typeof NAVIGATION_COMMAND_IDS];
+
+const isNavigationCommand = (
+  commandId?: string | null
+): commandId is NavigationCommandId =>
+  commandId === NAVIGATION_COMMAND_IDS.back ||
+  commandId === NAVIGATION_COMMAND_IDS.forward;
+
+const getActiveLeaf = (plugin: any) => {
+  const workspace = plugin?.app?.workspace;
+  return workspace?.activeLeaf ?? workspace?.getMostRecentLeaf?.();
+};
+
+const canExecuteCommand = (plugin: any, commandId?: string | null) => {
+  if (!isNavigationCommand(commandId)) return true;
+
+  const history = getActiveLeaf(plugin)?.history;
+  if (commandId === NAVIGATION_COMMAND_IDS.back) {
+    return (history?.backHistory?.length ?? 0) > 0;
+  }
+  return (history?.forwardHistory?.length ?? 0) > 0;
+};
+
+const getNavigationIconOpacity = (plugin: any, commandId?: string | null) =>
+  isNavigationCommand(commandId) && !canExecuteCommand(plugin, commandId)
+    ? "0.42"
+    : "";
 
 const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
   const pointerDataRef = useRef<{
@@ -49,6 +88,67 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
   const isSelected = buttonId === selectedButtonId;
 
   const bgScale = useResponsiveScale(rowHeight, gridGap, numCols, gridPadding);
+  const [navigationRevision, setNavigationRevision] = useState(0);
+  const [tabCount, setTabCount] = useState(0);
+  const hasNavigationGesture =
+    isNavigationCommand(onTapCommandId) ||
+    isNavigationCommand(onPressCommandId) ||
+    !!swipeCommands?.some((cmd) => isNavigationCommand(cmd?.commandId));
+  const hasTabOverviewGesture =
+    isTabOverviewCommand(getCommand(plugin, onTapCommandId)) ||
+    isTabOverviewCommand(getCommand(plugin, onPressCommandId)) ||
+    !!swipeCommands?.some((cmd) =>
+      isTabOverviewCommand(getCommand(plugin, cmd?.commandId))
+    );
+
+  useEffect(() => {
+    if (!plugin || (!hasNavigationGesture && !hasTabOverviewGesture)) return;
+
+    const workspace = plugin.app.workspace as any;
+    let leafHistoryRef: any = null;
+
+    const refreshNavigationState = () => {
+      setNavigationRevision((revision) => revision + 1);
+      if (hasTabOverviewGesture) {
+        setTabCount(getMainTabCount(plugin.app));
+      }
+    };
+
+    const watchActiveLeafHistory = () => {
+      if (leafHistoryRef) {
+        workspace.offref?.(leafHistoryRef);
+        leafHistoryRef = null;
+      }
+
+      const leaf = getActiveLeaf(plugin);
+      if (leaf?.on) {
+        leafHistoryRef = leaf.on("history-change", refreshNavigationState);
+      }
+
+      refreshNavigationState();
+    };
+
+    const refs = [
+      workspace.on?.("active-leaf-change", watchActiveLeafHistory),
+      workspace.on?.("layout-change", watchActiveLeafHistory),
+      workspace.on?.("file-open", refreshNavigationState),
+    ].filter(Boolean);
+
+    watchActiveLeafHistory();
+
+    return () => {
+      if (leafHistoryRef) workspace.offref?.(leafHistoryRef);
+      refs.forEach((ref) => workspace.offref?.(ref));
+    };
+  }, [plugin, hasNavigationGesture, hasTabOverviewGesture]);
+
+  const executeCommand = (commandId?: string | null) => {
+    if (!commandId) return;
+
+    // @ts-ignore | app.commands exists; not sure why it's not in the API...
+    plugin?.app.commands.executeCommandById(commandId);
+    setTimeout(() => setNavigationRevision((revision) => revision + 1), 0);
+  };
 
   let ring: string = "";
   if (swipeCommands && swipeCommands.length) {
@@ -81,22 +181,30 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
     // * TAP
     if (tapIconRef.current) {
       setIcon(tapIconRef.current, tapIcon || "question-mark-glyph");
+      if (isTabOverviewCommand(getCommand(plugin, onTapCommandId))) {
+        renderTabCountOnIcon(tapIconRef.current, tabCount);
+      }
       const svg = tapIconRef.current.firstChild as HTMLElement;
       if (svg) {
         if (buttonRef.current) {
           svg.style.color = getLuminanceGuidedIconColor(backgroundColor);
         }
+        svg.style.opacity = getNavigationIconOpacity(plugin, onTapCommandId);
       }
     }
 
     // * PRESS
     if (pressIconRef.current && pressIcon) {
       setIcon(pressIconRef.current, pressIcon);
+      if (isTabOverviewCommand(getCommand(plugin, onPressCommandId))) {
+        renderTabCountOnIcon(pressIconRef.current, tabCount);
+      }
       const svg = pressIconRef.current.firstChild as HTMLElement;
       if (svg) {
         if (buttonRef.current) {
           svg.style.color = getLuminanceGuidedIconColor(backgroundColor);
         }
+        svg.style.opacity = getNavigationIconOpacity(plugin, onPressCommandId);
       }
     }
 
@@ -105,15 +213,27 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
       const el = swipeRefs.current[i].current;
       if (el && c) {
         setIcon(el, c?.icon ?? "plus");
+        if (isTabOverviewCommand(getCommand(plugin, c.commandId))) {
+          renderTabCountOnIcon(el, tabCount);
+        }
         const svg = el.firstChild as HTMLElement;
         if (svg) {
           if (c) {
             svg.style.color = getLuminanceGuidedIconColor(c.color);
+            svg.style.opacity = getNavigationIconOpacity(plugin, c.commandId);
           }
         }
       }
     });
-  }, [isEditing, tapIcon, pressIcon, backgroundColor, swipeCommands]);
+  }, [
+    isEditing,
+    tapIcon,
+    pressIcon,
+    backgroundColor,
+    swipeCommands,
+    navigationRevision,
+    tabCount,
+  ]);
 
   return (
     <TouchManager
@@ -228,15 +348,10 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
               const delta = endTime - pointerDataRef.current.startTime;
               if (delta < pressDelayMs) {
                 // tap
-                if (onTapCommandId)
-                  // @ts-ignore | app.commands exists; not sure why it's not in the API...
-                  plugin?.app.commands.executeCommandById(onTapCommandId);
+                executeCommand(onTapCommandId);
               } else {
                 // long-press
-                if (onPressCommandId) {
-                  // @ts-ignore | app.commands exists; not sure why it's not in the API...
-                  plugin?.app.commands.executeCommandById(onPressCommandId);
-                }
+                executeCommand(onPressCommandId);
               }
             } else if (swipeCommands && swipeCommands.length) {
               // SWIPE
@@ -261,8 +376,7 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
                 }, 1000);
               }
 
-              // @ts-ignore | app.commands exists; not sure why it's not in the API...
-              plugin?.app.commands.executeCommandById(swipeCommandId);
+              executeCommand(swipeCommandId);
             }
 
             pointerDataRef.current.initXY = undefined;

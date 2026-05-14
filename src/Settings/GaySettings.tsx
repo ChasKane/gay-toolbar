@@ -6,7 +6,7 @@ import React, {
 } from "react";
 import { useEditor, usePlugin, useSettings } from "../StateManagement";
 import type { SettingsScreen } from "../types";
-import { setIcon } from "obsidian";
+import { Platform, setIcon } from "obsidian";
 import { getLuminanceGuidedIconColor } from "../utils";
 import ButtonSettings from "./ButtonSettings";
 import Configs from "./Configs";
@@ -14,6 +14,9 @@ import CommandEditor from "./CommandEditor";
 import RestoreDefaults from "./RestoreDefaults";
 import GayColorPicker from "./GayColorPicker";
 import MainSettings from "./MainSettings";
+
+const isRealMobileApp = () => Platform.isMobile && (Platform as any).isMobileApp;
+const getCapacitor = () => (window as any).Capacitor;
 
 const GaySettings: React.FC = () => {
   const plugin = usePlugin();
@@ -116,9 +119,10 @@ const GaySettings: React.FC = () => {
   useEffect(() => {
     (async () => {
       backBtnListener.current?.remove?.();
+      if (!isRealMobileApp()) return;
+
       backBtnListener.current =
-        // @ts-ignore Capacitor exists on mobile because Obsidian mobile is built on it
-        await window.Capacitor?.Plugins?.App?.addListener("backButton", () => {
+        await getCapacitor()?.Plugins?.App?.addListener?.("backButton", () => {
           if (settingsScreen === "color-picker") {
             setSettingsScreen("main");
             setColorPickerContext(null);

@@ -38,6 +38,9 @@ const ICON: string = `<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
 	</g>
 </svg>`
 
+const isRealMobileApp = () => Platform.isMobile && (Platform as any).isMobileApp;
+const getCapacitor = () => (window as any).Capacitor;
+
 export default class GayToolbarPlugin extends Plugin {
   settings: GayToolbarSettings;
   toolbarRoot: Root;
@@ -94,9 +97,10 @@ export default class GayToolbarPlugin extends Plugin {
     }
 
     // @ts-ignore Capacitor exists on mobile
-    if (Platform.isMobile && window.Capacitor?.Plugins?.Keyboard) {
+    const keyboard = getCapacitor()?.Plugins?.Keyboard;
+    if (isRealMobileApp() && keyboard?.addListener) {
       // @ts-ignore Capacitor exists on mobile
-      this.keyboardHideListener = window.Capacitor.Plugins.Keyboard.addListener(
+      this.keyboardHideListener = keyboard.addListener(
         "keyboardWillHide",
         () => {
           this.hideNavbar();
@@ -104,7 +108,7 @@ export default class GayToolbarPlugin extends Plugin {
         }
       );
       // @ts-ignore Capacitor exists on mobile
-      this.keyboardShowListener = window.Capacitor.Plugins.Keyboard.addListener(
+      this.keyboardShowListener = keyboard.addListener(
         "keyboardWillShow",
         () => {
           this.setBottomBufferCssValue(0);
@@ -141,7 +145,9 @@ export default class GayToolbarPlugin extends Plugin {
           // drag ops (on android at least) hide keyboard and there's no way around it,
           // so this ensures consistency at least
           // @ts-ignore Capacitor exists on mobile because Obsidian mobile is built on it
-          Platform.isMobile && window.Capacitor.Plugins.Keyboard.hide();
+          if (isRealMobileApp()) {
+            getCapacitor()?.Plugins?.Keyboard?.hide?.();
+          }
           return { isEditing: !prev.isEditing };
         });
       },

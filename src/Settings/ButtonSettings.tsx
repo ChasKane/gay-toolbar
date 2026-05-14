@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useEditor, usePlugin, useSettings } from "../StateManagement";
 import chooseNewCommand from "./chooseNewCommand";
-import { setIcon } from "obsidian";
+import { Platform, setIcon } from "obsidian";
 import {
   getLuminanceGuidedIconColor,
   groomValue,
@@ -9,6 +9,9 @@ import {
   positionCentralItem,
 } from "utils";
 import SettingsHeader from "./SettingsHeader";
+
+const isRealMobileApp = () => Platform.isMobile && (Platform as any).isMobileApp;
+const getCapacitor = () => (window as any).Capacitor;
 
 const replaceAt = (arr: any[], index: number, value: any) =>
   arr.map((item, i) => (i === index ? value : item));
@@ -122,8 +125,9 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({ onBack }) => {
 
     (async () => {
       listener.current?.remove?.();
-      // @ts-ignore Capacitor exists on mobile because Obsidian mobile is built on it
-      listener.current = await window.Capacitor?.Plugins?.App?.addListener(
+      if (!isRealMobileApp()) return;
+
+      listener.current = await getCapacitor()?.Plugins?.App?.addListener?.(
         "backButton",
         () => setIsEditing(false)
       );

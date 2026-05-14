@@ -17,6 +17,9 @@ import {
   parseMarkdownConfigs,
 } from "./utils";
 
+const isRealMobileApp = () => Platform.isMobile && (Platform as any).isMobileApp;
+const getCapacitor = () => (window as any).Capacitor;
+
 // Re-export MarkdownConfig for use in other files
 export type { MarkdownConfig };
 
@@ -225,8 +228,9 @@ export const useEditor = create<EditorState & EditorActions>()((set) => ({
   setIsEditing: (isEditing) => {
     // drag ops (on android at least) hide keyboard and there's no way around it,
     // so this ensures consistency at least
-    // @ts-ignore Capacitor exists on mobile because Obsidian mobile is built on it
-    Platform.isMobile && window.Capacitor.Plugins.Keyboard.hide();
+    if (isRealMobileApp()) {
+      getCapacitor()?.Plugins?.Keyboard?.hide?.();
+    }
 
     set({ isEditing: isEditing });
   },
