@@ -34,7 +34,7 @@ const RestoreDefaults: React.FC<RestoreDefaultsProps> = ({
     }, 20);
     return () => {
       if (scrollIntervalRef.current) {
-        clearInterval(scrollIntervalRef.current);
+        window.clearInterval(scrollIntervalRef.current);
         scrollIntervalRef.current = null;
       }
     };
@@ -43,7 +43,7 @@ const RestoreDefaults: React.FC<RestoreDefaultsProps> = ({
   const handleQuoteInteraction = () => {
     setIsAutoScrolling(false);
     if (scrollIntervalRef.current) {
-      clearInterval(scrollIntervalRef.current);
+      window.clearInterval(scrollIntervalRef.current);
       scrollIntervalRef.current = null;
     }
   };

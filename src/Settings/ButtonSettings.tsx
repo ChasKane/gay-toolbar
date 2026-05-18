@@ -69,6 +69,64 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({ onBack }) => {
     );
   }
 
+  const handlePickPressCommand = async () => {
+    if (!plugin) return;
+    setSubMenu(true);
+    try {
+      const command = await chooseNewCommand(plugin, onPressCommandId);
+      updateButton(selectedButtonId, {
+        onPressCommandId: command.id,
+        pressIcon: command.icon,
+      });
+    } catch {
+      /* modal dismissed */
+    } finally {
+      setSubMenu(false);
+    }
+  };
+
+  const handlePickTapCommand = async () => {
+    if (!plugin) return;
+    setSubMenu(true);
+    try {
+      const command = await chooseNewCommand(plugin, onTapCommandId);
+      updateButton(selectedButtonId, {
+        onTapCommandId: command.id,
+        tapIcon: command.icon,
+      });
+    } catch {
+      /* dismissed */
+    } finally {
+      setSubMenu(false);
+    }
+  };
+
+  const handlePickSwipeCommand = async (
+    swipeIndex: number,
+    prevCommandId?: string | null
+  ) => {
+    if (!plugin) return;
+    setSubMenu(true);
+    try {
+      const command = await chooseNewCommand(plugin, prevCommandId ?? undefined);
+      updateButton(selectedButtonId, {
+        colorIdx: ((colorIdx ?? 0) + 1) % presetColors.length,
+        swipeCommands: [
+          ...replaceAt(swipeCommands ?? [], swipeIndex, {
+            commandId: command.id,
+            icon: command.icon,
+            color:
+              presetColors[(colorIdx ?? 0) % presetColors.length],
+          }),
+        ],
+      });
+    } catch {
+      /* dismissed */
+    } finally {
+      setSubMenu(false);
+    }
+  };
+
   useLayoutEffect(() => {
     if (!selectedButtonId) return;
 
@@ -96,7 +154,11 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({ onBack }) => {
         if (svg) {
           if (c) {
             el.style.backgroundColor = c.color;
-            svg.style.color = getLuminanceGuidedIconColor(c.color);
+            svg.classList.add("gay-toolbar-settings-palette-icon");
+            svg.style.setProperty(
+              "--gay-toolbar-settings-palette-icon-color",
+              getLuminanceGuidedIconColor(c.color)
+            );
           }
         }
       }
@@ -104,7 +166,13 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({ onBack }) => {
       if (colorEl) {
         setIcon(colorEl, "palette");
         const svg = colorEl.firstChild as HTMLElement;
-        if (svg && c) svg.style.color = getLuminanceGuidedIconColor(c.color);
+        if (svg && c) {
+          svg.classList.add("gay-toolbar-settings-palette-icon");
+          svg.style.setProperty(
+            "--gay-toolbar-settings-palette-icon-color",
+            getLuminanceGuidedIconColor(c.color)
+          );
+        }
       }
       const clearEl = swipeClearButtonRefs.current[i]?.current;
       if (clearEl) setIcon(clearEl, "x");
@@ -112,7 +180,13 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({ onBack }) => {
     if (buttonBackgroundRef.current) {
       setIcon(buttonBackgroundRef.current, "palette");
       const svg = buttonBackgroundRef.current.firstChild as HTMLElement;
-      if (svg) svg.style.color = getLuminanceGuidedIconColor(backgroundColor ?? "#000");
+      if (svg) {
+        svg.classList.add("gay-toolbar-settings-palette-icon");
+        svg.style.setProperty(
+          "--gay-toolbar-settings-palette-icon-color",
+          getLuminanceGuidedIconColor(backgroundColor ?? "#000")
+        );
+      }
     }
   }, [buttons, selectedButtonId, backgroundColor]);
 
@@ -123,7 +197,7 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({ onBack }) => {
       return () => {};
     }
 
-    (async () => {
+    void (async () => {
       listener.current?.remove?.();
       if (!isRealMobileApp()) return;
 
@@ -250,22 +324,7 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({ onBack }) => {
             )}
             <button
               ref={pressCommandButtonRef}
-              onClick={async () => {
-                if (!plugin) return;
-                setSubMenu(true);
-                let command;
-                try {
-                  command = await chooseNewCommand(plugin, onPressCommandId);
-                } catch (e) {
-                  setSubMenu(false);
-                }
-                if (command)
-                  updateButton(selectedButtonId, {
-                    onPressCommandId: command.id,
-                    pressIcon: command.icon,
-                  });
-                setSubMenu(false);
-              }}
+              onClick={() => void handlePickPressCommand()}
             />
             <small>
               {
@@ -302,22 +361,7 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({ onBack }) => {
             <span>Tap</span>
             <button
               ref={tapCommandButtonRef}
-              onClick={async () => {
-                if (!plugin) return;
-                setSubMenu(true);
-                let command;
-                try {
-                  command = await chooseNewCommand(plugin, onTapCommandId);
-                } catch (e) {
-                  setSubMenu(false);
-                }
-                if (command)
-                  updateButton(selectedButtonId, {
-                    onTapCommandId: command.id,
-                    tapIcon: command.icon,
-                  });
-                setSubMenu(false);
-              }}
+              onClick={() => void handlePickTapCommand()}
             />
             <small>
               {
@@ -446,31 +490,9 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({ onBack }) => {
                       width: !c ? "30px" : undefined,
                       padding: !c ? "4px" : undefined,
                     }}
-                    onClick={async () => {
-                      if (!plugin) return;
-                      setSubMenu(true);
-                      let command;
-                      try {
-                        command = await chooseNewCommand(plugin, c?.commandId);
-                      } catch (e) {
-                        setSubMenu(false);
-                      }
-                      if (command)
-                        updateButton(selectedButtonId, {
-                          colorIdx: ((colorIdx ?? 0) + 1) % presetColors.length,
-                          swipeCommands: [
-                            ...replaceAt(swipeCommands ?? [], i, {
-                              commandId: command.id,
-                              icon: command.icon,
-                              color:
-                                presetColors[
-                                  (colorIdx ?? 0) % presetColors.length
-                                ],
-                            }),
-                          ],
-                        });
-                      setSubMenu(false);
-                    }}
+                    onClick={() =>
+                      void handlePickSwipeCommand(i, c?.commandId ?? null)
+                    }
                   />
                   {c &&
                     (() => {

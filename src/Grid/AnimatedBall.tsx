@@ -25,13 +25,8 @@ const AnimatedBall: React.FC<AnimatedBallProps> = React.memo(
           const iconColor = getLuminanceGuidedIconColor(
             color || "rgba(255, 255, 255, 0.8)"
           );
-          svg.style.color = iconColor;
-          svg.style.filter = "drop-shadow(0 0 6px rgba(0,0,0,0.8))";
-          svg.style.width = `100%`;
-          svg.style.height = `100%`;
-          svg.style.display = "block";
-          svg.style.position = "relative";
-          svg.style.zIndex = "20";
+          svg.classList.add("gay-toolbar-trail-ball-icon");
+          svg.style.setProperty("--gay-toolbar-trail-icon-color", iconColor);
         }
       }
     }, [icon, diameter]);

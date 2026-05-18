@@ -535,10 +535,43 @@
   touch-action: none;
 }
 
+.slot.gay-toolbar-slot-pinned-front {
+  z-index: 999999;
+}
+
+/* Trail ball icons (Obsidian inserts SVG via setIcon); color via CSS variable. */
+svg.gay-toolbar-trail-ball-icon {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 20;
+  filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.8));
+  color: var(--gay-toolbar-trail-icon-color, currentColor);
+}
+
+.tap-icon > svg.gay-toolbar-btn-command-icon,
+.tap-icon-no-press > svg.gay-toolbar-btn-command-icon,
+.press-icon > svg.gay-toolbar-btn-command-icon,
+.swipe-icon > svg.gay-toolbar-btn-command-icon {
+  color: var(--gay-toolbar-btn-icon-color);
+  opacity: var(--gay-toolbar-btn-icon-opacity, 1);
+}
+
 @import "./button-settings.css";
 @import "./grid.css";
 @import "./settings.css";
 @import "./components.css";
+
+/* Desktop: raise status bar above expanded toolbar (offset via --gay-toolbar-status-bar-bottom). */
+.status-bar.gay-toolbar-status-bar-offset {
+  bottom: var(--gay-toolbar-status-bar-bottom, 0px);
+}
+
+/* Mobile: hide default navbar while Gay Toolbar UX runs (removed on plugin unload). */
+.mobile-navbar.gay-toolbar-navbar-suppressed {
+  display: none !important;
+}
 
 div[style*="position: absolute"] > svg,
 div[style*="position: fixed"] > svg {
@@ -1037,5 +1070,22 @@ div[style*="position: fixed"] > svg {
 .gay-command-editor-pre .token.important,
 .gay-command-editor-pre .token.variable {
   color: var(--color-yellow);
+}
+
+.gay-toolbar-modal-detail {
+  margin: 0;
+  line-height: var(--line-height-normal);
+}
+
+.gay-toolbar-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.gay-toolbar-settings-palette-icon {
+  color: var(--gay-toolbar-settings-palette-icon-color, var(--text-normal));
 }
 

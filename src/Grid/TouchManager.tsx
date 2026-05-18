@@ -27,6 +27,11 @@ interface TouchManagerProps {
   isEditing?: boolean;
 }
 
+/** Subtract from viewport clientY so bubbles sit above thumb/finger; scales with bubble size. */
+function trailViewportYOffsetPx(ballDiameter: number): number {
+  return (ballDiameter * 1.05 + 10) * 2;
+}
+
 const TouchManager: React.FC<TouchManagerProps> = ({
   children,
   ballCount,
@@ -81,35 +86,40 @@ const TouchManager: React.FC<TouchManagerProps> = ({
     [swipeCommands, swipeRingOffsetAngle, buttonBackgroundColor]
   );
 
-  const createTrail = useCallback((x: number, y: number) => {
-    const id = `trail-${trailIdCounter.current++}`;
+  const createTrail = useCallback(
+    (clientX: number, clientY: number) => {
+      const id = `trail-${trailIdCounter.current++}`;
+      const y = clientY - trailViewportYOffsetPx(ballDiameter);
 
-    // Convert viewport coordinates to container-relative coordinates
-    const containerRect = containerRef.current?.getBoundingClientRect();
-    const relativeX = containerRect ? x - containerRect.left : x;
-    const relativeY = containerRect ? y - containerRect.top : y;
-
-    const newTrail: Trail = {
-      id,
-      targetX: relativeX,
-      targetY: relativeY,
-      isActive: true,
-      velocityX: 0,
-      velocityY: 0,
-      color: "rgba(255, 255, 255, 0)", // Start with white, will be updated on first movement
-      initX: relativeX,
-      initY: relativeY,
-    };
-
-    setTrails((prev) => [...prev, newTrail]);
-    return id;
-  }, []);
-
-  const updateTrail = useCallback(
-    (id: string, x: number, y: number) => {
       // Convert viewport coordinates to container-relative coordinates
       const containerRect = containerRef.current?.getBoundingClientRect();
-      const relativeX = containerRect ? x - containerRect.left : x;
+      const relativeX = containerRect ? clientX - containerRect.left : clientX;
+      const relativeY = containerRect ? y - containerRect.top : y;
+
+      const newTrail: Trail = {
+        id,
+        targetX: relativeX,
+        targetY: relativeY,
+        isActive: true,
+        velocityX: 0,
+        velocityY: 0,
+        color: "rgba(255, 255, 255, 0)", // Start with white, will be updated on first movement
+        initX: relativeX,
+        initY: relativeY,
+      };
+
+      setTrails((prev) => [...prev, newTrail]);
+      return id;
+    },
+    [ballDiameter]
+  );
+
+  const updateTrail = useCallback(
+    (id: string, clientX: number, clientY: number) => {
+      const y = clientY - trailViewportYOffsetPx(ballDiameter);
+      // Convert viewport coordinates to container-relative coordinates
+      const containerRect = containerRef.current?.getBoundingClientRect();
+      const relativeX = containerRect ? clientX - containerRect.left : clientX;
       const relativeY = containerRect ? y - containerRect.top : y;
 
       setTrails((prev) =>
@@ -141,7 +151,7 @@ const TouchManager: React.FC<TouchManagerProps> = ({
         })
       );
     },
-    [getCommandFromPosition]
+    [getCommandFromPosition, ballDiameter]
   );
 
   const deactivateTrail = useCallback((id: string) => {

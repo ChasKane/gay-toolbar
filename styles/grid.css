@@ -192,3 +192,26 @@
 .touch-manager {
   touch-action: none;
 }
+
+.slot.gay-toolbar-slot-pinned-front {
+  z-index: 999999;
+}
+
+/* Trail ball icons (Obsidian inserts SVG via setIcon); color via CSS variable. */
+svg.gay-toolbar-trail-ball-icon {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 20;
+  filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.8));
+  color: var(--gay-toolbar-trail-icon-color, currentColor);
+}
+
+.tap-icon > svg.gay-toolbar-btn-command-icon,
+.tap-icon-no-press > svg.gay-toolbar-btn-command-icon,
+.press-icon > svg.gay-toolbar-btn-command-icon,
+.swipe-icon > svg.gay-toolbar-btn-command-icon {
+  color: var(--gay-toolbar-btn-icon-color);
+  opacity: var(--gay-toolbar-btn-icon-opacity, 1);
+}

@@ -55,7 +55,7 @@ const getNavigationIconOpacity = (plugin: any, commandId?: string | null) =>
 
 const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
   const pointerDataRef = useRef<{
-    timeout: ReturnType<typeof setTimeout> | null;
+    timeout: number | null;
     pointerDown: boolean;
     startTime: number;
     initXY?: Position;
@@ -147,7 +147,7 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
 
     // @ts-ignore | app.commands exists; not sure why it's not in the API...
     plugin?.app.commands.executeCommandById(commandId);
-    setTimeout(() => setNavigationRevision((revision) => revision + 1), 0);
+    window.setTimeout(() => setNavigationRevision((revision) => revision + 1), 0);
   };
 
   let ring: string = "";
@@ -186,10 +186,17 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
       }
       const svg = tapIconRef.current.firstChild as HTMLElement;
       if (svg) {
+        svg.classList.add("gay-toolbar-btn-command-icon");
         if (buttonRef.current) {
-          svg.style.color = getLuminanceGuidedIconColor(backgroundColor);
+          svg.style.setProperty(
+            "--gay-toolbar-btn-icon-color",
+            getLuminanceGuidedIconColor(backgroundColor)
+          );
         }
-        svg.style.opacity = getNavigationIconOpacity(plugin, onTapCommandId);
+        svg.style.setProperty(
+          "--gay-toolbar-btn-icon-opacity",
+          getNavigationIconOpacity(plugin, onTapCommandId) || "1"
+        );
       }
     }
 
@@ -201,10 +208,17 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
       }
       const svg = pressIconRef.current.firstChild as HTMLElement;
       if (svg) {
+        svg.classList.add("gay-toolbar-btn-command-icon");
         if (buttonRef.current) {
-          svg.style.color = getLuminanceGuidedIconColor(backgroundColor);
+          svg.style.setProperty(
+            "--gay-toolbar-btn-icon-color",
+            getLuminanceGuidedIconColor(backgroundColor)
+          );
         }
-        svg.style.opacity = getNavigationIconOpacity(plugin, onPressCommandId);
+        svg.style.setProperty(
+          "--gay-toolbar-btn-icon-opacity",
+          getNavigationIconOpacity(plugin, onPressCommandId) || "1"
+        );
       }
     }
 
@@ -219,8 +233,15 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
         const svg = el.firstChild as HTMLElement;
         if (svg) {
           if (c) {
-            svg.style.color = getLuminanceGuidedIconColor(c.color);
-            svg.style.opacity = getNavigationIconOpacity(plugin, c.commandId);
+            svg.classList.add("gay-toolbar-btn-command-icon");
+            svg.style.setProperty(
+              "--gay-toolbar-btn-icon-color",
+              getLuminanceGuidedIconColor(c.color)
+            );
+            svg.style.setProperty(
+              "--gay-toolbar-btn-icon-opacity",
+              getNavigationIconOpacity(plugin, c.commandId) || "1"
+            );
           }
         }
       }
@@ -304,13 +325,13 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
             // Set the grid slot's z-index to bring it to front
             const gridSlot = el?.closest(".slot") as HTMLElement;
             if (gridSlot) {
-              gridSlot.style.zIndex = "999999";
+              gridSlot.classList.add("gay-toolbar-slot-pinned-front");
             }
 
             pointerDataRef.current.startTime = Date.now();
             pointerDataRef.current.pointerDown = true;
 
-            pointerDataRef.current.timeout = setTimeout(() => {
+            pointerDataRef.current.timeout = window.setTimeout(() => {
               el?.removeClass("gay-button-tap");
               if (
                 pointerDataRef.current.pointerDown &&
@@ -371,7 +392,7 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
               const selectedSwipeIcon = swipeRefs.current[swipeIdx]?.current;
               if (selectedSwipeIcon) {
                 selectedSwipeIcon.classList.add("swipe-icon-highlighted");
-                setTimeout(() => {
+                window.setTimeout(() => {
                   selectedSwipeIcon.classList.remove("swipe-icon-highlighted");
                 }, 1000);
               }
@@ -387,7 +408,7 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
             // Reset the grid slot's z-index
             const gridSlot = el?.closest(".slot") as HTMLElement;
             if (gridSlot) {
-              gridSlot.style.zIndex = "";
+              gridSlot.classList.remove("gay-toolbar-slot-pinned-front");
             }
           }}
           onPointerCancel={(e: any) => {
@@ -401,7 +422,7 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
             // Reset the grid slot's z-index
             const gridSlot = el?.closest(".slot") as HTMLElement;
             if (gridSlot) {
-              gridSlot.style.zIndex = "";
+              gridSlot.classList.remove("gay-toolbar-slot-pinned-front");
             }
           }}
         >

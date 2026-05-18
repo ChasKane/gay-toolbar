@@ -35,12 +35,24 @@ const MainSettings: React.FC<MainSettingsProps> = ({ marqueeColor }) => {
     if (toolbarColorButtonRef.current) {
       setIcon(toolbarColorButtonRef.current, "palette");
       const svg = toolbarColorButtonRef.current.firstChild as HTMLElement;
-      if (svg) svg.style.color = getLuminanceGuidedIconColor(backgroundColor ?? "#000");
+      if (svg) {
+        svg.classList.add("gay-toolbar-settings-palette-icon");
+        svg.style.setProperty(
+          "--gay-toolbar-settings-palette-icon-color",
+          getLuminanceGuidedIconColor(backgroundColor ?? "#000")
+        );
+      }
     }
     if (allButtonsColorButtonRef.current && buttonIds.length > 0) {
       setIcon(allButtonsColorButtonRef.current, "palette");
       const svg = allButtonsColorButtonRef.current.firstChild as HTMLElement;
-      if (svg) svg.style.color = getLuminanceGuidedIconColor(buttons[buttonIds[0]].backgroundColor ?? "#000");
+      if (svg) {
+        svg.classList.add("gay-toolbar-settings-palette-icon");
+        svg.style.setProperty(
+          "--gay-toolbar-settings-palette-icon-color",
+          getLuminanceGuidedIconColor(buttons[buttonIds[0]].backgroundColor ?? "#000")
+        );
+      }
     }
   }, [backgroundColor, buttonIds, buttons]);
 

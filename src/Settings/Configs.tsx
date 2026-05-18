@@ -39,7 +39,7 @@ const Configs: React.FC<ConfigsProps> = ({ onBack }) => {
           setLoadingConfigs(false);
         }
       };
-      loadConfigs();
+      void loadConfigs();
     }
   }, [plugin]);
 
@@ -71,7 +71,7 @@ const Configs: React.FC<ConfigsProps> = ({ onBack }) => {
           <button
             disabled={addingConfig}
             className="mod-cta save-current-config-button"
-            onClick={handleSaveCurrent}
+            onClick={() => void handleSaveCurrent()}
           >
             {addingConfig ? "⏳" : "Save current"}
           </button>
@@ -155,16 +155,18 @@ const Configs: React.FC<ConfigsProps> = ({ onBack }) => {
           <div key={id} className="gay-config-panel">
             <span>
               <button
-                onClick={async () => {
-                  await deleteConfig(id);
-                  if (plugin) {
-                    const currentSettings = useSettings.getState();
-                    const loadedConfigs = await loadConfigsFromMarkdown(
-                      plugin,
-                      currentSettings.savedConfigsFilePath
-                    );
-                    setConfigs(loadedConfigs);
-                  }
+                onClick={() => {
+                  void (async () => {
+                    await deleteConfig(id);
+                    if (plugin) {
+                      const currentSettings = useSettings.getState();
+                      const loadedConfigs = await loadConfigsFromMarkdown(
+                        plugin,
+                        currentSettings.savedConfigsFilePath
+                      );
+                      setConfigs(loadedConfigs);
+                    }
+                  })();
                 }}
               >
                 🗑️

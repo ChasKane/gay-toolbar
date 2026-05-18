@@ -1,13 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import { usePlugin, useSettings } from "../StateManagement";
 import { Notice, setIcon } from "obsidian";
+import { OverwriteCustomCommandModal } from "./OverwriteCustomCommandModal";
 import { CustomCommand } from "../types";
 import SettingsHeader from "./SettingsHeader";
 import Prism from "prismjs";
 import "prismjs/components/prism-javascript";
+import { getActiveDocument } from "../utils";
 
 function escapeHtml(text: string): string {
-  const div = document.createElement("div");
+  const div = getActiveDocument().createElement("div");
   div.textContent = text;
   return div.innerHTML;
 }
@@ -157,10 +159,13 @@ const CommandEditor: React.FC<CommandEditorProps> = ({
     );
     if (existingIndex >= 0) {
       const existingName = customCommands[existingIndex].name;
-      const overwrite = confirm(
-        `A command with ID "${commandId.trim()}" already exists (${existingName}). Overwrite it?`
-      );
-      if (!overwrite) return;
+      if (!plugin?.app) return;
+      new OverwriteCustomCommandModal(
+        plugin.app,
+        `A command with ID "${commandId.trim()}" already exists (${existingName}). Replace it with this one?`,
+        () => performSave()
+      ).open();
+      return;
     }
     performSave();
   };

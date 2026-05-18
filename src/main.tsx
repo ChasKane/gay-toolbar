@@ -2,7 +2,12 @@ import { addIcon, App, Platform, Plugin, PluginSettingTab, removeIcon, Setting }
 import { createRoot, Root } from "react-dom/client";
 import GayToolbar from "./GayTOOLBAR";
 import DEFAULT_SETTINGS from "./Settings/DEFAULT_SETTINGS";
-import { setCSSVariables, migrateSettings, migrateOpenAccordions } from "./utils";
+import {
+  getActiveDocument,
+  migrateOpenAccordions,
+  migrateSettings,
+  setCSSVariables,
+} from "./utils";
 import {
   usePlugin,
   useSettings,
@@ -54,15 +59,19 @@ export default class GayToolbarPlugin extends Plugin {
 
   hideNavbar() {
     if (!Platform.isMobile) return;
-    
-    const navbarElement = document.querySelector(".mobile-navbar") as HTMLElement;
+
+    const navbarElement = getActiveDocument().querySelector(
+      ".mobile-navbar"
+    ) as HTMLElement;
     if (navbarElement) {
-      navbarElement.style.display = "none";
+      navbarElement.classList.add("gay-toolbar-navbar-suppressed");
     }
   }
 
   setBottomBufferCssValue(value: number) {
-    const parentNode = document.querySelector(".app-container") as HTMLElement;
+    const parentNode = getActiveDocument().querySelector(
+      ".app-container"
+    ) as HTMLElement;
     if (parentNode) {
       const effective = Platform.isMobile ? Math.max(0, value) : 0;
       parentNode.style.setProperty("--bottom-buffer", `${effective}px`);
@@ -76,12 +85,12 @@ export default class GayToolbarPlugin extends Plugin {
     this.hideNavbar();
 
     // Set up MutationObserver to watch for navbar being added/remounted
-    const appContainer = document.querySelector(".app-container");
+    const appContainer = getActiveDocument().querySelector(".app-container");
     if (appContainer) {
       this.navbarObserver = new MutationObserver(() => {
         // Clear any pending timeout
         if (this.hideNavbarTimeout !== null) {
-          clearTimeout(this.hideNavbarTimeout);
+          window.clearTimeout(this.hideNavbarTimeout);
         }
         
         // Use a small timeout to catch navbar after it's added to DOM
@@ -201,13 +210,13 @@ export default class GayToolbarPlugin extends Plugin {
     this.app.workspace.onLayoutReady(() => {
       this.toolbarRoot?.unmount?.();
       this.toolbarNode?.remove();
-      document.querySelector(".gay-toolbar-container")?.remove(); // not sure why this is sometimes necessary
+      getActiveDocument().querySelector(".gay-toolbar-container")?.remove(); // not sure why this is sometimes necessary
 
       // Hide navbar when layout is ready
       this.hideNavbar();
 
       const parentNode: HTMLElement | null =
-        document.querySelector(".app-container");
+        getActiveDocument().querySelector(".app-container");
       if (parentNode) {
         const bottomBuffer = Platform.isMobile ? (this.settings.bottomBuffer ?? 0) : 0;
         setCSSVariables(
@@ -222,7 +231,8 @@ export default class GayToolbarPlugin extends Plugin {
         this.toolbarRoot = createRoot(this.toolbarNode);
         this.toolbarRoot.render(<GayToolbar />);
 
-        const navbarElement = document.querySelector(".mobile-navbar");
+        const navbarElement =
+          getActiveDocument().querySelector(".mobile-navbar");
         if (navbarElement && parentNode.contains(navbarElement)) {
           parentNode.insertBefore(this.toolbarNode, navbarElement);
         } else {
@@ -337,14 +347,16 @@ export default class GayToolbarPlugin extends Plugin {
       for (const k of persistedSettingsKeys) {
         (persisted as any)[k] = (state as any)[k];
       }
-      this.saveSettings(persisted as GayToolbarSettings);
+      void this.saveSettings(persisted as GayToolbarSettings).catch((err) =>
+        console.error("Failed to persist Gay Toolbar settings:", err)
+      );
     });
   }
 
   onunload() {
     this.toolbarRoot?.unmount?.();
     this.toolbarNode?.remove();
-    document.querySelector(".gay-toolbar-container")?.remove(); // not sure why this is sometimes necessary
+    getActiveDocument().querySelector(".gay-toolbar-container")?.remove(); // not sure why this is sometimes necessary
     this.unsubscribeSettingsSync?.();
     
     // Clean up navbar hiding
@@ -353,7 +365,7 @@ export default class GayToolbarPlugin extends Plugin {
       this.navbarObserver = null;
     }
     if (this.hideNavbarTimeout !== null) {
-      clearTimeout(this.hideNavbarTimeout);
+      window.clearTimeout(this.hideNavbarTimeout);
       this.hideNavbarTimeout = null;
     }
     if (this.keyboardHideListener) {
@@ -371,9 +383,11 @@ export default class GayToolbarPlugin extends Plugin {
     
     // Restore navbar visibility on unload
     if (Platform.isMobile) {
-      const navbarElement = document.querySelector(".mobile-navbar") as HTMLElement;
+      const navbarElement = getActiveDocument().querySelector(
+        ".mobile-navbar"
+      ) as HTMLElement;
       if (navbarElement) {
-        navbarElement.style.display = "";
+        navbarElement.classList.remove("gay-toolbar-navbar-suppressed");
       }
     }
   }

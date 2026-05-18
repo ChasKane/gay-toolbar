@@ -339,3 +339,20 @@
 .gay-command-editor-pre .token.variable {
   color: var(--color-yellow);
 }
+
+.gay-toolbar-modal-detail {
+  margin: 0;
+  line-height: var(--line-height-normal);
+}
+
+.gay-toolbar-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.gay-toolbar-settings-palette-icon {
+  color: var(--gay-toolbar-settings-palette-icon-color, var(--text-normal));
+}

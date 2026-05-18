@@ -3,6 +3,16 @@
 @import "./settings.css";
 @import "./components.css";
 
+/* Desktop: raise status bar above expanded toolbar (offset via --gay-toolbar-status-bar-bottom). */
+.status-bar.gay-toolbar-status-bar-offset {
+  bottom: var(--gay-toolbar-status-bar-bottom, 0px);
+}
+
+/* Mobile: hide default navbar while Gay Toolbar UX runs (removed on plugin unload). */
+.mobile-navbar.gay-toolbar-navbar-suppressed {
+  display: none !important;
+}
+
 div[style*="position: absolute"] > svg,
 div[style*="position: fixed"] > svg {
   display: block;

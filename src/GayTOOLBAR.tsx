@@ -3,7 +3,7 @@ import ButtonGrid from "./Grid/ButtonGrid";
 import GaySettings from "./Settings/GaySettings";
 import { useEditor, usePlugin, useSettings } from "./StateManagement";
 import { Platform } from "obsidian";
-import { getLuminanceGuidedIconColor } from "./utils";
+import { getActiveDocument, getLuminanceGuidedIconColor } from "./utils";
 import { createPortal } from "react-dom";
 
 const GayToolbar: React.FC = () => {
@@ -22,13 +22,21 @@ const GayToolbar: React.FC = () => {
   useEffect(() => {
     if (Platform.isMobile) return;
     const statusBar: HTMLDivElement | null =
-      document.querySelector(".status-bar");
-    if (statusBar)
-      statusBar.style.bottom = isMinimized
-        ? "0px"
-        : (ref.current?.getBoundingClientRect().height || 0) + "px";
+      getActiveDocument().querySelector(".status-bar");
+    if (statusBar) {
+      statusBar.classList.add("gay-toolbar-status-bar-offset");
+      statusBar.style.setProperty(
+        "--gay-toolbar-status-bar-bottom",
+        isMinimized
+          ? "0px"
+          : `${ref.current?.getBoundingClientRect().height || 0}px`
+      );
+    }
     return () => {
-      if (statusBar) statusBar.style.bottom = "0px";
+      if (statusBar) {
+        statusBar.classList.remove("gay-toolbar-status-bar-offset");
+        statusBar.style.removeProperty("--gay-toolbar-status-bar-bottom");
+      }
     };
     // isEditing, annoyingText, and selectedButtonId required because they change the overall toolbar height
   }, [isEditing, annoyingText, selectedButtonId, isMinimized]);
@@ -106,7 +114,7 @@ const GayToolbar: React.FC = () => {
           </svg>
         </button>
       </div>,
-      document.querySelector(".horizontal-main-container")!
+      getActiveDocument().querySelector(".horizontal-main-container")!
     );
   return (
     <div ref={ref} className="gay-toolbar-main">

@@ -1,5 +1,5 @@
-import React, { forwardRef, useEffect, useRef, useState } from "react";
-import { useSpring, animated, SpringRef } from "@react-spring/web";
+import React, { useEffect, useRef } from "react";
+import { useSpring } from "@react-spring/web";
 import AnimatedBall from "./AnimatedBall";
 
 interface TrailProps {
@@ -28,7 +28,7 @@ const AnimatedTrail = React.memo<TrailProps>(
     color,
     icon,
   }) => {
-    const fadeOutTimeoutRef = useRef<NodeJS.Timeout>();
+    const fadeOutTimeoutRef = useRef<number>();
     const isFadingRef = useRef(false);
     const lastPositionRef = useRef({ x: targetX, y: targetY });
     const velocityRef = useRef({ x: 0, y: 0 });
@@ -76,7 +76,7 @@ const AnimatedTrail = React.memo<TrailProps>(
               x: targetX,
               y: targetY,
             };
-            spring.xy.start([targetPos.x, targetPos.y]);
+            void spring.xy.start([targetPos.x, targetPos.y]);
           });
         }
 
@@ -94,26 +94,26 @@ const AnimatedTrail = React.memo<TrailProps>(
         const finalX = lastPositionRef.current.x + velocity.x * 3;
         const finalY = lastPositionRef.current.y + velocity.y * 3;
 
-        setTimeout(() => {
+        window.setTimeout(() => {
           // setTimeout to ensure react's re-render doesn't overwrite these spring updates.
           // Start fade out animation with continued movement and scaling
           springs.forEach((spring, index) => {
-            spring.xy.start([finalX, finalY]);
-            spring.opacity.start(0.7);
+            void spring.xy.start([finalX, finalY]);
+            void spring.opacity.start(0.7);
             if (index === 0) {
-              spring.scale.start(4);
+              void spring.scale.start(4);
             }
           });
         }, 0);
 
         // Remove trail after fade out
-        fadeOutTimeoutRef.current = setTimeout(() => {
+        fadeOutTimeoutRef.current = window.setTimeout(() => {
           onComplete(id);
         }, pressDelayMs);
 
         return () => {
           if (fadeOutTimeoutRef.current) {
-            clearTimeout(fadeOutTimeoutRef.current);
+            window.clearTimeout(fadeOutTimeoutRef.current);
           }
         };
       }
@@ -123,7 +123,7 @@ const AnimatedTrail = React.memo<TrailProps>(
     useEffect(() => {
       return () => {
         if (fadeOutTimeoutRef.current) {
-          clearTimeout(fadeOutTimeoutRef.current);
+          window.clearTimeout(fadeOutTimeoutRef.current);
         }
         if (animationFrameRef.current) {
           cancelAnimationFrame(animationFrameRef.current);

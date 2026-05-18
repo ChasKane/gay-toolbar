@@ -112,15 +112,19 @@ const ButtonGrid: React.FC = () => {
         case !buttonId && isEditing:
           child = (
             <button
-              onClick={async () => {
-                if (plugin?.app) {
-                  const { icon, id: onTapCommandId } = await chooseNewCommand(
-                    plugin
-                  );
-                  const id = Date.now().toString(36);
-                  addButton(id, icon, onTapCommandId, [i, j]);
-                  setTimeout(() => setSelectedButtonId(id), 0);
-                }
+              onClick={() => {
+                void (async () => {
+                  if (!plugin?.app) return;
+                  try {
+                    const { icon, id: onTapCommandId } =
+                      await chooseNewCommand(plugin);
+                    const id = Date.now().toString(36);
+                    addButton(id, icon, onTapCommandId, [i, j]);
+                    window.setTimeout(() => setSelectedButtonId(id), 0);
+                  } catch {
+                    /* command picker dismissed */
+                  }
+                })();
               }}
             >
               +

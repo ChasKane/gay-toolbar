@@ -14,6 +14,12 @@ const ACCORDION_SECTIONS: (keyof SettingsAccordionSections)[] = [
 
 export type Position = { x: number; y: number };
 
+/** Obsidian pop-out windows: use focused window's document when available (tests fall back to `document`). */
+export function getActiveDocument(): Document {
+  const g = globalThis as typeof globalThis & { activeDocument?: Document };
+  return g.activeDocument ?? document;
+}
+
 export const hexToIColor = (color: string) => {
   const parsed = culori.parseHex(color);
   if (!parsed) {
@@ -174,7 +180,9 @@ export const setCSSVariables = (
   swipeBorderWidth: number = 20,
   bottomBuffer: number = 0
 ) => {
-  const parentNode = document.querySelector(".app-container") as HTMLElement;
+  const parentNode = getActiveDocument().querySelector(
+    ".app-container"
+  ) as HTMLElement;
   if (parentNode) {
     parentNode.style.setProperty("--press-delay", `${pressDelayMs}ms`);
     const borderWidth = `${rowHeight * (swipeBorderWidth / 100)}px`;
@@ -194,7 +202,7 @@ export const positionCentralItem: (multiple: number) => any = (
 // ============================================================================= //
 
 export const takeSnapshot = async () => {
-  const element = document.getElementById("gay-button-grid");
+  const element = getActiveDocument().getElementById("gay-button-grid");
   if (!element) {
     throw new Error("Element not found");
   }

@@ -67,7 +67,8 @@ export const renderTabCountOnIcon = (
   const x = (viewBox?.x || 0) + width / 2;
   const y = (viewBox?.y || 0) + height / 2;
 
-  const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+  const doc = svg.ownerDocument;
+  const text = doc.createElementNS("http://www.w3.org/2000/svg", "text");
   text.dataset.gayTabCount = "true";
   text.textContent = String(tabCount);
   text.setAttribute("x", String(x));

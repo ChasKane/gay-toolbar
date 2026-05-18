@@ -117,7 +117,7 @@ const GaySettings: React.FC = () => {
   ]);
 
   useEffect(() => {
-    (async () => {
+    void (async () => {
       backBtnListener.current?.remove?.();
       if (!isRealMobileApp()) return;
 

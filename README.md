@@ -11,6 +11,11 @@ In edit mode (wrench 🔧 icon, or obsidian command `Gay Toolbar: Toggle edit mo
 > P.S. My partner and I are looking for freelance work. She specializes in real-time full-stack app development (web sockets, Go, etc.). I specialize in real-time front ends, animation, and performance. Together, we've built apps, AI integrations, plugins, and much more.
 > P.P.S. I've found [Code Editor Shortcuts](https://github.com/timhor/obsidian-editor-shortcuts) to be utterly indispensable so I highly recommend you explore what other plugins add the behavior you want so you can add it to your Gay toolbar.
 
+### Privacy & plugin-review notes
+
+- **No outbound telemetry.** The plugin does not phone home or send background analytics. The only `setInterval` usage is local UI: optional slow auto-scroll of the long quote on the **Restore default settings** screen.
+- **Custom commands run user-authored JavaScript.** In **Command editor**, saved snippets become Obsidian commands. They are executed via the JavaScript `Function` constructor (same general idea as pasting code in the developer console): **only code you write and save runs**, loaded from your vault settings—not fetched from the network for execution. Treat custom commands like any privileged automation: don’t paste untrusted snippets.
+
 ---
 
 (now for the AI-generated part BUT there's still helpful clarifications here. Think of it like a Q&A)
