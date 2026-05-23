@@ -1,6 +1,8 @@
 # **The Most Colorful Obsidian Toolbar**
 
-A fully customizable, collapsible toolbar that floats above the keyboard, replacing the default toolbar. Highly polished, feature-rich. Built (and maintained!) with ❤️
+A fully customizable, collapsible toolbar that floats above the keyboard, intentionally replacing parts of the default mobile toolbar/navigation UX. Highly polished, feature-rich, loud, and opinionated. Built primarily around my own mobile workflow and tastes — both aesthetically and interactionally — and shared with anyone else who enjoys that energy.
+The defaults are intentionally colorful, gesture-dense, and high-contrast. If you want something quieter, the plugin is deeply customizable: desaturate it, make everything grey, simplify layouts, preserve more native behavior, whatever you want. I genuinely welcome contributions that support different philosophies and workflows — especially if they’re bundled cleanly into optional settings instead of diluting the core defaults.
+Built (and maintained!) with ❤️
 
 In edit mode (wrench 🔧 icon, or obsidian command `Gay Toolbar: Toggle edit mode`), each button can be assigned a primary (tap) and optional secondary (long-press) obsidian command, as well as any number of swipe commands, each assigned to a different swipe direction. Buttons can be moved between slots by long-pressing and dragging in edit mode. Their colors can be customized from a customizable color palette or assigned in bulk. The background color of the whole toolbar can be set to a solid color, or you can use your own CSS value for crazy radial gradients or whatever. Did I mention this toolbar is customizable? The number and size of rows and columns can also be set independently, and when you arrive at a config you like, you can snapshot it like a video game save slot.
 ![Image of gay-toolbar](https://github.com/user-attachments/assets/47aad823-1d29-4930-b86e-dd24f772a5f3)
@@ -10,6 +12,9 @@ In edit mode (wrench 🔧 icon, or obsidian command `Gay Toolbar: Toggle edit mo
 
 > P.S. My partner and I are looking for freelance work. She specializes in real-time full-stack app development (web sockets, Go, etc.). I specialize in real-time front ends, animation, and performance. Together, we've built apps, AI integrations, plugins, and much more.
 > P.P.S. I've found [Code Editor Shortcuts](https://github.com/timhor/obsidian-editor-shortcuts) to be utterly indispensable so I highly recommend you explore what other plugins add the behavior you want so you can add it to your Gay toolbar.
+
+### One important note: customization cuts both ways. The defaults are not attempting to be universally neutral or minimal. They reflect my own preferences after hundreds of hour spent building this plugin in the days before AI. If your immediate reaction is “this is too much,” good news: the plugin was built so you can reshape nearly all of it.
+And if your disagreement with the defaults is strong enough that you want new settings (“desaturate all defaults”, “keep the native navbar”, “load monochrome color pallet”, etc.), PRs are warmly welcomed. I’d happily collect options like these into a dedicated “Minimalist and Proud” settings section.
 
 ### Privacy & plugin-review notes
 
