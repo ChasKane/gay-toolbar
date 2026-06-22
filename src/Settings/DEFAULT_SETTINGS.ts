@@ -35,6 +35,11 @@ export const getEmptySettings = () =>
     customCommands: [],
     bottomBuffer: 0,
     adoptSlotColorsOnDrop: false,
+    lockColorsInPlace: true,
+    swipeColorsFromPalette: false,
+    lockSwipeColorsToButton: false,
+    showNewVersionNotes: true,
+    lastSeenUpdateNotesVersion: "",
     openAccordions: {
       layout: false,
       appearance: false,
@@ -326,6 +331,11 @@ export default {
   customCommands: [],
   bottomBuffer: 0,
   adoptSlotColorsOnDrop: false,
+  lockColorsInPlace: true,
+  swipeColorsFromPalette: false,
+  lockSwipeColorsToButton: false,
+  showNewVersionNotes: true,
+  lastSeenUpdateNotesVersion: "",
   openAccordions: {
     layout: false,
     appearance: false,

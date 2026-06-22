@@ -1,7 +1,9 @@
 import * as culori from "culori";
 import { toPng } from "html-to-image";
 import {
+  GayButtonSettings,
   GayToolbarSettings,
+  persistedSettingsKeys,
   savedConfigKeys,
   SettingsAccordionSections,
 } from "./types";
@@ -351,6 +353,136 @@ export const getSwipeIconPosition = (
   };
 };
 
+export const normalizeAngle = (degrees: number): number =>
+  ((degrees % 360) + 360) % 360;
+
+export const angularDistance = (a: number, b: number): number => {
+  const diff = Math.abs(normalizeAngle(a) - normalizeAngle(b));
+  return Math.min(diff, 360 - diff);
+};
+
+export const getSwipeAngle = (
+  index: number,
+  swipeCount: number,
+  offsetAngle = 0
+): number => normalizeAngle((360 * index) / swipeCount + offsetAngle);
+
+export const syncSwipeColorsToButtonColor = (
+  swipeCommands: GayButtonSettings["swipeCommands"],
+  backgroundColor: string
+): GayButtonSettings["swipeCommands"] => {
+  if (!swipeCommands?.length) return swipeCommands;
+  return swipeCommands.map((entry) =>
+    entry && typeof entry === "object"
+      ? { ...entry, color: backgroundColor }
+      : entry
+  );
+};
+
+export const syncAllSwipeColorsToButtonColors = (
+  buttons: Record<string, GayButtonSettings>
+): Record<string, GayButtonSettings> => {
+  const next: Record<string, GayButtonSettings> = { ...buttons };
+  for (const id of Object.keys(next)) {
+    const button = next[id];
+    const swipeCommands = syncSwipeColorsToButtonColor(
+      button.swipeCommands,
+      button.backgroundColor
+    );
+    if (swipeCommands !== button.swipeCommands) {
+      next[id] = { ...button, swipeCommands };
+    }
+  }
+  return next;
+};
+
+export type SwipeColorAnchor = { angle: number; color: string };
+
+export const interpolateHexColors = (
+  colorA: string,
+  colorB: string,
+  weightA: number
+): string => {
+  const a = culori.parse(colorA);
+  const b = culori.parse(colorB);
+  if (!a || !b) return colorA;
+  const rgbA = culori.rgb(a);
+  const rgbB = culori.rgb(b);
+  if (!rgbA || !rgbB) return colorA;
+  const weightB = 1 - weightA;
+  const mixed = {
+    mode: "rgb" as const,
+    r: rgbA.r * weightA + rgbB.r * weightB,
+    g: rgbA.g * weightA + rgbB.g * weightB,
+    b: rgbA.b * weightA + rgbB.b * weightB,
+  };
+  const hex = culori.formatHex(mixed);
+  return hex ?? colorA;
+};
+
+export const colorForSwipeAngle = (
+  angle: number,
+  anchors: SwipeColorAnchor[],
+  fallbackBackgroundColor: string
+): string => {
+  if (anchors.length === 0) return fallbackBackgroundColor;
+  if (anchors.length === 1) return anchors[0].color;
+
+  const θ = normalizeAngle(angle);
+  const byDistance = [...anchors].sort(
+    (a, b) => angularDistance(θ, a.angle) - angularDistance(θ, b.angle)
+  );
+  const nearest = byDistance[0];
+  const second = byDistance[1];
+
+  if (angularDistance(θ, nearest.angle) < 0.01) return nearest.color;
+
+  const d1 = angularDistance(θ, nearest.angle);
+  const d2 = angularDistance(θ, second.angle);
+  if (d1 + d2 === 0) return nearest.color;
+
+  const weightNearest = d2 / (d1 + d2);
+  return interpolateHexColors(nearest.color, second.color, weightNearest);
+};
+
+export const swipeColorAnchorsFromCommands = (
+  swipeCommands: ({ color: string } | null)[],
+  swipeRingOffsetAngle = 0
+): SwipeColorAnchor[] => {
+  const count = swipeCommands.length;
+  if (!count) return [];
+  return swipeCommands.flatMap((entry, index) => {
+    if (!entry) return [];
+    return [
+      {
+        angle: getSwipeAngle(index, count, swipeRingOffsetAngle),
+        color: entry.color,
+      },
+    ];
+  });
+};
+
+export const assignSwipeColorsFromSlot = (
+  incomingSwipes: ({ commandId: string; icon: string; color: string } | null)[],
+  incomingOffset: number,
+  slotSwipes: ({ color: string } | null)[],
+  slotOffset: number,
+  slotBackgroundColor: string
+): ({ commandId: string; icon: string; color: string } | null)[] => {
+  const anchors = swipeColorAnchorsFromCommands(slotSwipes, slotOffset);
+  const count = incomingSwipes.length;
+  if (!count) return incomingSwipes;
+
+  return incomingSwipes.map((entry, index) => {
+    if (!entry) return null;
+    const angle = getSwipeAngle(index, count, incomingOffset);
+    return {
+      ...entry,
+      color: colorForSwipeAngle(angle, anchors, slotBackgroundColor),
+    };
+  });
+};
+
 /**
  * Migrates settings by adding missing keys from default settings
  * @param settings - Current settings object (will be mutated)
@@ -376,6 +508,30 @@ export const migrateSettings = (
   }
 
   return hasMissingKeys;
+};
+
+/**
+ * First-time upgrade from adoptSlotColorsOnDrop to lockColorsInPlace.
+ * Preserves the user's prior adopt-slot choice; new installs keep migrateSettings default.
+ */
+export const migrateLockColorsInPlace = (
+  settings: GayToolbarSettings
+): boolean => {
+  const hadLockColorsInPlace =
+    "lockColorsInPlace" in settings &&
+    settings.lockColorsInPlace !== undefined;
+
+  if (hadLockColorsInPlace) return false;
+
+  const hadAdoptSlotColorsOnDrop =
+    "adoptSlotColorsOnDrop" in settings &&
+    settings.adoptSlotColorsOnDrop !== undefined;
+
+  if (!hadAdoptSlotColorsOnDrop) return false;
+
+  settings.lockColorsInPlace = settings.adoptSlotColorsOnDrop;
+  settings.adoptSlotColorsOnDrop = false;
+  return true;
 };
 
 /**
@@ -413,3 +569,18 @@ export const migrateOpenAccordions = (
   }
   return false;
 };
+
+/** Subset of settings stored in data.json — safe to merge into the Zustand store. */
+export function pickPersistedSettings(
+  settings: GayToolbarSettings
+): Partial<GayToolbarSettings> {
+  const toMerge: Partial<GayToolbarSettings> = {};
+  for (const k of persistedSettingsKeys) {
+    if ((settings as Record<string, unknown>)[k] !== undefined) {
+      (toMerge as Record<string, unknown>)[k] = (
+        settings as Record<string, unknown>
+      )[k];
+    }
+  }
+  return toMerge;
+}

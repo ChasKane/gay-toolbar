@@ -5,7 +5,7 @@ import {
   GayToolbarSettings,
   savedConfigKeys,
 } from "../types";
-import { migrateOpenAccordions, migrateSettings } from "../utils";
+import { migrateLockColorsInPlace, migrateOpenAccordions, migrateSettings } from "../utils";
 
 describe("Settings Migration", () => {
   it("should identify missing settings keys correctly", () => {
@@ -96,6 +96,9 @@ describe("Settings Migration", () => {
       customCommands: [],
       bottomBuffer: 0,
       adoptSlotColorsOnDrop: false,
+      lockColorsInPlace: false,
+      swipeColorsFromPalette: false,
+      lockSwipeColorsToButton: false,
     };
 
     const hasMissingKeys = migrateSettings(
@@ -167,6 +170,15 @@ describe("Settings Migration", () => {
     expect(oldSettings.adoptSlotColorsOnDrop).toBe(
       DEFAULT_SETTINGS.adoptSlotColorsOnDrop
     );
+    expect(oldSettings.lockColorsInPlace).toBe(
+      DEFAULT_SETTINGS.lockColorsInPlace
+    );
+    expect(oldSettings.swipeColorsFromPalette).toBe(
+      DEFAULT_SETTINGS.swipeColorsFromPalette
+    );
+    expect(oldSettings.lockSwipeColorsToButton).toBe(
+      DEFAULT_SETTINGS.lockSwipeColorsToButton
+    );
   });
 
   it("should not add openAccordions via migrateSettings (migrated separately in main)", () => {
@@ -207,5 +219,54 @@ describe("Settings Migration", () => {
     expect(changed).toBe(true);
     expect(settings.openAccordions).toEqual(DEFAULT_SETTINGS.openAccordions);
     expect(settings.openAccordions).not.toHaveProperty("notifications");
+  });
+
+  it("migrateLockColorsInPlace maps adoptSlotColorsOnDrop false to lockColorsInPlace false", () => {
+    const settings = {
+      adoptSlotColorsOnDrop: false,
+    } as GayToolbarSettings;
+
+    const changed = migrateLockColorsInPlace(settings);
+    migrateSettings(settings, DEFAULT_SETTINGS);
+
+    expect(changed).toBe(true);
+    expect(settings.lockColorsInPlace).toBe(false);
+    expect(settings.adoptSlotColorsOnDrop).toBe(false);
+  });
+
+  it("migrateLockColorsInPlace maps adoptSlotColorsOnDrop true to lockColorsInPlace true", () => {
+    const settings = {
+      adoptSlotColorsOnDrop: true,
+    } as GayToolbarSettings;
+
+    const changed = migrateLockColorsInPlace(settings);
+    migrateSettings(settings, DEFAULT_SETTINGS);
+
+    expect(changed).toBe(true);
+    expect(settings.lockColorsInPlace).toBe(true);
+    expect(settings.adoptSlotColorsOnDrop).toBe(false);
+  });
+
+  it("migrateLockColorsInPlace leaves default when adoptSlotColorsOnDrop was never set", () => {
+    const settings = {} as GayToolbarSettings;
+
+    const changed = migrateLockColorsInPlace(settings);
+    migrateSettings(settings, DEFAULT_SETTINGS);
+
+    expect(changed).toBe(false);
+    expect(settings.lockColorsInPlace).toBe(true);
+  });
+
+  it("migrateLockColorsInPlace does nothing when lockColorsInPlace already exists", () => {
+    const settings = {
+      adoptSlotColorsOnDrop: true,
+      lockColorsInPlace: false,
+    } as GayToolbarSettings;
+
+    const changed = migrateLockColorsInPlace(settings);
+
+    expect(changed).toBe(false);
+    expect(settings.lockColorsInPlace).toBe(false);
+    expect(settings.adoptSlotColorsOnDrop).toBe(true);
   });
 });

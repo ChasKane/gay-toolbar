@@ -16,6 +16,7 @@ export type SettingsScreen =
   | "main"
   | "configs"
   | "command-editor"
+  | "new-version-notes"
   | "restore-defaults"
   | "color-picker";
 
@@ -34,14 +35,31 @@ export type SettingsAccordionSections = {
 export type EditorState = {
   isEditing: boolean;
   selectedButtonId: string;
+  selectedSwipeIndex: number | null;
   settingsScreen: SettingsScreen;
   colorPickerContext: ColorPickerContext | null;
 };
 export type EditorActions = {
   setIsEditing: (isEditing: boolean) => void;
   setSelectedButtonId: (id: string) => void;
+  setSelectedSwipeIndex: (index: number | null) => void;
   setSettingsScreen: (screen: SettingsScreen) => void;
   setColorPickerContext: (ctx: ColorPickerContext | null) => void;
+};
+
+export const REPEAT_LAST_COMMAND_ID = "gay-toolbar:repeat-last-command";
+
+export const SKIP_LAST_COMMAND_TRACKING = new Set([
+  REPEAT_LAST_COMMAND_ID,
+  "gay-toolbar:no-op",
+]);
+
+export type CommandSessionState = {
+  lastIssuedCommandId: string | null;
+};
+
+export type CommandSessionActions = {
+  setLastIssuedCommandId: (commandId: string) => void;
 };
 
 export type CustomCommand = {
@@ -77,6 +95,9 @@ export const savedConfigKeys = [
   "minimizedToolbarLoc",
   "bottomBuffer",
   "adoptSlotColorsOnDrop",
+  "lockColorsInPlace",
+  "swipeColorsFromPalette",
+  "lockSwipeColorsToButton",
 ] as const;
 export type SavedConfigKeys = (typeof savedConfigKeys)[number];
 
@@ -100,6 +121,9 @@ export type SavedConfigValues = {
   minimizedToolbarLoc: Coord;
   bottomBuffer: number;
   adoptSlotColorsOnDrop: boolean;
+  lockColorsInPlace: boolean;
+  swipeColorsFromPalette: boolean;
+  lockSwipeColorsToButton: boolean;
 };
 
 export type SavedConfig = {
@@ -112,6 +136,8 @@ export type GayToolbarSettings = SavedConfig & {
   savedConfigsFilePath: string;
   openAccordions: SettingsAccordionSections;
   customCommands: CustomCommand[];
+  showNewVersionNotes: boolean;
+  lastSeenUpdateNotesVersion: string;
 };
 
 /** Keys persisted to data.json. Excludes store-only behavior (e.g. toggleAccordion). */
@@ -122,6 +148,8 @@ export const persistedSettingsKeys = [
   "openAccordions",
   "customCommands",
   "presetColors",
+  "showNewVersionNotes",
+  "lastSeenUpdateNotesVersion",
 ] as const;
 export type PersistedSettingsKey = (typeof persistedSettingsKeys)[number];
 
@@ -142,4 +170,9 @@ export type SettingsActions = {
   addConfig: () => void;
   deleteConfig: (id: string) => void;
   swapButtonColors: (buttonIdA: string, buttonIdB: string) => void;
+  swapButtonFunctionalityLockingColors: (
+    buttonIdA: string,
+    buttonIdB: string
+  ) => void;
+  applyLockSwipeColorsToButton: () => void;
 };

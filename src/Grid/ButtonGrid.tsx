@@ -10,8 +10,6 @@ import React from "react";
 const ButtonGrid: React.FC = () => {
   const addButton = useSettings((state) => state.addButton);
   const moveButton = useSettings((state) => state.moveButton);
-  const swapButtonColors = useSettings((state) => state.swapButtonColors);
-  const adoptSlotColorsOnDrop = useSettings((state) => state.adoptSlotColorsOnDrop);
   const setSelectedButtonId = useEditor((state) => state.setSelectedButtonId);
 
   const isEditing = useEditor((state) => state.isEditing);
@@ -68,22 +66,34 @@ const ButtonGrid: React.FC = () => {
         const [sx, sy] = sourceLocation;
         const [dx, dy] = destinationLocation;
         const sourceId = source.data.buttonId as string;
-        const destId = buttonIdGrid[dx][dy];
 
-        if (adoptSlotColorsOnDrop && destId) {
-          swapButtonColors(sourceId, destId);
+        const {
+          buttonLocations,
+          numRows,
+          numCols,
+          lockColorsInPlace,
+          swapButtonFunctionalityLockingColors,
+        } = useSettings.getState();
+
+        const buttonIdGrid: string[][] = Array.from({ length: numRows }, () =>
+          Array(numCols).fill("")
+        );
+        Object.entries(buttonLocations).forEach(([id, coord]) => {
+          if (coord[0] < numRows && coord[1] < numCols) {
+            buttonIdGrid[coord[0]][coord[1]] = id;
+          }
+        });
+
+        const destId = buttonIdGrid[dx]?.[dy];
+
+        if (lockColorsInPlace && destId) {
+          swapButtonFunctionalityLockingColors(sourceId, destId);
         }
         moveButton(sourceId, [dx, dy]);
         if (destId) moveButton(destId, [sx, sy]);
       },
     });
-  }, [
-    buttonLocations,
-    moveButton,
-    swapButtonColors,
-    adoptSlotColorsOnDrop,
-    isEditing,
-  ]);
+  }, [isEditing, moveButton]);
 
   const buttonIdGrid: Array<Array<string>> = useMemo(() => {
     const arr = Array(numRows);

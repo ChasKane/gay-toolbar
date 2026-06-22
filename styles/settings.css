@@ -105,6 +105,18 @@
   width: 100%;
 }
 
+.gay-version-notes-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.gay-version-notes-setting-row .gt-checkbox {
+  flex: 1 1 220px;
+}
+
 .toolbar-setting-wrapper {
   display: flex;
   justify-content: center;

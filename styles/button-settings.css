@@ -57,8 +57,50 @@
   flex-shrink: 1;
 }
 
-/* small {
-  max-width: 10ch;
-  word-wrap: break-word;
+.swipe-settings-slot {
+  z-index: 0;
+}
+
+.swipe-settings-slot--raised {
+  z-index: 2;
+}
+
+.swipe-settings-slot-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: center;
+}
+
+.swipe-settings-slot--wiggle {
+  animation: wiggle 0.8s infinite ease;
+}
+
+.swipe-settings-slot--selected {
+  animation: none;
+  transform: scale(2);
+}
+
+.swipe-settings-slot-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.swipe-settings-slot-label {
+  position: absolute;
+  left: 50%;
+  font-size: xx-small;
   text-align: center;
-} */
+  width: 10ch;
+  pointer-events: none;
+  background-color: color-mix(
+    in srgb,
+    var(--background-primary) 50%,
+    transparent
+  );
+  padding: 0.2rem;
+  border-radius: 0.2rem;
+  color: var(--text-primary);
+}

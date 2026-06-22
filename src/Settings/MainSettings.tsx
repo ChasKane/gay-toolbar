@@ -1,22 +1,27 @@
 import React, { useLayoutEffect, useRef } from "react";
 import NumericInputGroup from "./NumericInputGroup";
-import { useEditor, useSettings } from "../StateManagement";
+import { useEditor, usePlugin, useSettings } from "../StateManagement";
 import { setIcon } from "obsidian";
 import { getLuminanceGuidedIconColor } from "../utils";
 import AccordionSection from "../components/ui/accordion";
 import SettingsCard from "./SettingsCard";
 import { Checkbox } from "../components/ui/checkbox";
+import { GayToolbarConfirmModal } from "./GayToolbarConfirmModal";
 
 type MainSettingsProps = {
   marqueeColor: string;
 };
 
 const MainSettings: React.FC<MainSettingsProps> = ({ marqueeColor }) => {
+  const plugin = usePlugin();
   const { setSettingsScreen, setColorPickerContext } = useEditor(
     (state) => state
   );
 
   const setSettings = useSettings((state) => state.setSettings);
+  const applyLockSwipeColorsToButton = useSettings(
+    (state) => state.applyLockSwipeColorsToButton
+  );
   const openAccordions = useSettings((state) => state.openAccordions);
   const toggleAccordion = useSettings((state) => state.toggleAccordion);
   const backgroundColor = useSettings((state) => state.backgroundColor);
@@ -25,8 +30,15 @@ const MainSettings: React.FC<MainSettingsProps> = ({ marqueeColor }) => {
   const buttons = useSettings((state) => state.buttons);
   const buttonIds = useSettings((state) => state.buttonIds);
   const annoyingText = useSettings((state) => state.annoyingText);
-  const adoptSlotColorsOnDrop = useSettings(
-    (state) => state.adoptSlotColorsOnDrop
+  const showNewVersionNotes = useSettings(
+    (state) => state.showNewVersionNotes
+  );
+  const swipeColorsFromPalette = useSettings(
+    (state) => state.swipeColorsFromPalette
+  );
+  const lockColorsInPlace = useSettings((state) => state.lockColorsInPlace);
+  const lockSwipeColorsToButton = useSettings(
+    (state) => state.lockSwipeColorsToButton
   );
 
   const toolbarColorButtonRef = useRef<HTMLButtonElement>(null);
@@ -240,12 +252,41 @@ const MainSettings: React.FC<MainSettingsProps> = ({ marqueeColor }) => {
             }
           />
         )}
-        <SettingsCard title="Adopt slot colors on drop">
+        <SettingsCard title="Swipe command colors">
           <Checkbox
-            label="When you drop a button onto another, swap their colors (main and swipe) so the moved button takes the slot's colors."
-            checked={adoptSlotColorsOnDrop}
+            label="Pick new swipe command colors from the palette instead of inheriting the button color. [legacy behavior]"
+            checked={swipeColorsFromPalette}
             onChange={(e) =>
-              setSettings({ adoptSlotColorsOnDrop: e.target.checked })
+              setSettings({ swipeColorsFromPalette: e.target.checked })
+            }
+          />
+        </SettingsCard>
+        <SettingsCard title="Lock swipe colors to button">
+          <Checkbox
+            label="Keep every swipe command color matched to its button color. Changing a button color updates its swipes too."
+            checked={lockSwipeColorsToButton}
+            onChange={(e) => {
+              if (e.target.checked) {
+                if (!plugin?.app) return;
+                new GayToolbarConfirmModal(
+                  plugin.app,
+                  "Lock swipe colors to button color?",
+                  "Are you sure? This sets every swipe command color to match its button. Custom swipe colors will be lost.",
+                  "Lock colors",
+                  () => applyLockSwipeColorsToButton()
+                ).open();
+                return;
+              }
+              setSettings({ lockSwipeColorsToButton: false });
+            }}
+          />
+        </SettingsCard>
+        <SettingsCard title="Lock colors in place">
+          <Checkbox
+            label="When you drop a button onto another, keep each slot's colors and only move the commands. Swipe colors blend from the two nearest previous swipe angles (e.g. N white + E black → NE grey, NNE light grey). If the drop slot had no swipes, incoming swipes use that slot's button color."
+            checked={lockColorsInPlace}
+            onChange={(e) =>
+              setSettings({ lockColorsInPlace: e.target.checked })
             }
           />
         </SettingsCard>
@@ -257,6 +298,14 @@ const MainSettings: React.FC<MainSettingsProps> = ({ marqueeColor }) => {
         open={openAccordions.other}
         onToggle={() => toggleAccordion("other")}
       >
+        <SettingsCard title="Long-press delay">
+          <NumericInputGroup
+            label="Long-press delay"
+            name="pressDelayMs"
+            bounds={[1, 5000]}
+            hideLabel
+          />
+        </SettingsCard>
         <SettingsCard title="Saved Configs">
           <button
             className="mod-cta"
@@ -273,13 +322,23 @@ const MainSettings: React.FC<MainSettingsProps> = ({ marqueeColor }) => {
             Open command editor
           </button>
         </SettingsCard>
-        <SettingsCard title="Long-press delay">
-          <NumericInputGroup
-            label="Long-press delay"
-            name="pressDelayMs"
-            bounds={[1, 5000]}
-            hideLabel
-          />
+        <SettingsCard title="New version notes">
+          <div className="gay-version-notes-setting-row">
+            <Checkbox
+              label="Show a small heads-up after Gay Toolbar updates."
+              checked={showNewVersionNotes}
+              onChange={(e) =>
+                setSettings({ showNewVersionNotes: e.target.checked })
+              }
+            />
+            <button
+              type="button"
+              className="mod-cta"
+              onClick={() => setSettingsScreen("new-version-notes")}
+            >
+              View
+            </button>
+          </div>
         </SettingsCard>
         <SettingsCard title="Lost?">
           <button

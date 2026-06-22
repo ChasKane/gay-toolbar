@@ -12,6 +12,28 @@ import {
   renderTabCountOnIcon,
 } from "../workspaceState";
 
+export async function chooseCommandOnly(
+  plugin: GayToolbarPlugin,
+  currentCommandId?: string
+): Promise<{ id: string; icon: string }> {
+  const command = await new AddCommandModal(
+    plugin,
+    currentCommandId
+  ).awaitSelection();
+  return {
+    id: command.id,
+    icon: command.icon ?? "box",
+  };
+}
+
+export async function chooseNewIcon(
+  plugin: GayToolbarPlugin,
+  defaultIcon?: string,
+  command?: Command
+): Promise<string> {
+  return new ChooseIconModal(plugin, defaultIcon, command).awaitSelection();
+}
+
 export default async function chooseNewCommand(
   plugin: GayToolbarPlugin,
   currentCommandId?: string
@@ -19,14 +41,16 @@ export default async function chooseNewCommand(
   id: string;
   icon: string;
 }> {
-  const command = await new AddCommandModal(
+  const command = await chooseCommandOnly(plugin, currentCommandId);
+  const icon = await chooseNewIcon(
     plugin,
-    currentCommandId
-  ).awaitSelection();
-  let icon = await new ChooseIconModal(plugin, command.icon, command).awaitSelection();
+    command.icon,
+    // @ts-ignore | app.commands exists; not sure why it's not in the API...
+    plugin.app.commands.findCommand(command.id)
+  );
 
   return {
-    icon: icon ?? command.icon!,
+    icon: icon ?? command.icon,
     id: command.id,
   };
 }

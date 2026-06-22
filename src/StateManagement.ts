@@ -6,6 +6,9 @@ import {
   SettingsActions,
   EditorActions,
   EditorState,
+  CommandSessionActions,
+  CommandSessionState,
+  SKIP_LAST_COMMAND_TRACKING,
   savedConfigKeys,
 } from "./types";
 import { Platform } from "obsidian";
@@ -15,6 +18,9 @@ import {
   removeConfigFromMarkdown,
   MarkdownConfig,
   parseMarkdownConfigs,
+  assignSwipeColorsFromSlot,
+  syncAllSwipeColorsToButtonColors,
+  syncSwipeColorsToButtonColor,
 } from "./utils";
 
 const isRealMobileApp = () => Platform.isMobile && (Platform as any).isMobileApp;
@@ -26,7 +32,8 @@ export type { MarkdownConfig };
 export const useSettings = create<GayToolbarSettings & SettingsActions>()(
   (set, get) => ({
     ...getEmptySettings(),
-    setSettings: set,
+    setSettings: (partial) =>
+      set((state) => ({ ...state, ...partial })),
 
     moveButton: (buttonId, location) =>
       set((prev: GayToolbarSettings) => ({
@@ -56,12 +63,27 @@ export const useSettings = create<GayToolbarSettings & SettingsActions>()(
         },
       })),
     updateButton: (id, newSettings) =>
-      set((prev: GayToolbarSettings) => ({
-        buttons: {
-          ...prev.buttons,
-          [id]: { ...prev.buttons[id], id, ...newSettings },
-        },
-      })),
+      set((prev: GayToolbarSettings) => {
+        const current = prev.buttons[id];
+        if (!current) return prev;
+        const merged = { ...current, id, ...newSettings };
+        if (
+          prev.lockSwipeColorsToButton &&
+          newSettings.backgroundColor !== undefined &&
+          merged.swipeCommands?.length
+        ) {
+          merged.swipeCommands = syncSwipeColorsToButtonColor(
+            merged.swipeCommands,
+            newSettings.backgroundColor
+          );
+        }
+        return {
+          buttons: {
+            ...prev.buttons,
+            [id]: merged,
+          },
+        };
+      }),
     deleteButton: (id) =>
       set((prev: GayToolbarSettings) => ({
         buttonIds: prev.buttonIds.filter((s) => s !== id),
@@ -122,6 +144,50 @@ export const useSettings = create<GayToolbarSettings & SettingsActions>()(
           },
         };
       }),
+
+    swapButtonFunctionalityLockingColors: (buttonIdA, buttonIdB) =>
+      set((prev: GayToolbarSettings) => {
+        const a = prev.buttons[buttonIdA];
+        const b = prev.buttons[buttonIdB];
+        if (!a || !b) return prev;
+
+        const swipesA = assignSwipeColorsFromSlot(
+          a.swipeCommands ?? [],
+          a.swipeRingOffsetAngle ?? 0,
+          b.swipeCommands ?? [],
+          b.swipeRingOffsetAngle ?? 0,
+          b.backgroundColor
+        );
+        const swipesB = assignSwipeColorsFromSlot(
+          b.swipeCommands ?? [],
+          b.swipeRingOffsetAngle ?? 0,
+          a.swipeCommands ?? [],
+          a.swipeRingOffsetAngle ?? 0,
+          a.backgroundColor
+        );
+
+        return {
+          buttons: {
+            ...prev.buttons,
+            [buttonIdA]: {
+              ...a,
+              backgroundColor: b.backgroundColor,
+              swipeCommands: swipesA,
+            },
+            [buttonIdB]: {
+              ...b,
+              backgroundColor: a.backgroundColor,
+              swipeCommands: swipesB,
+            },
+          },
+        };
+      }),
+
+    applyLockSwipeColorsToButton: () =>
+      set((prev: GayToolbarSettings) => ({
+        lockSwipeColorsToButton: true,
+        buttons: syncAllSwipeColorsToButtonColors(prev.buttons),
+      })),
 
     addConfig: async () => {
       const snapshot = await takeSnapshot();
@@ -219,9 +285,20 @@ export const useSettings = create<GayToolbarSettings & SettingsActions>()(
 
 // ---------------- Not saved to data.json ----------------
 
+export const useCommandSession = create<
+  CommandSessionState & CommandSessionActions
+>()((set) => ({
+  lastIssuedCommandId: null,
+  setLastIssuedCommandId: (commandId) => {
+    if (SKIP_LAST_COMMAND_TRACKING.has(commandId)) return;
+    set({ lastIssuedCommandId: commandId });
+  },
+}));
+
 export const useEditor = create<EditorState & EditorActions>()((set) => ({
   isEditing: false,
   selectedButtonId: "",
+  selectedSwipeIndex: null,
   settingsScreen: "main",
   colorPickerContext: null,
 
@@ -234,7 +311,9 @@ export const useEditor = create<EditorState & EditorActions>()((set) => ({
 
     set({ isEditing: isEditing });
   },
-  setSelectedButtonId: (id) => set({ selectedButtonId: id }),
+  setSelectedButtonId: (id) =>
+    set({ selectedButtonId: id, selectedSwipeIndex: null }),
+  setSelectedSwipeIndex: (index) => set({ selectedSwipeIndex: index }),
   setSettingsScreen: (screen) => set({ settingsScreen: screen }),
   setColorPickerContext: (ctx) => set({ colorPickerContext: ctx }),
 }));

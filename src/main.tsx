@@ -4,18 +4,22 @@ import GayToolbar from "./GayTOOLBAR";
 import DEFAULT_SETTINGS from "./Settings/DEFAULT_SETTINGS";
 import {
   getActiveDocument,
+  migrateLockColorsInPlace,
   migrateOpenAccordions,
   migrateSettings,
+  pickPersistedSettings,
   setCSSVariables,
 } from "./utils";
 import {
   usePlugin,
   useSettings,
   useEditor,
+  useCommandSession,
   loadConfigsFromMarkdown,
   migrateConfigsToMarkdown,
 } from "./StateManagement";
 import {
+  CustomCommand,
   GayToolbarSettings,
   persistedSettingsKeys,
   savedConfigKeys,
@@ -45,12 +49,17 @@ const ICON: string = `<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
 
 const isRealMobileApp = () => Platform.isMobile && (Platform as any).isMobileApp;
 const getCapacitor = () => (window as any).Capacitor;
+const EXTERNAL_SETTINGS_RELOAD_MS = 300;
 
 export default class GayToolbarPlugin extends Plugin {
   settings: GayToolbarSettings;
   toolbarRoot: Root;
   toolbarNode: HTMLElement;
   unsubscribeSettingsSync: () => void;
+  settingsPersistSubscribed = false;
+  registeredCustomCommandIds: string[] = [];
+  applyingExternalSettings = false;
+  externalSettingsReloadTimeout: number | null = null;
   navbarObserver: MutationObserver | null = null;
   hideNavbarTimeout: number | null = null;
   keyboardHideListener: any = null;
@@ -206,6 +215,18 @@ export default class GayToolbarPlugin extends Plugin {
       id: "no-op",
       name: "Do nothing",
     });
+    this.addCommand({
+      id: "repeat-last-command",
+      name: "Repeat last command",
+      icon: "lucide-repeat-2",
+      callback: () => {
+        const lastId = useCommandSession.getState().lastIssuedCommandId;
+        if (lastId) {
+          // @ts-ignore | app.commands exists; not sure why it's not in the API...
+          this.app.commands.executeCommandById(lastId);
+        }
+      },
+    });
 
     this.app.workspace.onLayoutReady(() => {
       this.toolbarRoot?.unmount?.();
@@ -218,15 +239,7 @@ export default class GayToolbarPlugin extends Plugin {
       const parentNode: HTMLElement | null =
         getActiveDocument().querySelector(".app-container");
       if (parentNode) {
-        const bottomBuffer = Platform.isMobile ? (this.settings.bottomBuffer ?? 0) : 0;
-        setCSSVariables(
-          this.settings.pressDelayMs,
-          this.settings.rowHeight,
-          this.settings.swipeBorderWidth,
-          bottomBuffer
-        );
-        // Assume keyboard hidden on startup
-        this.setBottomBufferCssValue(this.settings.bottomBuffer ?? 0);
+        this.applyToolbarCssFromSettings();
         this.toolbarNode = createDiv("gay-toolbar-container");
         this.toolbarRoot = createRoot(this.toolbarNode);
         this.toolbarRoot.render(<GayToolbar />);
@@ -246,102 +259,37 @@ export default class GayToolbarPlugin extends Plugin {
     await this.saveData(newSettings || this.settings);
   }
 
-  async loadSettings() {
-    this.settings = await this.loadData();
-    if (!this.settings) {
-      this.settings = { ...DEFAULT_SETTINGS };
-      await this.saveSettings(this.settings);
-    }
+  applyToolbarCssFromSettings() {
+    const bottomBuffer = Platform.isMobile
+      ? (this.settings.bottomBuffer ?? 0)
+      : 0;
+    setCSSVariables(
+      this.settings.pressDelayMs,
+      this.settings.rowHeight,
+      this.settings.swipeBorderWidth,
+      bottomBuffer
+    );
+    this.setBottomBufferCssValue(this.settings.bottomBuffer ?? 0);
+  }
 
-    // Ensure savedConfigsFilePath is set (for users upgrading from older versions)
-    if (!this.settings.savedConfigsFilePath) {
-      this.settings.savedConfigsFilePath = "GayToolbarSavedConfigs.md";
-      await this.saveSettings(this.settings);
-    }
-
-    // Initialize minimizedToolbarLoc from default settings if not exists
-    if (!this.settings.minimizedToolbarLoc) {
-      this.settings.minimizedToolbarLoc = DEFAULT_SETTINGS.minimizedToolbarLoc;
-      await this.saveSettings(this.settings);
-    }
-
-    // Fix invalid position values (ensure positive pixel values)
-    if (this.settings.minimizedToolbarLoc) {
-      const [x, y] = this.settings.minimizedToolbarLoc;
-      const clampedX = Math.max(0, x);
-      const clampedY = Math.max(0, y);
-
-      if (clampedX !== x || clampedY !== y) {
-        this.settings.minimizedToolbarLoc = [clampedX, clampedY];
-        await this.saveSettings(this.settings);
-      }
-    }
-    // Migrate missing settings keys and openAccordions
-    let hasMissingKeys = migrateSettings(this.settings, DEFAULT_SETTINGS);
-    if (migrateOpenAccordions(this.settings, DEFAULT_SETTINGS)) {
-      hasMissingKeys = true;
-    }
-    if (hasMissingKeys) {
-      await this.saveSettings(this.settings);
-    }
-
-    // Ensure customCommands is initialized (for users upgrading from older versions)
-    if (!this.settings.customCommands) {
-      this.settings.customCommands = [];
-      await this.saveSettings(this.settings);
-    }
-
-    // Ensure presetColors is initialized (for users upgrading from older versions)
-    if (!this.settings.presetColors || !Array.isArray(this.settings.presetColors)) {
-      this.settings.presetColors = [...DEFAULT_SETTINGS.presetColors];
-      await this.saveSettings(this.settings);
-    }
-
-    // Load custom commands on startup
-    if (
-      this.settings.customCommands &&
-      this.settings.customCommands.length > 0
-    ) {
-      this.settings.customCommands.forEach((cmd) => {
-        try {
-          const executeCode = new Function(
-            "plugin",
-            "app",
-            "console",
-            cmd.content
-          ) as (plugin: any, app: any, console: any) => void;
-          this.addCommand({
-            id: cmd.id,
-            name: cmd.name,
-            callback: () => {
-              executeCode(this, this.app, console);
-            },
-          });
-        } catch (error) {
-          console.error(`Error loading custom command ${cmd.id}:`, error);
-        }
-      });
-    }
-
-    // Migrate existing configs to markdown file if needed
-    try {
-      await migrateConfigsToMarkdown(this, this.settings.savedConfigsFilePath);
-    } catch (error) {
-      console.error("Error migrating configs to markdown file:", error);
-    }
-
+  applySettingsToStore(settings: GayToolbarSettings) {
+    this.settings = settings;
     usePlugin.setState(this);
-
-    // Merge only persisted data into store so we never overwrite actions (e.g. toggleAccordion)
-    const toMerge: Partial<GayToolbarSettings> = {};
-    for (const k of persistedSettingsKeys) {
-      if ((this.settings as any)[k] !== undefined) {
-        (toMerge as any)[k] = (this.settings as any)[k];
-      }
+    this.applyingExternalSettings = true;
+    try {
+      useSettings.setState(pickPersistedSettings(settings));
+    } finally {
+      this.applyingExternalSettings = false;
     }
-    useSettings.setState(toMerge);
+  }
+
+  attachSettingsPersistSubscription() {
+    if (this.settingsPersistSubscribed) return;
+    this.settingsPersistSubscribed = true;
 
     this.unsubscribeSettingsSync = useSettings.subscribe((state) => {
+      if (this.applyingExternalSettings) return;
+
       this.settings = state;
       const persisted: Partial<GayToolbarSettings> = {};
       for (const k of persistedSettingsKeys) {
@@ -353,12 +301,151 @@ export default class GayToolbarPlugin extends Plugin {
     });
   }
 
+  syncCustomCommands(commands: CustomCommand[]) {
+    for (const id of this.registeredCustomCommandIds) {
+      this.removeCommand(id);
+    }
+    this.registeredCustomCommandIds = [];
+
+    for (const cmd of commands) {
+      try {
+        const executeCode = new Function(
+          "plugin",
+          "app",
+          "console",
+          cmd.content
+        ) as (plugin: any, app: any, console: any) => void;
+        this.addCommand({
+          id: cmd.id,
+          name: cmd.name,
+          callback: () => {
+            executeCode(this, this.app, console);
+          },
+        });
+        this.registeredCustomCommandIds.push(cmd.id);
+      } catch (error) {
+        console.error(`Error loading custom command ${cmd.id}:`, error);
+      }
+    }
+  }
+
+  async fetchAndNormalizeSettings(): Promise<GayToolbarSettings> {
+    let settings = (await this.loadData()) as GayToolbarSettings | null;
+    if (!settings) {
+      settings = { ...DEFAULT_SETTINGS };
+      await this.saveSettings(settings);
+    }
+
+    // Ensure savedConfigsFilePath is set (for users upgrading from older versions)
+    if (!settings.savedConfigsFilePath) {
+      settings.savedConfigsFilePath = "GayToolbarSavedConfigs.md";
+      await this.saveSettings(settings);
+    }
+
+    // Initialize minimizedToolbarLoc from default settings if not exists
+    if (!settings.minimizedToolbarLoc) {
+      settings.minimizedToolbarLoc = DEFAULT_SETTINGS.minimizedToolbarLoc;
+      await this.saveSettings(settings);
+    }
+
+    // Fix invalid position values (ensure positive pixel values)
+    if (settings.minimizedToolbarLoc) {
+      const [x, y] = settings.minimizedToolbarLoc;
+      const clampedX = Math.max(0, x);
+      const clampedY = Math.max(0, y);
+
+      if (clampedX !== x || clampedY !== y) {
+        settings.minimizedToolbarLoc = [clampedX, clampedY];
+        await this.saveSettings(settings);
+      }
+    }
+    // Migrate missing settings keys and openAccordions
+    let hasMissingKeys = migrateLockColorsInPlace(settings);
+    if (migrateSettings(settings, DEFAULT_SETTINGS)) {
+      hasMissingKeys = true;
+    }
+    if (migrateOpenAccordions(settings, DEFAULT_SETTINGS)) {
+      hasMissingKeys = true;
+    }
+    if (settings.showNewVersionNotes === undefined) {
+      settings.showNewVersionNotes = DEFAULT_SETTINGS.showNewVersionNotes;
+      hasMissingKeys = true;
+    }
+    if (settings.lastSeenUpdateNotesVersion === undefined) {
+      settings.lastSeenUpdateNotesVersion =
+        DEFAULT_SETTINGS.lastSeenUpdateNotesVersion;
+      hasMissingKeys = true;
+    }
+    if (hasMissingKeys) {
+      await this.saveSettings(settings);
+    }
+
+    // Ensure customCommands is initialized (for users upgrading from older versions)
+    if (!settings.customCommands) {
+      settings.customCommands = [];
+      await this.saveSettings(settings);
+    }
+
+    // Ensure presetColors is initialized (for users upgrading from older versions)
+    if (
+      !settings.presetColors ||
+      !Array.isArray(settings.presetColors)
+    ) {
+      settings.presetColors = [...DEFAULT_SETTINGS.presetColors];
+      await this.saveSettings(settings);
+    }
+
+    return settings;
+  }
+
+  async reloadSettingsFromDisk() {
+    try {
+      const settings = await this.fetchAndNormalizeSettings();
+      this.syncCustomCommands(settings.customCommands ?? []);
+      this.applySettingsToStore(settings);
+      this.applyToolbarCssFromSettings();
+    } catch (error) {
+      console.error("Failed to reload Gay Toolbar settings from disk:", error);
+    }
+  }
+
+  onExternalSettingsChange() {
+    if (this.externalSettingsReloadTimeout !== null) {
+      window.clearTimeout(this.externalSettingsReloadTimeout);
+    }
+
+    this.externalSettingsReloadTimeout = window.setTimeout(() => {
+      this.externalSettingsReloadTimeout = null;
+      void this.reloadSettingsFromDisk();
+    }, EXTERNAL_SETTINGS_RELOAD_MS);
+  }
+
+  async loadSettings() {
+    this.settings = await this.fetchAndNormalizeSettings();
+
+    this.syncCustomCommands(this.settings.customCommands ?? []);
+
+    // Migrate existing configs to markdown file if needed
+    try {
+      await migrateConfigsToMarkdown(this, this.settings.savedConfigsFilePath);
+    } catch (error) {
+      console.error("Error migrating configs to markdown file:", error);
+    }
+
+    this.applySettingsToStore(this.settings);
+    this.attachSettingsPersistSubscription();
+  }
+
   onunload() {
     this.toolbarRoot?.unmount?.();
     this.toolbarNode?.remove();
     getActiveDocument().querySelector(".gay-toolbar-container")?.remove(); // not sure why this is sometimes necessary
     this.unsubscribeSettingsSync?.();
-    
+    this.settingsPersistSubscribed = false;
+    if (this.externalSettingsReloadTimeout !== null) {
+      window.clearTimeout(this.externalSettingsReloadTimeout);
+      this.externalSettingsReloadTimeout = null;
+    }
     // Clean up navbar hiding
     if (this.navbarObserver) {
       this.navbarObserver.disconnect();

@@ -1,5 +1,5 @@
 import { getEmptySettings } from "./Settings/DEFAULT_SETTINGS";
-import { useSettings, useEditor, usePlugin } from "./StateManagement";
+import { useSettings, useEditor, usePlugin, useCommandSession } from "./StateManagement";
 
 // Reset all stores to initial state before each test
 export const resetAllStores = () => {
@@ -11,6 +11,10 @@ export const resetAllStores = () => {
     setSelectedButtonId: jest.fn(),
   });
   usePlugin.setState(null);
+  useCommandSession.setState({
+    lastIssuedCommandId: null,
+    setLastIssuedCommandId: useCommandSession.getState().setLastIssuedCommandId,
+  });
 };
 
 // Mock external dependencies that cause issues in tests

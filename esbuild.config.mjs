@@ -38,6 +38,9 @@ const context = await esbuild.context({
     js: banner,
   },
   entryPoints: ["src/main.tsx"],
+  loader: {
+    ".png": "dataurl",
+  },
   bundle: true,
   external: [
     "obsidian",
@@ -59,6 +62,8 @@ const context = await esbuild.context({
   target: "es2018",
   logLevel: "info",
   sourcemap: prod ? false : "inline",
+  minify: prod,
+  define: prod ? { "process.env.NODE_ENV": '"production"' } : undefined,
   treeShaking: true,
   outdir: ".",
   entryNames: "[name]",

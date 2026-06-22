@@ -4,6 +4,8 @@ A fully customizable, collapsible toolbar that floats above the keyboard, intent
 The defaults are intentionally colorful, gesture-dense, and high-contrast. If you want something quieter, the plugin is deeply customizable: desaturate it, make everything grey, simplify layouts, preserve more native behavior, whatever you want. I genuinely welcome contributions that support different philosophies and workflows — especially if they’re bundled cleanly into optional settings instead of diluting the core defaults.
 Built (and maintained!) with ❤️
 
+[![Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-☕-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/chaskane)
+
 In edit mode (wrench 🔧 icon, or obsidian command `Gay Toolbar: Toggle edit mode`), each button can be assigned a primary (tap) and optional secondary (long-press) obsidian command, as well as any number of swipe commands, each assigned to a different swipe direction. Buttons can be moved between slots by long-pressing and dragging in edit mode. Their colors can be customized from a customizable color palette or assigned in bulk. The background color of the whole toolbar can be set to a solid color, or you can use your own CSS value for crazy radial gradients or whatever. Did I mention this toolbar is customizable? The number and size of rows and columns can also be set independently, and when you arrive at a config you like, you can snapshot it like a video game save slot.
 ![Image of gay-toolbar](https://github.com/user-attachments/assets/47aad823-1d29-4930-b86e-dd24f772a5f3)
 
@@ -100,6 +102,12 @@ _If you’re excited about seeing any of these or other ideas implemented, I’d
 
 ---
 
+# **Support**
+
+If Gay Toolbar saves you time on mobile — especially if you're using swipe commands — [buy me a coffee](https://buymeacoffee.com/chaskane) ☕
+
+---
+
 # **Contributions**
 
 ## **Development Setup**
@@ -142,4 +150,4 @@ fswatch -o main.js styles.css manifest.json data.json | xargs -n1 -I{} sh -c 'ec
 
 Replace `<path/to/.obsidian>` with your actual Obsidian vault path. The `data.json` sync is optional - you can remove it from the command if you don't want to sync your settings.
 
-I've found the [hot-reload plugin](https://github.com/shabegom/obsidian-hot-reload-mobile) sometimes useful, as well as the [dev tools plugin](https://github.com/KjellConnelly/obsidian-dev-tools), tho for the latter case it's often easier to use the chrome devtools on mac, connected to android via adb. Lmk if you need help; happy to accept PRs!
+I've found the [hot-reload plugin](https://github.com/shabegom/obsidian-hot-reload-mobile) sometimes useful, as well as the [dev tools plugin](https://github.com/KjellConnelly/obsidian-dev-tools), tho for the latter case it's often easier to use the chrome devtools on mac, connected to android via adb. Lmk if you need help; happy to accept PRs! UPDATE: I now use the [Logstravaganza plugin](https://github.com/czottmann/obsidian-logstravaganza) for accessing the results of console logs.

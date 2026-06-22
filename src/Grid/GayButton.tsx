@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { setIcon } from "obsidian";
-import { usePlugin, useSettings, useEditor } from "../StateManagement";
+import { usePlugin, useSettings, useEditor, useCommandSession } from "../StateManagement";
 import {
   getAngle,
   getDistance,
@@ -144,6 +144,8 @@ const GayButton: React.FC<{ buttonId: string }> = ({ buttonId }) => {
 
   const executeCommand = (commandId?: string | null) => {
     if (!commandId) return;
+
+    useCommandSession.getState().setLastIssuedCommandId(commandId);
 
     // @ts-ignore | app.commands exists; not sure why it's not in the API...
     plugin?.app.commands.executeCommandById(commandId);

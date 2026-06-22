@@ -1,6 +1,7 @@
 import React, { RefObject, useEffect, useRef } from "react";
 import ButtonGrid from "./Grid/ButtonGrid";
 import GaySettings from "./Settings/GaySettings";
+import ChasUpdateAvatar from "./Intro/ChasUpdateAvatar";
 import { useEditor, usePlugin, useSettings } from "./StateManagement";
 import { Platform } from "obsidian";
 import { getActiveDocument, getLuminanceGuidedIconColor } from "./utils";
@@ -118,6 +119,7 @@ const GayToolbar: React.FC = () => {
     );
   return (
     <div ref={ref} className="gay-toolbar-main">
+      <ChasUpdateAvatar />
       {isEditing && <GaySettings />}
       <ButtonGrid />
     </div>

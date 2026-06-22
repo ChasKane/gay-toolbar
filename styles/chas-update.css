@@ -1,0 +1,210 @@
+/* Chas update avatar + speech bubble above the toolbar. */
+
+.chas-update-overlay {
+  --chas-update-dialog-height: 190px;
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translateX(-50%);
+  margin-bottom: 25px;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 10px;
+  z-index: var(--layer-popover, 1000);
+  pointer-events: auto;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: 0 !important;
+}
+
+.chas-update-preview {
+  --chas-update-dialog-height: 190px;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: center;
+  gap: 10px;
+  margin: 16px 0;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: 0 !important;
+}
+
+.chas-update-avatar-wrap {
+  position: relative;
+  width: calc(var(--chas-update-dialog-height) * 0.67);
+  height: var(--chas-update-dialog-height);
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: chas-update-pop-in 0.4s ease-out forwards,
+    chas-update-wiggle 1.2s ease-in-out 0.45s infinite;
+  transform-origin: center bottom;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: 0 !important;
+  padding: 0 !important;
+  isolation: isolate;
+  overflow: visible !important;
+}
+
+.chas-update-avatar-wrap::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 20%;
+  height: 116%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    rgba(255, 182, 193, 0.72) 50%,
+    rgba(255, 128, 170, 0.34) 64%,
+    rgba(255, 128, 170, 0) 82%
+  ) !important;
+  box-shadow: 0 0 18px 20px rgba(255, 182, 193, 0.35);
+  filter: blur(4px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.chas-update-avatar {
+  position: relative;
+  z-index: 1;
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  display: block;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: 0 !important;
+}
+
+.chas-update-bubble {
+  position: relative;
+  box-sizing: border-box;
+  height: var(--chas-update-dialog-height);
+  display: flex;
+  flex-direction: column;
+  margin-top: 0;
+  padding: 12px 36px 12px 14px;
+  max-width: min(360px, 92vw);
+  min-width: min(320px, 92vw);
+  background: var(--background-primary, #1e1e1e);
+  color: var(--text-normal, #ccc);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--background-modifier-border, #333);
+}
+
+.chas-update-preview .chas-update-bubble {
+  padding-right: 14px;
+}
+
+.chas-update-bubble::before {
+  content: "";
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 8px solid transparent;
+  border-right-color: var(--background-primary, #1e1e1e);
+  border-left: none;
+}
+
+.chas-update-close {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: var(--background-modifier-hover, #333);
+  color: var(--text-normal, #ccc);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chas-update-close:hover {
+  background: var(--background-modifier-active-hover, #444);
+}
+
+.chas-update-copy {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+  scroll-behavior: smooth;
+}
+
+.chas-update-text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+  white-space: normal;
+}
+
+.chas-update-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  background: currentColor;
+  animation: chas-update-cursor-blink 0.6s step-end infinite;
+}
+
+.chas-update-actions {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+@keyframes chas-update-pop-in {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes chas-update-wiggle {
+  0%,
+  100% {
+    transform: rotate(-2deg) scale(1);
+  }
+  50% {
+    transform: rotate(2deg) scale(1.02);
+  }
+}
+
+@keyframes chas-update-cursor-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}

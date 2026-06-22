@@ -14,6 +14,7 @@ import CommandEditor from "./CommandEditor";
 import RestoreDefaults from "./RestoreDefaults";
 import GayColorPicker from "./GayColorPicker";
 import MainSettings from "./MainSettings";
+import NewVersionNotes from "./NewVersionNotes";
 
 const isRealMobileApp = () => Platform.isMobile && (Platform as any).isMobileApp;
 const getCapacitor = () => (window as any).Capacitor;
@@ -176,6 +177,8 @@ const GaySettings: React.FC = () => {
         return <Configs onBack={handleBackToMain} />;
       case "command-editor":
         return <CommandEditor onBack={handleBackToMain} />;
+      case "new-version-notes":
+        return <NewVersionNotes onBack={handleBackToMain} />;
       case "restore-defaults":
         return (
           <RestoreDefaults
