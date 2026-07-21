@@ -10,7 +10,7 @@ This plan tests that `customCommands` and `presetColors` persist independently o
 ### 1. Type Safety & Build
 **Goal:** Verify TypeScript compilation and type correctness
 
-- [ ] Run `npm run build` - should compile without errors
+- [ ] Run `pnpm run build` - should compile without errors
 - [ ] Verify `customCommands` is NOT in `savedConfigKeys` array
 - [ ] Verify `presetColors` is NOT in `savedConfigKeys` array
 - [ ] Verify `customCommands` IS in `GayToolbarSettings` intersection type
@@ -302,7 +302,7 @@ This plan tests that `customCommands` and `presetColors` persist independently o
 - [ ] Update `settingsMigration.test.ts` if needed
 - [ ] Add unit tests for config loading logic
 - [ ] Add unit tests for restore defaults logic
-- [ ] Run `npm test` and verify all pass
+- [ ] Run `pnpm test` and verify all pass
 
 ### Regression Testing
 - [ ] Verify existing saved configs still load correctly

@@ -29,8 +29,8 @@ const NewVersionNotes: React.FC<NewVersionNotesProps> = ({ onBack }) => {
           </div>
         </div>
         <p className="gay-toolbar-modal-detail">
-          This is the update note people see once after a new Gay Toolbar
-          version, unless they turn these notes off.
+          The popup after an update shows only the latest version. This preview
+          is the full cumulative history — scroll to read older releases.
         </p>
       </div>
     </>

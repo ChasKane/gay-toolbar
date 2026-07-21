@@ -1,5 +1,6 @@
 import * as culori from "culori";
 import { toPng } from "html-to-image";
+import { ColorService } from "react-color-palette";
 import {
   GayButtonSettings,
   GayToolbarSettings,
@@ -22,35 +23,9 @@ export function getActiveDocument(): Document {
   return g.activeDocument ?? document;
 }
 
-export const hexToIColor = (color: string) => {
-  const parsed = culori.parseHex(color);
-  if (!parsed) {
-    return {
-      hex: color,
-      rgb: { r: 0, g: 0, b: 0, a: 1 },
-      hsv: { h: 0, s: 0, v: 0, a: 1 },
-    };
-  }
-
-  const rgb = culori.rgb(parsed);
-  const hsv = culori.hsv(parsed);
-
-  return {
-    hex: color,
-    rgb: {
-      r: rgb?.r || 0,
-      g: rgb?.g || 0,
-      b: rgb?.b || 0,
-      a: rgb?.alpha || 1,
-    },
-    hsv: {
-      h: hsv?.h || 0,
-      s: hsv?.s || 0,
-      v: hsv?.v || 0,
-      a: hsv?.alpha || 1,
-    },
-  };
-};
+/** Convert hex for react-color-palette (RGB 0–255, HSV s/v 0–100 — not culori’s 0–1). */
+export const hexToIColor = (color: string) =>
+  ColorService.convert("hex", color);
 
 export const getDistance = (initYX?: Position, finalXY?: Position) => {
   if (!initYX || !finalXY) {
@@ -229,7 +204,73 @@ export interface MarkdownConfig {
   date: number;
   screenshot: string;
   data: string;
+  /** Original locale date/time when epoch could not be parsed (legacy files). */
+  dateLabel?: string;
 }
+
+/**
+ * Resolve a saved-config timestamp from markdown metadata.
+ * Prefer machine-readable **Timestamp:** (epoch ms). Fall back to **Date:**
+ * locale strings from older files — those often fail to parse (e.g. DD/MM/YYYY).
+ */
+export const resolveConfigTimestamp = (
+  timestampRaw: string | undefined,
+  datePart: string | undefined,
+  timePart: string | undefined
+): number => {
+  if (timestampRaw) {
+    const epoch = Number(timestampRaw.trim());
+    if (Number.isFinite(epoch) && epoch > 0) return epoch;
+  }
+  if (datePart && timePart) {
+    const parsed = new Date(`${datePart} ${timePart}`);
+    const ms = parsed.getTime();
+    if (Number.isFinite(ms)) return ms;
+  }
+  return 0;
+};
+
+export const formatConfigDisplayDate = (
+  timestamp: number,
+  dateLabel?: string
+): string => {
+  if (Number.isFinite(timestamp) && timestamp > 0) {
+    try {
+      return new Intl.DateTimeFormat().format(new Date(timestamp));
+    } catch {
+      /* fall through */
+    }
+  }
+  if (dateLabel) {
+    // "21/01/2026 at 21:52:20" → date part only
+    const at = dateLabel.indexOf(" at ");
+    return at >= 0 ? dateLabel.slice(0, at) : dateLabel;
+  }
+  return "Unknown date";
+};
+
+export const formatConfigDisplayTime = (
+  timestamp: number,
+  dateLabel?: string
+): string => {
+  if (Number.isFinite(timestamp) && timestamp > 0) {
+    try {
+      return new Intl.DateTimeFormat(undefined, {
+        hour: "numeric",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      }).format(new Date(timestamp));
+    } catch {
+      /* fall through */
+    }
+  }
+  if (dateLabel) {
+    const at = dateLabel.indexOf(" at ");
+    return at >= 0 ? dateLabel.slice(at + 4) : "";
+  }
+  return "";
+};
 
 export const parseMarkdownConfigs = (content: string): MarkdownConfig[] => {
   const configs: MarkdownConfig[] = [];
@@ -238,23 +279,33 @@ export const parseMarkdownConfigs = (content: string): MarkdownConfig[] => {
   for (const section of sections) {
     const lines = section.split("\n");
     const id = lines[0].trim();
+    // Skip the file title section ("Gay Toolbar Saved Configs")
+    if (!id || id.startsWith("Gay Toolbar")) continue;
+
+    const timestampMatch = section.match(/\*\*Timestamp:\*\* (\d+)/);
     const dateMatch = section.match(/\*\*Date:\*\* (.+?) at (.+?)$/m);
     const screenshotMatch = section.match(
       /!\[.*?\]\(data:image\/png;base64,([^)]+)\)/
     );
     const dataMatch = section.match(/```json\n([\s\S]*?)\n```/);
 
-    if (id && dateMatch && screenshotMatch && dataMatch) {
-      // Parse the formatted date back to timestamp
-      const dateStr = `${dateMatch[1]} ${dateMatch[2]}`;
-      const parsedDate = new Date(dateStr);
-      const timestamp = parsedDate.getTime();
-
+    // Require screenshot + JSON; date metadata may be missing or unparseable
+    if (id && screenshotMatch && dataMatch) {
+      const date = resolveConfigTimestamp(
+        timestampMatch?.[1],
+        dateMatch?.[1],
+        dateMatch?.[2]
+      );
+      const dateLabel =
+        dateMatch && date <= 0
+          ? `${dateMatch[1]} at ${dateMatch[2]}`
+          : undefined;
       configs.push({
         id,
-        date: timestamp,
+        date,
         screenshot: `data:image/png;base64,${screenshotMatch[1]}`,
         data: dataMatch[1],
+        ...(dateLabel ? { dateLabel } : {}),
       });
     }
   }
@@ -270,12 +321,20 @@ export const generateMarkdownContent = (configs: MarkdownConfig[]): string => {
   let content = "# Gay Toolbar Saved Configs\n\n";
 
   for (const config of configs) {
-    const date = new Date(config.date);
-    const formattedDate = date.toLocaleDateString();
-    const formattedTime = date.toLocaleTimeString();
-
+    const hasEpoch = Number.isFinite(config.date) && config.date > 0;
     content += `## ${config.id}\n\n`;
-    content += `**Date:** ${formattedDate} at ${formattedTime}\n\n`;
+    if (hasEpoch) {
+      const date = new Date(config.date);
+      const formattedDate = date.toLocaleDateString();
+      const formattedTime = date.toLocaleTimeString();
+      content += `**Timestamp:** ${date.getTime()}\n\n`;
+      content += `**Date:** ${formattedDate} at ${formattedTime}\n\n`;
+    } else if (config.dateLabel) {
+      // Preserve legacy locale date string; Timestamp added on next save once known
+      content += `**Date:** ${config.dateLabel}\n\n`;
+    } else {
+      content += `**Date:** Unknown\n\n`;
+    }
     content += `![Toolbar Screenshot](${config.screenshot})\n\n`;
     content += `**Settings:**\n\n`;
     content += `\`\`\`json\n${config.data}\n\`\`\`\n\n`;
@@ -570,6 +629,48 @@ export const migrateOpenAccordions = (
   return false;
 };
 
+/**
+ * Normalize a saved-config JSON blob for applying to the live store:
+ * migrate missing schema keys, drop non-layout fields that must stay current.
+ */
+export const prepareLoadedSavedConfig = (
+  parsedData: Record<string, unknown>,
+  current: Pick<
+    GayToolbarSettings,
+    "customCommands" | "presetColors" | "savedConfigsFilePath"
+  >,
+  defaultSettings: GayToolbarSettings
+): Partial<GayToolbarSettings> => {
+  const {
+    configs: _configs,
+    customCommands: _customCommands,
+    presetColors: _presetColors,
+    savedConfigsFilePath: _savedConfigsFilePath,
+    openAccordions: _openAccordions,
+    showNewVersionNotes: _showNewVersionNotes,
+    lastSeenUpdateNotesVersion: _lastSeenUpdateNotesVersion,
+    ...rest
+  } = parsedData;
+
+  const migrated = { ...rest } as GayToolbarSettings;
+  migrateLockColorsInPlace(migrated);
+  migrateSettings(migrated, defaultSettings);
+
+  const settingsToLoad: Partial<GayToolbarSettings> = {};
+  for (const key of savedConfigKeys) {
+    if (key in migrated && migrated[key] !== undefined) {
+      (settingsToLoad as any)[key] = migrated[key];
+    }
+  }
+
+  return {
+    ...settingsToLoad,
+    customCommands: current.customCommands ?? [],
+    presetColors: current.presetColors ?? [],
+    savedConfigsFilePath: current.savedConfigsFilePath,
+  };
+};
+
 /** Subset of settings stored in data.json — safe to merge into the Zustand store. */
 export function pickPersistedSettings(
   settings: GayToolbarSettings
@@ -583,4 +684,17 @@ export function pickPersistedSettings(
     }
   }
   return toMerge;
+}
+
+/** Turning update notes back on replays the current version after settings close. */
+export function patchShowNewVersionNotesToggle(
+  wasEnabled: boolean,
+  nowEnabled: boolean
+): Partial<
+  Pick<GayToolbarSettings, "showNewVersionNotes" | "lastSeenUpdateNotesVersion">
+> {
+  if (nowEnabled && !wasEnabled) {
+    return { showNewVersionNotes: true, lastSeenUpdateNotesVersion: "" };
+  }
+  return { showNewVersionNotes: nowEnabled };
 }

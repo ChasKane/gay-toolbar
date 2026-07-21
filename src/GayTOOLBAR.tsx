@@ -9,7 +9,7 @@ import { createPortal } from "react-dom";
 
 const GayToolbar: React.FC = () => {
   const plugin = usePlugin();
-  const { isEditing, selectedButtonId } = useEditor();
+  const { isEditing, selectedButtonId, settingsScreen } = useEditor();
 
   const isMinimized = useSettings((state) => state.isMinimized);
   const backgroundColor = useSettings((state) => state.backgroundColor);
@@ -24,23 +24,31 @@ const GayToolbar: React.FC = () => {
     if (Platform.isMobile) return;
     const statusBar: HTMLDivElement | null =
       getActiveDocument().querySelector(".status-bar");
-    if (statusBar) {
+    const el = ref.current;
+    if (!statusBar) return;
+
+    const updateOffset = () => {
       statusBar.classList.add("gay-toolbar-status-bar-offset");
       statusBar.style.setProperty(
         "--gay-toolbar-status-bar-bottom",
         isMinimized
           ? "0px"
-          : `${ref.current?.getBoundingClientRect().height || 0}px`
+          : `${el?.getBoundingClientRect().height || 0}px`
       );
-    }
-    return () => {
-      if (statusBar) {
-        statusBar.classList.remove("gay-toolbar-status-bar-offset");
-        statusBar.style.removeProperty("--gay-toolbar-status-bar-bottom");
-      }
     };
-    // isEditing, annoyingText, and selectedButtonId required because they change the overall toolbar height
-  }, [isEditing, annoyingText, selectedButtonId, isMinimized]);
+
+    updateOffset();
+
+    // Settings screens (e.g. color picker) change toolbar height without remounting
+    const ro = el ? new ResizeObserver(updateOffset) : null;
+    if (el && ro) ro.observe(el);
+
+    return () => {
+      ro?.disconnect();
+      statusBar.classList.remove("gay-toolbar-status-bar-offset");
+      statusBar.style.removeProperty("--gay-toolbar-status-bar-bottom");
+    };
+  }, [isEditing, annoyingText, selectedButtonId, settingsScreen, isMinimized]);
 
   if (isMinimized)
     return createPortal(

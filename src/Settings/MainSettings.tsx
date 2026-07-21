@@ -2,7 +2,7 @@ import React, { useLayoutEffect, useRef } from "react";
 import NumericInputGroup from "./NumericInputGroup";
 import { useEditor, usePlugin, useSettings } from "../StateManagement";
 import { setIcon } from "obsidian";
-import { getLuminanceGuidedIconColor } from "../utils";
+import { getLuminanceGuidedIconColor, patchShowNewVersionNotesToggle } from "../utils";
 import AccordionSection from "../components/ui/accordion";
 import SettingsCard from "./SettingsCard";
 import { Checkbox } from "../components/ui/checkbox";
@@ -254,7 +254,7 @@ const MainSettings: React.FC<MainSettingsProps> = ({ marqueeColor }) => {
         )}
         <SettingsCard title="Swipe command colors">
           <Checkbox
-            label="Pick new swipe command colors from the palette instead of inheriting the button color. [legacy behavior]"
+            label="[legacy behavior] Pick new swipe command colors from the palette instead of inheriting the button color."
             checked={swipeColorsFromPalette}
             onChange={(e) =>
               setSettings({ swipeColorsFromPalette: e.target.checked })
@@ -325,10 +325,15 @@ const MainSettings: React.FC<MainSettingsProps> = ({ marqueeColor }) => {
         <SettingsCard title="New version notes">
           <div className="gay-version-notes-setting-row">
             <Checkbox
-              label="Show a small heads-up after Gay Toolbar updates."
+              label="Show Gay Toolbar update notes"
               checked={showNewVersionNotes}
               onChange={(e) =>
-                setSettings({ showNewVersionNotes: e.target.checked })
+                setSettings(
+                  patchShowNewVersionNotesToggle(
+                    showNewVersionNotes,
+                    e.target.checked
+                  )
+                )
               }
             />
             <button

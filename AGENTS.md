@@ -14,4 +14,4 @@ Maintain **[docs/taste-log.md](docs/taste-log.md)** — a running log of intenti
 Agents: update the Taste Log in the same change that implements the behavior — not as a follow-up.
 
 - Keep `CHANGES_IN_THIS_COMMIT.md` in sync as you edit. Write it as a short, user-friendly summary of what changed and why it matters, not as an internal implementation log.
-- Before creating any commit, update the text in `src/Intro/ChasUpdateAvatar.tsx` from the user-friendly version of `CHANGES_IN_THIS_COMMIT.md`. Keep the avatar copy chill and useful, focused on what's new in the version. Do not bring back tutorial or onboarding copy.
+- Before creating any commit, update `CURRENT_UPDATE_POPUP_TEXT` in `src/Intro/ChasUpdateAvatar.tsx` from the user-friendly version of `CHANGES_IN_THIS_COMMIT.md` (current version only — what the avatar popup types out). **Prepend** the same section to `UPDATE_NOTES_TEXT` for the cumulative settings preview; keep prior version sections (sourced from GitHub releases). Keep the avatar copy chill and useful; do not bring back tutorial or onboarding copy.

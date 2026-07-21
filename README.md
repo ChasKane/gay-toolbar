@@ -117,32 +117,32 @@ To run the plugin locally:
 1. Install dependencies:
 
    ```bash
-   npm i
+   pnpm install
    ```
 
 2. Start development mode (builds `main.js` from `src/main.tsx`, watches source and `styles/*.css` and writes combined `styles.css`):
 
    ```bash
-   npm run dev
+   pnpm run dev
    ```
 
 3. Build for production:
 
    ```bash
-   npm run build
+   pnpm run build
    ```
 
 4. Run tests:
 
    ```bash
-   npm run test
-   npm run test:watch    # watch mode
-   npm run test:coverage # coverage report
+   pnpm run test
+   pnpm run test:watch    # watch mode
+   pnpm run test:coverage # coverage report
    ```
 
 ## **Android Development Sync**
 
-To sync changes to your Android Obsidian installation via ADB on save, have `npm run dev` running in another terminal and then:
+To sync changes to your Android Obsidian installation via ADB on save, have `pnpm run dev` running in another terminal and then:
 
 ```bash
 fswatch -o main.js styles.css manifest.json data.json | xargs -n1 -I{} sh -c 'echo "Files changed, syncing..."; adb push main.js <path/to/.obsidian>/plugins/gay-toolbar/ && adb push styles.css <path/to/.obsidian>/plugins/gay-toolbar/ && adb push manifest.json <path/to/.obsidian>/plugins/gay-toolbar/ && adb push data.json <path/to/.obsidian>/plugins/gay-toolbar/ && echo "Sync complete"'

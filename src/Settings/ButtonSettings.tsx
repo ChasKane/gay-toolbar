@@ -32,6 +32,13 @@ const swapAt = <T,>(arr: T[], a: number, b: number) => {
   return next;
 };
 
+const moveSwipeAt = <T,>(arr: (T | null)[], from: number, to: number) => {
+  const next = [...arr];
+  next[to] = next[from];
+  next[from] = null;
+  return next;
+};
+
 type SwipeCommand = NonNullable<GayButtonSettings["swipeCommands"]>[number];
 
 type SwipeRingSlotProps = {
@@ -62,18 +69,24 @@ const SwipeRingSlot: React.FC<SwipeRingSlotProps> = ({
 
   useEffect(() => {
     const el = slotRef.current;
-    if (!el || !isFilled) return;
+    if (!el) return;
 
     const cleanups = [
-      draggable({
-        element: el,
-        getInitialData: () => ({ swipeIndex: index, kind: "swipe-command" }),
-      }),
       dropTargetForElements({
         element: el,
         getData: () => ({ swipeIndex: index, kind: "swipe-command" }),
       }),
     ];
+
+    if (isFilled) {
+      cleanups.push(
+        draggable({
+          element: el,
+          getInitialData: () => ({ swipeIndex: index, kind: "swipe-command" }),
+        })
+      );
+    }
+
     return () => cleanups.forEach((cleanup) => cleanup());
   }, [index, isFilled]);
 
@@ -203,14 +216,17 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({ onBack }) => {
 
         const destIndex = destination.data.swipeIndex as number | undefined;
         if (destIndex === undefined || destIndex === sourceIndex) return;
-        if (!swipeCommands?.[sourceIndex] || !swipeCommands?.[destIndex]) return;
+        if (!swipeCommands?.[sourceIndex]) return;
 
+        const destCommand = swipeCommands[destIndex];
         updateButton(selectedButtonId, {
-          swipeCommands: swapAt(swipeCommands, sourceIndex, destIndex),
+          swipeCommands: destCommand
+            ? swapAt(swipeCommands, sourceIndex, destIndex)
+            : moveSwipeAt(swipeCommands, sourceIndex, destIndex),
         });
         if (selectedSwipeIndex === sourceIndex) {
           setSelectedSwipeIndex(destIndex);
-        } else if (selectedSwipeIndex === destIndex) {
+        } else if (destCommand && selectedSwipeIndex === destIndex) {
           setSelectedSwipeIndex(sourceIndex);
         }
       },
