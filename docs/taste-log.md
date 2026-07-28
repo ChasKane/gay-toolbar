@@ -17,6 +17,11 @@ For removals, use **Removed:** instead of **Change:** and note what replaced it 
 
 ## Entries
 
+### 2026-07-28 — Release workflow uses packageManager pnpm version
+- **Area:** tooling
+- **Change:** Removed explicit `version: 10` from `pnpm/action-setup` in `.github/workflows/release.yml` so CI uses only `package.json`'s `packageManager` (`pnpm@10.28.0`).
+- **Reason:** Tag push for 2.3.0 failed immediately — action-setup errors when both `version` and `packageManager` are set.
+
 ### 2026-07-21 — Saved configs: locale dates + load-time migration
 - **Area:** plugin
 - **Change:** Saved-config markdown now writes a machine-readable `**Timestamp:**` (epoch ms) alongside the human `**Date:**` line. Parsing prefers Timestamp; unparseable locale dates (e.g. DD/MM/YYYY) no longer produce `NaN` that crashes `Intl.DateTimeFormat` and unmounts the toolbar. Display formatters are defensive; the configs screen has an error boundary so a future crash stays on that screen. Loading a saved config runs `migrateLockColorsInPlace` + `migrateSettings` before apply (preserving custom commands, palette, and configs file path).
