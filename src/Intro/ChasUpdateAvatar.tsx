@@ -8,7 +8,13 @@ const SHOW_DELAY_MS = 3000;
 const CHAR_DELAY_MS = 28;
 
 /** Current version only — typed out in the avatar popup after an update. */
-export const CURRENT_UPDATE_POPUP_TEXT = `Gay Toolbar 2.3.0:
+export const CURRENT_UPDATE_POPUP_TEXT = `Gay Toolbar 2.3.1:
+* Changing a swipe command no longer resets its icon — icon and command stay on separate controls.`;
+
+/** Cumulative release notes (newest first). Prepend each version on release; prior sections stay. */
+export const UPDATE_NOTES_TEXT = `${CURRENT_UPDATE_POPUP_TEXT}
+
+Gay Toolbar 2.3.0:
 * Fixed saved configs — viewing or loading them no longer makes the toolbar disappear (especially with non-US date formats).
 * Older saved configs migrate to the current schema when you load them.
 * Settings sync live across devices — change the toolbar on one device and others pick it up without a restart.
@@ -18,10 +24,7 @@ export const CURRENT_UPDATE_POPUP_TEXT = `Gay Toolbar 2.3.0:
 * Repeat last command — bind it to any slot.
 * Long-press delay moved to the top of Other in settings.
 * Lock colors in place is on by default for new setups.
-* I may pop in after updates like this; turn that off in settings if you prefer quiet.`;
-
-/** Cumulative release notes (newest first). Prepend each version on release; prior sections stay. */
-export const UPDATE_NOTES_TEXT = `${CURRENT_UPDATE_POPUP_TEXT}
+* I may pop in after updates like this; turn that off in settings if you prefer quiet.
 
 Gay Toolbar 2.2.0:
 This release updates the default toolbar preset to encompase the navbar's behavior so the toolbar is more friendly to new users — back/forward nav commands have icons that reflect whether such actions can be done (transparent icons if back/forward wouldn't lead anywhere) and the Show Tab Overview command now reflects the current number of tabs like the one in the navbar.

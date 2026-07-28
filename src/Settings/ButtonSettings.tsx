@@ -325,7 +325,10 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({ onBack }) => {
           : {}),
         swipeCommands: replaceAt(swipeCommands ?? [], selectedSwipeIndex, {
           commandId: command.id,
-          icon: command.icon,
+          icon:
+            prev && typeof prev === "object" && prev.icon
+              ? prev.icon
+              : command.icon,
           color:
             prev && typeof prev === "object" && prev.color
               ? prev.color

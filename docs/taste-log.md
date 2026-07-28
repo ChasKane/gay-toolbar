@@ -17,6 +17,11 @@ For removals, use **Removed:** instead of **Change:** and note what replaced it 
 
 ## Entries
 
+### 2026-07-28 — Swipe command picker leaves icon alone
+- **Area:** plugin
+- **Change:** Changing a filled swipe’s command (inner ring control) updates only `commandId`; the existing swipe icon is preserved. Icon stays on its own control. Command-only modal hint says “Select command” instead of “Choose an icon.”
+- **Reason:** User report — picking a swipe command always replaced the icon (often with the generic box) even though swipe editing intentionally splits icon vs command.
+
 ### 2026-07-28 — Release workflow uses packageManager pnpm version
 - **Area:** tooling
 - **Change:** Removed explicit `version: 10` from `pnpm/action-setup` in `.github/workflows/release.yml` so CI uses only `package.json`'s `packageManager` (`pnpm@10.28.0`).

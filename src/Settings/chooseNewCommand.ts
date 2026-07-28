@@ -18,7 +18,8 @@ export async function chooseCommandOnly(
 ): Promise<{ id: string; icon: string }> {
   const command = await new AddCommandModal(
     plugin,
-    currentCommandId
+    currentCommandId,
+    { selectPurpose: "Select command" }
   ).awaitSelection();
   return {
     id: command.id,
@@ -61,7 +62,8 @@ export class AddCommandModal extends FuzzySuggestModal<Command> {
 
   public constructor(
     plugin: GayToolbarPlugin | null,
-    currentCommandId?: string
+    currentCommandId?: string,
+    options?: { selectPurpose?: string }
   ) {
     if (!plugin) return;
     super(plugin.app);
@@ -78,7 +80,7 @@ export class AddCommandModal extends FuzzySuggestModal<Command> {
       },
       {
         command: "↵",
-        purpose: "Choose an icon",
+        purpose: options?.selectPurpose ?? "Choose an icon",
       },
       {
         command: "esc",

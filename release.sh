@@ -6,7 +6,7 @@
 # versions.json
 # package.json
 
-TAG="2.3.0"
+TAG="2.3.1"
 
 pnpm run build
 git add -A && git commit -m "version bump: $TAG"
