@@ -2,6 +2,10 @@
 
 Product/design decisions: **[docs/taste-log.md](docs/taste-log.md)**.
 
+## Development layout
+
+Source lives in `Freelancing/.Projects/gay-toolbar`. `pnpm dev` / `pnpm build` write `main.js`, `styles.css`, and `manifest.json` into `wolfpack/.obsidian/plugins/gay-toolbar` (override via `env.mjs` `obsidianExportPath` or `OBSIDIAN_PLUGIN_DIR`). Vault install keeps only runtime files + `data.json`.
+
 ## Taste Log
 
 Maintain **[docs/taste-log.md](docs/taste-log.md)** — a running log of intentional product choices and why they were made.
